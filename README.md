@@ -86,14 +86,16 @@ The framework integrates four complementary layers:
 ---
 
 ## Repository Structure
+
+```
 unified-probabilistic-validation/
 │
 ├── src/
-│ ├── calibration/
-│ ├── scoring/
-│ ├── conformal/
-│ ├── governance/
-│ └── utils/
+│   ├── calibration/
+│   ├── scoring/
+│   ├── conformal/
+│   ├── governance/
+│   └── utils/
 │
 ├── experiments/
 ├── notebooks/
@@ -101,6 +103,7 @@ unified-probabilistic-validation/
 ├── docs/
 ├── paper/
 └── data/
+```
 
 
 ---
@@ -144,3 +147,4 @@ The emphasis is on reliability diagnostics and structured evaluation.
 
 ## License
 License to be determined upon supervisor approval.
+
