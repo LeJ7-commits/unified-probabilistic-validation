@@ -6,22 +6,31 @@ from scipy.stats import kstest
 from scipy.stats import norm
 
 
-def compute_pit(cdf_values: np.ndarray) -> np.ndarray:
-    """
-    compute PIT values u_t = F_t(y_t)
 
-    parameters
+def compute_pit(y_true, samples):
+    """
+    compute Probability Integral Transform (PIT)
+    from predictive samples.
+
+    Parameters
     ----------
-    cdf_values : np.ndarray
-        Evaluated predictive CDF at realized value y_t.
+    y_true : array-like, shape (n_obs,)
+    samples : array-like, shape (n_obs, n_samples)
 
-    returns
+    Returns
     -------
-    np.ndarray
-        PIT values in (0,1)
+    u : ndarray, shape (n_obs,)
+        PIT values in [0,1]
     """
-    eps = 1e-12
-    return np.clip(cdf_values, eps, 1 - eps)
+    y_true = np.asarray(y_true)
+    samples = np.asarray(samples)
+
+    n_obs, n_samples = samples.shape
+
+    # empirical CDF per observation
+    u = np.mean(samples <= y_true[:, None], axis=1)
+
+    return u
 
 
 def pit_uniformity_test(pit_values: np.ndarray):
