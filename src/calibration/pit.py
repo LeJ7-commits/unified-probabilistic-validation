@@ -1,16 +1,14 @@
-# src/calibration/pit.py
+from __future__ import annotations
 
 import numpy as np
-from scipy.stats import uniform
-from scipy.stats import kstest
-from scipy.stats import norm
+from scipy.stats import kstest, cramervonmises, norm
+from statsmodels.stats.diagnostic import acorr_ljungbox
 
 
-
-def compute_pit(y_true, samples):
+def compute_pit(y_true, samples) -> np.ndarray:
     """
-    compute Probability Integral Transform (PIT)
-    from predictive samples.
+    Compute Probability Integral Transform (PIT) values u_t in [0,1]
+    from predictive samples via the empirical CDF.
 
     Parameters
     ----------
@@ -22,33 +20,118 @@ def compute_pit(y_true, samples):
     u : ndarray, shape (n_obs,)
         PIT values in [0,1]
     """
-    y_true = np.asarray(y_true)
-    samples = np.asarray(samples)
+    y_true = np.asarray(y_true, dtype=float)
+    samples = np.asarray(samples, dtype=float)
 
-    n_obs, n_samples = samples.shape
+    if samples.ndim != 2:
+        raise ValueError("samples must have shape (n_obs, n_samples)")
+
+    n_obs, _ = samples.shape
+    if y_true.shape[0] != n_obs:
+        raise ValueError("y_true and samples must have same n_obs")
 
     # empirical CDF per observation
     u = np.mean(samples <= y_true[:, None], axis=1)
-
+    # numerical guard (avoid exactly 0/1 for inverse CDF)
+    u = np.clip(u, 1e-12, 1 - 1e-12)
     return u
 
 
-def pit_uniformity_test(pit_values: np.ndarray):
+def pit_inverse_normal(pit_values: np.ndarray) -> np.ndarray:
     """
-    Kolmogorov-Smirnov test against Uniform(0,1)
+    Inverse-CDF transformation z_t = Phi^{-1}(u_t), recommended before
+    autocorrelation testing on PIT values.
     """
-    stat, p_value = kstest(pit_values, 'uniform')
+    u = np.asarray(pit_values, dtype=float)
+    u = np.clip(u, 1e-12, 1 - 1e-12)
+    return norm.ppf(u)
+
+
+def pit_gof_tests(pit_values: np.ndarray) -> dict:
+    """
+    Uniformity / goodness-of-fit tests for PIT against Uniform(0,1).
+
+    Includes:
+    - Kolmogorov-Smirnov (KS)
+    - Cramér–von Mises (CvM)
+    - Anderson–Darling style statistic:
+        scipy does not provide AD for Uniform directly, so we transform:
+        z = Phi^{-1}(u) should be N(0,1) if u ~ Uniform(0,1),
+        then apply scipy.stats.anderson(z, dist='norm').
+
+    Returns
+    -------
+    dict with test statistics and p-values where available.
+    """
+    u = np.asarray(pit_values, dtype=float)
+    u = np.clip(u, 1e-12, 1 - 1e-12)
+
+    # KS test vs Uniform(0,1)
+    ks_stat, ks_p = kstest(u, "uniform")
+
+    # CvM test vs Uniform(0,1) (has p-value in scipy)
+    cvm_res = cramervonmises(u, "uniform")
+
+    # AD for normality after inverse-normal transform
+    # (no p-value, but includes critical values)
+    from scipy.stats import anderson  # local import
+
+    z = pit_inverse_normal(u)
+    ad_res = anderson(z, dist="norm")
+
     return {
-        "ks_statistic": stat,
-        "p_value": p_value
+        "pit_ks_stat": float(ks_stat),
+        "pit_ks_pvalue": float(ks_p),
+        "pit_cvm_stat": float(cvm_res.statistic),
+        "pit_cvm_pvalue": float(cvm_res.pvalue),
+        "pit_ad_stat": float(ad_res.statistic),
+        "pit_ad_critvals": [float(x) for x in ad_res.critical_values],
+        "pit_ad_siglevels": [float(x) for x in ad_res.significance_level],
     }
 
 
-def pit_autocorrelation_test(pit_values: np.ndarray, lags: int = 10):
+def pit_independence_tests(
+    pit_values: np.ndarray,
+    lags: int | list[int] = 20,
+    use_inverse_normal: bool = True,
+) -> dict:
     """
-    Ljung-Box autocorrelation check
-    """
-    from statsmodels.stats.diagnostic import acorr_ljungbox
+    Independence / autocorrelation check using Ljung-Box.
 
-    result = acorr_ljungbox(pit_values, lags=[lags], return_df=True)
-    return result.to_dict()
+    IMPORTANT (per Rikard/enBW comment):
+    - Perform inverse CDF transformation first (z = Phi^{-1}(u)).
+    - Then run autocorrelation tests on z_t.
+
+    Parameters
+    ----------
+    pit_values : ndarray, shape (n_obs,)
+    lags : int or list[int]
+        Ljung-Box lags. If int, evaluates at that lag.
+        If list, returns dict for all provided lags.
+    use_inverse_normal : bool
+        If True (default), test is applied to z_t = Phi^{-1}(u_t).
+        If False, test is applied directly to u_t (not recommended).
+
+    Returns
+    -------
+    dict with Ljung-Box statistics/p-values.
+    """
+    u = np.asarray(pit_values, dtype=float)
+    u = np.clip(u, 1e-12, 1 - 1e-12)
+
+    x = pit_inverse_normal(u) if use_inverse_normal else u
+
+    if isinstance(lags, int):
+        lag_list = [lags]
+    else:
+        lag_list = list(lags)
+
+    df = acorr_ljungbox(x, lags=lag_list, return_df=True)
+
+    out = {}
+    for lag in lag_list:
+        out[f"pit_lb_stat_lag{lag}"] = float(df.loc[lag, "lb_stat"])
+        out[f"pit_lb_pvalue_lag{lag}"] = float(df.loc[lag, "lb_pvalue"])
+
+    out["pit_lb_input"] = "z=Phi^{-1}(u)" if use_inverse_normal else "u"
+    return out

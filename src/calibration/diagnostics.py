@@ -1,28 +1,28 @@
+from __future__ import annotations
 import numpy as np
-from statsmodels.stats.diagnostic import acorr_ljungbox
-from scipy.stats import kstest
 
-def pit_autocorrelation(u, nlags=20):
+from src.calibration.pit import pit_gof_tests, pit_independence_tests
+
+
+def pit_uniformity_tests(u: np.ndarray) -> dict:
     """
-    Compute Ljung–Box test for PIT independence.
-    Returns test statistic and p-value.
+    Wrapper for PIT goodness-of-fit tests (KS, CvM, AD-stat via z-transform).
     """
-    lb = acorr_ljungbox(u, lags=[nlags], return_df=True)
-    return {
-        "ljung_box_stat": float(lb["lb_stat"].iloc[0]),
-        "p_value": float(lb["lb_pvalue"].iloc[0])
-    }
+    return pit_gof_tests(u)
 
 
-def interval_coverage(y, lower, upper):
+def pit_autocorrelation_tests(u: np.ndarray, lags: int | list[int] = 20) -> dict:
+    """
+    Wrapper for PIT independence tests (Ljung-Box on z=Phi^{-1}(u)).
+    """
+    return pit_independence_tests(u, lags=lags, use_inverse_normal=True)
+
+
+def interval_coverage(y: np.ndarray, lower: np.ndarray, upper: np.ndarray) -> float:
     """
     Compute empirical coverage of prediction intervals.
     """
+    y = np.asarray(y, dtype=float)
+    lower = np.asarray(lower, dtype=float)
+    upper = np.asarray(upper, dtype=float)
     return float(np.mean((y >= lower) & (y <= upper)))
-
-def pit_uniformity_ks(u):
-    """
-    KS test for Uniform(0,1).
-    """
-    stat, p = kstest(u, "uniform")
-    return {"ks_statistic": float(stat), "p_value": float(p)}
