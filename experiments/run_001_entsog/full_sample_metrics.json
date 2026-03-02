@@ -1,13 +1,41 @@
 {
-  "empirical_coverage": 0.8293229535267752,
+  "pit_ks_stat": 0.06783612000361516,
+  "pit_ks_pvalue": 0.0,
+  "pit_cvm_stat": 437.1717212446745,
+  "pit_cvm_pvalue": 1.3196401815740444e-07,
+  "pit_ad_stat": 1271.9884088195395,
+  "pit_ad_critvals": [
+    0.561,
+    0.631,
+    0.752,
+    0.873,
+    1.035
+  ],
+  "pit_ad_siglevels": [
+    15.0,
+    10.0,
+    5.0,
+    2.5,
+    1.0
+  ],
+  "pit_lb_stat_lag5": 888273.1512752946,
+  "pit_lb_pvalue_lag5": 0.0,
+  "pit_lb_stat_lag10": 1660715.8483881864,
+  "pit_lb_pvalue_lag10": 0.0,
+  "pit_lb_stat_lag20": 2914607.2778827483,
+  "pit_lb_pvalue_lag20": 0.0,
+  "pit_lb_input": "z=Phi^{-1}(u)",
+  "crps_mean": 1466.4453245024374,
+  "empirical_coverage": 0.8972824613394093,
   "risk_label": "RED",
   "risk_reasons": [
-    "Coverage off-target by 0.071 (target=0.900)."
+    "Uniformity strongly rejected (min p=0).",
+    "Independence strongly rejected (min Ljung-Box p=0)."
   ],
   "risk_signals": {
-    "min_p_uniformity": null,
-    "min_p_ljungbox": null,
-    "empirical_coverage": 0.8293229535267752,
-    "coverage_error": 0.07067704647322481
+    "min_p_uniformity": 0.0,
+    "min_p_ljungbox": 0.0,
+    "empirical_coverage": 0.8972824613394093,
+    "coverage_error": 0.002717538660590768
   }
 }

@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
 import numpy as np
-import pandas as pd
 
 from src.diagnostics.evaluator import evaluate_distribution
 from src.diagnostics.rolling import rolling_evaluation
@@ -49,6 +47,7 @@ def run_diagnostics_policy(
     y_true = np.asarray(y_true, dtype=float)
     samples_arr = None if samples is None else np.asarray(samples, dtype=float)
 
+    # Full-sample diagnostics can use samples and/or quantiles (evaluator decides what it can compute)
     out: dict[str, Any] = {
         "full_sample": evaluate_distribution(
             y_true=y_true,
@@ -65,12 +64,21 @@ def run_diagnostics_policy(
     policy = RiskPolicy(coverage_target=coverage_target)
     out["full_sample_governance"] = classify_risk(out["full_sample"], policy=policy)
 
-    do_rolling = (model_class == "short_term") or (model_class == "long_term" and enable_rolling_for_long_term)
+    do_rolling = (model_class == "short_term") or (
+        model_class == "long_term" and enable_rolling_for_long_term
+    )
     if do_rolling:
+        # IMPORTANT: do NOT fabricate dummy samples. Rolling requires either real samples or quantiles.
+        if samples_arr is None and quantiles is None:
+            raise ValueError(
+                "Rolling diagnostics require either `samples` or `quantiles` (refusing dummy zeros)."
+            )
+
         # Overlapping rolling
         out["rolling_overlapping"] = rolling_evaluation(
             y_true=y_true,
-            samples=samples_arr if samples_arr is not None else np.zeros((len(y_true), 1)),
+            samples=samples_arr,     # may be None
+            quantiles=quantiles,     # may be None
             window=rolling_window,
             step=rolling_step,
             mode="overlapping",
@@ -80,9 +88,10 @@ def run_diagnostics_policy(
         # Non-overlapping rolling
         out["rolling_non_overlapping"] = rolling_evaluation(
             y_true=y_true,
-            samples=samples_arr if samples_arr is not None else np.zeros((len(y_true), 1)),
+            samples=samples_arr,     # may be None
+            quantiles=quantiles,     # may be None
             window=rolling_window,
-            step=None,
+            step=None,               # rolling_evaluation will map this to step=window for non_overlapping
             mode="non_overlapping",
             lb_lags=list(lb_lags) if isinstance(lb_lags, tuple) else lb_lags,
         )
@@ -118,10 +127,15 @@ def write_run_artifacts(
         run_output["rolling_non_overlapping"].to_csv(out_dir / "rolling_non_overlapping.csv", index=False)
 
     # Optional: Anfuso interval backtest
-    if y_true is not None and quantiles is not None and (alpha/2) in quantiles and (1-alpha/2) in quantiles:
+    if (
+        y_true is not None
+        and quantiles is not None
+        and (alpha / 2) in quantiles
+        and (1 - alpha / 2) in quantiles
+    ):
         y = np.asarray(y_true, dtype=float)
-        lo = np.asarray(quantiles[alpha/2], dtype=float)
-        hi = np.asarray(quantiles[1-alpha/2], dtype=float)
+        lo = np.asarray(quantiles[alpha / 2], dtype=float)
+        hi = np.asarray(quantiles[1 - alpha / 2], dtype=float)
         anf = anfuso_interval_backtest(y, lo, hi, alpha=alpha)
         with open(out_dir / "anfuso_full_sample.json", "w", encoding="utf-8") as f:
             json.dump({k: _to_jsonable(v) for k, v in anf.items()}, f, indent=2, ensure_ascii=False)
