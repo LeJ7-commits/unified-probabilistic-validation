@@ -53,9 +53,9 @@ The forecast distribution underestimates variability, causing realizations to fa
 
 If the predictive mean is systematically shifted relative to the true process:
 
-[
+$
 \hat{\mu} \neq \mu
-]
+$
 
 then realizations consistently fall to one side of the predictive distribution.
 
