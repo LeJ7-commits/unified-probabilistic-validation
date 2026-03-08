@@ -31,38 +31,21 @@ if __name__ == "__main__":
     # --- load structural artifacts ---
     y = np.load(data_dir / "entsog_y.npy").astype(float)
 
-    # Prefer constructing base interval from yhat + scale (cleaner than storing lo/hi npy)
-    yhat_path = data_dir / "entsog_yhat.npy"
-    scale_path = data_dir / "entsog_scale.npy"
+    # Use asymmetric lo/hi directly — these are built from rolling empirical quantiles
+    # in build_entsog_derived.py and correctly capture the asymmetric residual structure.
+    # The yhat+scale path assumed Gaussian symmetry which is not valid here.
+    lo_path = data_dir / "entsog_lo_base_90.npy"
+    hi_path = data_dir / "entsog_hi_base_90.npy"
 
-    if yhat_path.exists() and scale_path.exists():
-        yhat = np.load(yhat_path).astype(float)
-        scale = np.load(scale_path).astype(float)
-
-        if yhat.shape != y.shape or scale.shape != y.shape:
-            raise ValueError(
-                f"Shape mismatch: y{y.shape}, yhat{yhat.shape}, scale{scale.shape}. "
-                "All must be identical length."
-            )
-
-        z = z_value_two_sided(alpha)
-        lower = yhat - z * scale
-        upper = yhat + z * scale
-
+    if lo_path.exists() and hi_path.exists():
+        lower = np.load(lo_path).astype(float)
+        upper = np.load(hi_path).astype(float)
     else:
-        # Fallback: if you still have stored lo/hi, use them; otherwise fail loudly.
-        lo_path = data_dir / "entsog_lo_base_90.npy"
-        hi_path = data_dir / "entsog_hi_base_90.npy"
-        if lo_path.exists() and hi_path.exists():
-            lower = np.load(lo_path).astype(float)
-            upper = np.load(hi_path).astype(float)
-        else:
-            raise FileNotFoundError(
-                "Missing required interval inputs. Provide either:\n"
-                "  (a) entsog_yhat.npy + entsog_scale.npy  (preferred), OR\n"
-                "  (b) entsog_lo_base_90.npy + entsog_hi_base_90.npy\n"
-                f"Looked in: {data_dir}"
-            )
+        raise FileNotFoundError(
+            "Missing required interval inputs: entsog_lo_base_90.npy and entsog_hi_base_90.npy\n"
+            f"Looked in: {data_dir}\n"
+            "Re-run scripts/build_entsog_derived.py to regenerate."
+        )
 
     quantiles = {alpha / 2: lower, 1 - alpha / 2: upper}
 
