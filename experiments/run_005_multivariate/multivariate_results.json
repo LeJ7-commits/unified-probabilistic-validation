@@ -1,0 +1,43 @@
+{
+  "n_shared": 4287,
+  "assets": [
+    "pv",
+    "wind"
+  ],
+  "shared_index_note": "Joint evaluation restricted to daytime hours where both PV and wind have evaluable observations after nighttime exclusion and warmup burn. Daytime restriction ensures comparable weather regimes drive both series.",
+  "marginal_pit": {
+    "pv": {
+      "mean_z": 0.10372295515594898,
+      "std_z": 1.941361243285361
+    },
+    "wind": {
+      "mean_z": -0.051433274872837616,
+      "std_z": 1.599677025875225
+    }
+  },
+  "multivariate_ljungbox": {
+    "lag5": {
+      "statistic": 15427.24319417392,
+      "df": 20,
+      "pvalue": 0.0
+    },
+    "lag10": {
+      "statistic": 20691.688154996864,
+      "df": 40,
+      "pvalue": 0.0
+    },
+    "lag20": {
+      "statistic": 24713.924086057854,
+      "df": 80,
+      "pvalue": 0.0
+    }
+  },
+  "cross_correlation": {
+    "lag0": -0.040407,
+    "lag1": -0.040719,
+    "lag6": -0.031129,
+    "lag24": 0.075347
+  },
+  "bivariate_energy_score": 2.016670182203763,
+  "independence_verdict": "REJECT"
+}

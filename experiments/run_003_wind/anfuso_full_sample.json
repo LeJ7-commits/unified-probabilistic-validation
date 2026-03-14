@@ -1,0 +1,22 @@
+{
+  "n": 9000,
+  "alpha": 0.1,
+  "lower_breaches": 580,
+  "upper_breaches": 444,
+  "total_breaches": 1024,
+  "lower_breach_rate": 0.06444444444444444,
+  "upper_breach_rate": 0.04933333333333333,
+  "total_breach_rate": 0.11377777777777778,
+  "binom_pvalue_lower_greater": 8.965192532651462e-10,
+  "binom_pvalue_upper_greater": 0.6208896161801227,
+  "binom_pvalue_total_greater": 1.0195622266820328e-05,
+  "traffic_light_lower": "RED",
+  "traffic_light_upper": "GREEN",
+  "traffic_light_total": "RED",
+  "cutoffs_lower_q95": 484,
+  "cutoffs_lower_q999": 515,
+  "cutoffs_upper_q95": 484,
+  "cutoffs_upper_q999": 515,
+  "cutoffs_total_q95": 947,
+  "cutoffs_total_q999": 989
+}

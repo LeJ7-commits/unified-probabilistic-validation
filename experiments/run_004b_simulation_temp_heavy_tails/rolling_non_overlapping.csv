@@ -1,0 +1,8 @@
+empirical_coverage,window_start,window_end,window_len,window_step,window_mode
+0.96,0,50,50,50,non_overlapping
+0.88,50,100,50,50,non_overlapping
+0.92,100,150,50,50,non_overlapping
+0.96,150,200,50,50,non_overlapping
+0.92,200,250,50,50,non_overlapping
+0.9,250,300,50,50,non_overlapping
+0.94,300,350,50,50,non_overlapping

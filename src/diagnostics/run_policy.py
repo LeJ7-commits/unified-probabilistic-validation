@@ -27,7 +27,7 @@ def _to_jsonable(x: Any) -> Any:
 
 def run_diagnostics_policy(
     *,
-    model_class: str,  # "short_term" | "long_term"
+    model_class: str,  # "short_term" | "long_term" | "simulation"
     y_true,
     samples=None,
     quantiles: dict[float, np.ndarray] | None = None,
@@ -64,8 +64,10 @@ def run_diagnostics_policy(
     policy = RiskPolicy(coverage_target=coverage_target)
     out["full_sample_governance"] = classify_risk(out["full_sample"], policy=policy)
 
-    do_rolling = (model_class == "short_term") or (
-        model_class == "long_term" and enable_rolling_for_long_term
+    do_rolling = (
+        model_class == "short_term"
+        or (model_class == "long_term" and enable_rolling_for_long_term)
+        or (model_class == "simulation" and enable_rolling_for_long_term)
     )
     if do_rolling:
         # IMPORTANT: do NOT fabricate dummy samples. Rolling requires either real samples or quantiles.

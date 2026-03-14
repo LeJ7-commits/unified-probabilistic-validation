@@ -1,0 +1,13 @@
+{
+  "empirical_coverage": 0.9232876712328767,
+  "risk_label": "YELLOW",
+  "risk_reasons": [
+    "Coverage mildly off-target by 0.023 (target=0.900)."
+  ],
+  "risk_signals": {
+    "min_p_uniformity": null,
+    "min_p_ljungbox": null,
+    "empirical_coverage": 0.9232876712328767,
+    "coverage_error": 0.023287671232876672
+  }
+}

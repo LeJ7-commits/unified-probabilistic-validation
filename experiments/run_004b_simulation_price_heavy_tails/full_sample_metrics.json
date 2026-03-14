@@ -1,0 +1,13 @@
+{
+  "empirical_coverage": 0.9013698630136986,
+  "risk_label": "GREEN",
+  "risk_reasons": [
+    "All monitored diagnostic signals within policy thresholds."
+  ],
+  "risk_signals": {
+    "min_p_uniformity": null,
+    "min_p_ljungbox": null,
+    "empirical_coverage": 0.9013698630136986,
+    "coverage_error": 0.001369863013698569
+  }
+}
