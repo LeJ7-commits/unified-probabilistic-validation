@@ -1,0 +1,96 @@
+{
+  "dataset": "Sim Price (well-spec)",
+  "scheme": "overlapping",
+  "n_windows": 32,
+  "state_sequence": [
+    "YELLOW",
+    "RED",
+    "YELLOW",
+    "GREEN",
+    "GREEN",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "RED",
+    "YELLOW",
+    "GREEN",
+    "YELLOW",
+    "YELLOW",
+    "GREEN",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "GREEN",
+    "GREEN",
+    "YELLOW",
+    "RED",
+    "RED",
+    "RED",
+    "RED"
+  ],
+  "state_frequency": {
+    "GREEN": 6,
+    "YELLOW": 16,
+    "RED": 10
+  },
+  "state_frequency_pct": {
+    "GREEN": 18.8,
+    "YELLOW": 50.0,
+    "RED": 31.2
+  },
+  "transition_matrix": {
+    "GREEN": {
+      "GREEN": 0.3333,
+      "YELLOW": 0.6667,
+      "RED": 0.0
+    },
+    "YELLOW": {
+      "GREEN": 0.25,
+      "YELLOW": 0.5625,
+      "RED": 0.1875
+    },
+    "RED": {
+      "GREEN": 0.0,
+      "YELLOW": 0.2222,
+      "RED": 0.7778
+    }
+  },
+  "transition_counts": {
+    "GREEN": {
+      "GREEN": 2,
+      "YELLOW": 4,
+      "RED": 0
+    },
+    "YELLOW": {
+      "GREEN": 4,
+      "YELLOW": 9,
+      "RED": 3
+    },
+    "RED": {
+      "GREEN": 0,
+      "YELLOW": 2,
+      "RED": 7
+    }
+  },
+  "stationary_distribution": {
+    "GREEN": 0.169,
+    "YELLOW": 0.4507,
+    "RED": 0.3803
+  },
+  "row_entropy_bits": {
+    "GREEN": 0.9183,
+    "YELLOW": 1.4197,
+    "RED": 0.7642
+  },
+  "stationary_entropy_bits": 1.4821,
+  "max_possible_entropy_bits": 1.585,
+  "stability_interpretation": "unstable"
+}

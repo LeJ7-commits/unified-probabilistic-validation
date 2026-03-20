@@ -1,0 +1,58 @@
+{
+  "transition": {
+    "n_windows": 7,
+    "state_counts": {
+      "GREEN": 1,
+      "YELLOW": 4,
+      "RED": 2
+    },
+    "state_freq_pct": {
+      "GREEN": 14.3,
+      "YELLOW": 57.1,
+      "RED": 28.6
+    },
+    "transition_matrix": {
+      "GREEN": {
+        "GREEN": 0.0,
+        "YELLOW": 1.0,
+        "RED": 0.0
+      },
+      "YELLOW": {
+        "GREEN": 0.3333,
+        "YELLOW": 0.3333,
+        "RED": 0.3333
+      },
+      "RED": {
+        "GREEN": 0.0,
+        "YELLOW": 1.0,
+        "RED": 0.0
+      }
+    },
+    "stability_rates": {
+      "GREEN": 0.0,
+      "YELLOW": 0.3333,
+      "RED": 0.0
+    },
+    "stationary_dist": {
+      "GREEN": 0.2,
+      "YELLOW": 0.6,
+      "RED": 0.2
+    },
+    "reason_codes": []
+  },
+  "entropy": {
+    "stationary_entropy_bits": 1.371,
+    "row_entropy_bits": {
+      "GREEN": -0.0,
+      "YELLOW": 1.585,
+      "RED": -0.0
+    },
+    "max_possible_entropy_bits": 1.585,
+    "is_unstable": true,
+    "stability_label": "unstable",
+    "interpretation": "Classification is highly unstable. Possible causes: (1) genuine regime shifts in the underlying process, (2) rolling window too small relative to process memory, (3) diagnostic thresholds near a decision boundary.",
+    "reason_codes": [
+      "high_entropy"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+dataset,run_dir,scheme,n_windows,pct_green,pct_yellow,pct_red,T_GG,T_RR,stationary_green,stationary_red,H_stationary_bits,stability,H_from_green,H_from_red
+ENTSO-E,run_001_entsoe,non_overlapping,838,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+ENTSO-E,run_001_entsoe,overlapping,4187,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+PV Solar,run_002_pv,non_overlapping,5,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+PV Solar,run_002_pv,overlapping,22,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Wind,run_003_wind,non_overlapping,12,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Wind,run_003_wind,overlapping,50,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Price (well-spec),run_004_simulation_price,non_overlapping,7,28.6,42.9,28.6,0.0,0.0,0.4,0.3,1.571,unstable,1.0,-0.0
+Sim Price (well-spec),run_004_simulation_price,overlapping,32,18.8,50.0,31.2,0.3333,0.7778,0.169,0.3803,1.4821,unstable,0.9183,0.7642
+Sim Temp (well-spec),run_004_simulation_temp,non_overlapping,7,14.3,85.7,0.0,0.0,0.0,0.1667,0.0,0.65,moderate,-0.0,-0.0
+Sim Temp (well-spec),run_004_simulation_temp,overlapping,32,18.8,68.8,12.5,0.1667,0.3333,0.1846,0.1385,1.226,unstable,0.65,0.9183
+Sim Price — Var Inflation,run_004b_simulation_price_variance_inflation,non_overlapping,7,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Price — Var Inflation,run_004b_simulation_price_variance_inflation,overlapping,32,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Price — Mean Bias,run_004b_simulation_price_mean_bias,non_overlapping,7,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Price — Mean Bias,run_004b_simulation_price_mean_bias,overlapping,32,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Price — Heavy Tails,run_004b_simulation_price_heavy_tails,non_overlapping,7,0.0,100.0,0.0,0.0,0.0,0.0,0.0,-0.0,stable,-0.0,-0.0
+Sim Price — Heavy Tails,run_004b_simulation_price_heavy_tails,overlapping,32,18.8,59.4,21.9,0.0,0.4286,0.1935,0.2258,1.3987,unstable,0.9183,1.4488
+Sim Temp — Var Inflation,run_004b_simulation_temp_variance_inflation,non_overlapping,7,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Temp — Var Inflation,run_004b_simulation_temp_variance_inflation,overlapping,32,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Temp — Mean Bias,run_004b_simulation_temp_mean_bias,non_overlapping,7,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Temp — Mean Bias,run_004b_simulation_temp_mean_bias,overlapping,32,0.0,0.0,100.0,0.0,1.0,0.0,1.0,-0.0,stable,-0.0,-0.0
+Sim Temp — Heavy Tails,run_004b_simulation_temp_heavy_tails,non_overlapping,7,14.3,57.1,28.6,0.0,0.0,0.2,0.2,1.371,unstable,-0.0,-0.0
+Sim Temp — Heavy Tails,run_004b_simulation_temp_heavy_tails,overlapping,32,9.4,75.0,15.6,0.0,0.25,0.0968,0.129,0.9931,moderate,-0.0,1.5

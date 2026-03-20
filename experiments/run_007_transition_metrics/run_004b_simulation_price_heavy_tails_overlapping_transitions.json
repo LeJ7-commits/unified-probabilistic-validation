@@ -1,0 +1,96 @@
+{
+  "dataset": "Sim Price \u2014 Heavy Tails",
+  "scheme": "overlapping",
+  "n_windows": 32,
+  "state_sequence": [
+    "YELLOW",
+    "GREEN",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "YELLOW",
+    "GREEN",
+    "YELLOW",
+    "GREEN",
+    "RED",
+    "YELLOW",
+    "YELLOW",
+    "RED",
+    "RED",
+    "GREEN",
+    "YELLOW",
+    "YELLOW",
+    "GREEN",
+    "RED",
+    "RED",
+    "YELLOW",
+    "GREEN",
+    "YELLOW",
+    "RED",
+    "RED",
+    "YELLOW",
+    "YELLOW"
+  ],
+  "state_frequency": {
+    "GREEN": 6,
+    "YELLOW": 19,
+    "RED": 7
+  },
+  "state_frequency_pct": {
+    "GREEN": 18.8,
+    "YELLOW": 59.4,
+    "RED": 21.9
+  },
+  "transition_matrix": {
+    "GREEN": {
+      "GREEN": 0.0,
+      "YELLOW": 0.6667,
+      "RED": 0.3333
+    },
+    "YELLOW": {
+      "GREEN": 0.2778,
+      "YELLOW": 0.6111,
+      "RED": 0.1111
+    },
+    "RED": {
+      "GREEN": 0.1429,
+      "YELLOW": 0.4286,
+      "RED": 0.4286
+    }
+  },
+  "transition_counts": {
+    "GREEN": {
+      "GREEN": 0,
+      "YELLOW": 4,
+      "RED": 2
+    },
+    "YELLOW": {
+      "GREEN": 5,
+      "YELLOW": 11,
+      "RED": 2
+    },
+    "RED": {
+      "GREEN": 1,
+      "YELLOW": 3,
+      "RED": 3
+    }
+  },
+  "stationary_distribution": {
+    "GREEN": 0.1935,
+    "YELLOW": 0.5806,
+    "RED": 0.2258
+  },
+  "row_entropy_bits": {
+    "GREEN": 0.9183,
+    "YELLOW": 1.2997,
+    "RED": 1.4488
+  },
+  "stationary_entropy_bits": 1.3987,
+  "max_possible_entropy_bits": 1.585,
+  "stability_interpretation": "unstable"
+}

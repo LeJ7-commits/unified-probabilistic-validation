@@ -1,0 +1,12 @@
+dataset,description,governance_label,empirical_coverage,coverage_error_pp,breach_rate,actual_exceptions_250d,nominal_exceptions_250d,excess_exceptions,adapted_zone,capital_multiplier,capital_distortion_abs,capital_distortion_pct,capital_direction,reserve_sizing_error_pp,reserve_direction
+ENTSO-E,Short-term electricity load,RED,0.8706,-2.94,0.1294,32.3,25.0,7.3,YELLOW,3.4,0.4,13.3,under-capitalised (7.3 excess exceptions above nominal),-2.94,undersized
+PV Solar,Long-term PV generation,RED,0.9137,1.37,0.0863,21.6,25.0,-3.4,CONSERVATIVE,2.8,-0.2,-6.7,over-capitalised (3.4 fewer exceptions than nominal),1.37,oversized
+Wind,Long-term wind generation,RED,0.8862,-1.38,0.1138,28.4,25.0,3.4,YELLOW,3.4,0.4,13.3,under-capitalised (3.4 excess exceptions above nominal),-1.38,undersized
+Sim Price (well-spec),Simulation price — well-specified,GREEN,0.8849,-1.51,0.1151,28.8,25.0,3.8,YELLOW,3.4,0.4,13.3,under-capitalised (3.8 excess exceptions above nominal),-1.51,undersized
+Sim Temp (well-spec),Simulation temp — well-specified,GREEN,0.8959,-0.41,0.1041,26.0,25.0,1.0,GREEN,3.0,0.0,0.0,under-capitalised (1.0 excess exceptions above nominal),-0.41,undersized
+Sim Price — Var Inflation,Variance inflation,RED,0.5534,-34.66,0.4466,111.6,25.0,86.6,RED,4.0,1.0,33.3,under-capitalised (86.6 excess exceptions above nominal),-34.66,undersized
+Sim Price — Mean Bias,Mean bias,RED,0.7041,-19.59,0.2959,74.0,25.0,49.0,RED,4.0,1.0,33.3,under-capitalised (49.0 excess exceptions above nominal),-19.59,undersized
+Sim Price — Heavy Tails,Heavy tails,GREEN,0.9014,0.14,0.0986,24.7,25.0,-0.3,GREEN,3.0,0.0,0.0,over-capitalised (0.3 fewer exceptions than nominal),0.14,oversized
+Sim Temp — Var Inflation,Variance inflation,RED,0.6247,-27.53,0.3753,93.8,25.0,68.8,RED,4.0,1.0,33.3,under-capitalised (68.8 excess exceptions above nominal),-27.53,undersized
+Sim Temp — Mean Bias,Mean bias,RED,0.7041,-19.59,0.2959,74.0,25.0,49.0,RED,4.0,1.0,33.3,under-capitalised (49.0 excess exceptions above nominal),-19.59,undersized
+Sim Temp — Heavy Tails,Heavy tails,YELLOW,0.9233,2.33,0.0767,19.2,25.0,-5.8,CONSERVATIVE,2.8,-0.2,-6.7,over-capitalised (5.8 fewer exceptions than nominal),2.33,oversized

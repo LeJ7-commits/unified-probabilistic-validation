@@ -1,0 +1,14 @@
+{
+  "dataset_label": "Wind",
+  "alpha": 0.1,
+  "window_size": 720,
+  "rolling_step": 168,
+  "coverage_target": 0.9,
+  "pvalue_red": 0.01,
+  "pvalue_yellow": 0.05,
+  "coverage_tol_red": 0.05,
+  "coverage_tol_yellow": 0.02,
+  "min_windows_for_transition": 5,
+  "entropy_threshold_unstable": 1.2,
+  "regime_col": null
+}

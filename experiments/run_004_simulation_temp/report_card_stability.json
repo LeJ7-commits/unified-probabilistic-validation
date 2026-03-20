@@ -1,0 +1,56 @@
+{
+  "transition": {
+    "n_windows": 7,
+    "state_counts": {
+      "GREEN": 1,
+      "YELLOW": 6,
+      "RED": 0
+    },
+    "state_freq_pct": {
+      "GREEN": 14.3,
+      "YELLOW": 85.7,
+      "RED": 0.0
+    },
+    "transition_matrix": {
+      "GREEN": {
+        "GREEN": 0.0,
+        "YELLOW": 1.0,
+        "RED": 0.0
+      },
+      "YELLOW": {
+        "GREEN": 0.2,
+        "YELLOW": 0.8,
+        "RED": 0.0
+      },
+      "RED": {
+        "GREEN": 0.0,
+        "YELLOW": 0.0,
+        "RED": 0.0
+      }
+    },
+    "stability_rates": {
+      "GREEN": 0.0,
+      "YELLOW": 0.8,
+      "RED": 0.0
+    },
+    "stationary_dist": {
+      "GREEN": 0.1667,
+      "YELLOW": 0.8333,
+      "RED": 0.0
+    },
+    "reason_codes": []
+  },
+  "entropy": {
+    "stationary_entropy_bits": 0.65,
+    "row_entropy_bits": {
+      "GREEN": -0.0,
+      "YELLOW": 0.7219,
+      "RED": 0.0
+    },
+    "max_possible_entropy_bits": 1.585,
+    "is_unstable": false,
+    "stability_label": "moderate",
+    "interpretation": "Classification shows moderate variation across states. Possible causes: mild regime shifts, seasonal effects on calibration quality, or borderline diagnostic thresholds.",
+    "reason_codes": []
+  }
+}

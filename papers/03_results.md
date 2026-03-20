@@ -1,48 +1,46 @@
 # Results
 
-This section reports full-sample and rolling diagnostic results for three model
-classes evaluated within the unified probabilistic validation framework:
-short-term gas load forecasting (ENTSOG), long-term PV generation simulation,
-and long-term wind generation simulation. Each dataset is assessed under the
-same four-layer diagnostic protocol: interval backtesting (Anfuso traffic-light
-framework), distributional diagnostics (PIT-based uniformity and independence
-tests), proper scoring (CRPS and empirical coverage), and governance
-classification.
+This chapter reports empirical results across all four model classes evaluated
+in the unified probabilistic validation framework. Results are organised by
+dataset: ENTSO-E short-term electricity load forecasting (run_001), long-term PV
+generation (run_002), long-term wind generation (run_003), the synthetic
+simulation positive control and misspecification scenarios (run_004,
+run_004b), and a joint multivariate dependency analysis of PV and wind
+(run_005). Each dataset is evaluated under the same diagnostic architecture:
+Anfuso traffic-light interval backtesting, PIT-based distributional and
+independence diagnostics, proper scoring via CRPS, and rolling-window
+stability analysis.
 
 ---
 
-## 1. ENTSOG — Short-Term Gas Load Forecasting
+## 1. ENTSO-E Short-Term Electricity Load Forecasting (run_001)
 
-**Dataset:** Full historical sample, quarter-hourly resolution  
-**Evaluable observations:** n = 209,555 (after removal of 200 missing values)  
-**Nominal coverage target:** 90% (α = 0.1)  
-**Base reconstruction method:** Rolling empirical quantiles with 4-bucket
-coarse time-of-day conditioning (night / morning / afternoon / evening) and
-global shrinkage. Window Wg = 672 steps (7 days); bucket window Wb = 40
-observations. Selected on the basis of feasibility analysis in
-`02_entsog_feasibility.ipynb`.
+**Dataset:** Full ENTSO-E electricity load series, quarter-hourly resolution.
+**Evaluable observations:** n = 209,555 (200 NaN observations removed).
+**Nominal level:** α = 0.1 (90% central interval).
+**Base interval construction:** Rolling empirical residual quantiles with
+4-bucket time-of-day conditioning (night/morning/afternoon/evening),
+Wb = 40 bucket-specific observations, Wg = 672 global observations (7 days).
 
 ---
 
 ### 1.1 Interval Backtesting (Anfuso Traffic-Light Framework)
 
-| Component  | Breaches | Breach Rate | Nominal | Traffic Light |
-|------------|----------|-------------|---------|---------------|
-| Lower tail | 13,948   | 6.66%       | 5.00%   | RED           |
-| Upper tail | 13,162   | 6.28%       | 5.00%   | RED           |
-| Total      | 27,110   | 12.94%      | 10.00%  | RED           |
+| Component  | Breach Rate | p-value (exceedance) | Traffic Light |
+|------------|-------------|----------------------|---------------|
+| Lower tail | 6.66%       | ≈ 1.17 × 10⁻²⁴¹      | RED           |
+| Upper tail | 6.28%       | ≈ 2.17 × 10⁻¹⁴⁸      | RED           |
+| Total      | 12.94%      | ≈ 0 (machine ε)      | RED           |
 
-Binomial exceedance p-values (one-sided, H₁: breach rate > nominal):
+Nominal expected breach rates: 5% per tail, 10% total.
 
-- Lower tail: p ≈ 1.17 × 10⁻²⁴¹
-- Upper tail: p ≈ 2.17 × 10⁻¹⁴⁸
-- Total:      p ≈ 0 (below machine precision)
-
-**Interpretation.** Both tails breach significantly above their nominal 5%
-targets. The bilateral over-breaching pattern indicates the reconstructed
-predictive intervals are systematically too narrow across the full historical
-sample — a finding that motivates the conformal augmentation layer addressed
-in RQ2.
+Both tails breach significantly above their nominal rates. The rolling
+empirical reconstruction (replacing the earlier global-quantile placeholder)
+correctly captures the asymmetric residual structure; the resulting
+intervals are systematically too narrow, producing bilateral over-breaching.
+Total breach rate of 12.94% represents a 2.94 percentage point excess over
+the nominal 10% target, confirmed as statistically extreme under the
+binomial test.
 
 ---
 
@@ -56,105 +54,95 @@ in RQ2.
 | Cramér–von Mises   | 2,032.08  | ≈ 3.85 × 10⁻⁷        |
 | Anderson–Darling   | 6,136.34  | >> critical values   |
 
-All three uniformity tests strongly reject the null hypothesis of U(0,1) PIT
+All uniformity tests strongly reject the null hypothesis of U(0,1) PIT
 scores at all conventional significance levels.
 
 #### Independence Tests (Ljung–Box on z = Φ⁻¹(u))
 
-| Lag | Statistic   | p-value |
-|-----|-------------|---------|
-| 5   | 846,049     | ≈ 0     |
-| 10  | 1,563,119   | ≈ 0     |
-| 20  | 2,699,489   | ≈ 0     |
+| Lag | Statistic  | p-value |
+|-----|------------|---------|
+| 5   | 846,049    | ≈ 0     |
+| 10  | 1,563,119  | ≈ 0     |
+| 20  | 2,699,489  | ≈ 0     |
 
-Serial independence is overwhelmingly rejected at all lags. The magnitude of
-the statistics — several orders above chi-squared critical values — indicates
-severe autocorrelation in the PIT residuals, consistent with the model failing
-to capture persistent temporal structure in gas load.
+Serial independence is overwhelmingly rejected at all lags. The magnitude
+of the statistics — several orders above chi-squared critical values —
+indicates severe autocorrelation in the probability integral transforms,
+consistent with the model failing to capture persistent temporal structure
+in electricity load.
 
 ---
 
 ### 1.3 Proper Scoring
 
-| Metric             | Value       |
-|--------------------|-------------|
-| Mean CRPS          | 1,515.23    |
-| Empirical coverage | 87.06%      |
-| Coverage error     | −2.94 pp    |
+- Mean CRPS: 1,515.23
+- Empirical coverage: 87.06%
+- Coverage error: −2.94 pp
 
-The negative coverage error confirms systematic under-coverage. The CRPS
-reflects absolute forecast scale (gas load in physical units); cross-asset
-comparisons of CRPS should account for differences in scale and units.
+The negative coverage error confirms that the base predictive intervals are
+too narrow on average. CRPS reflects the absolute forecast scale (electricity load
+in physical units); cross-asset CRPS comparisons should account for scale
+differences.
 
 ---
 
 ### 1.4 Governance Classification
 
-| Criterion              | Status   |
-|------------------------|----------|
-| PIT uniformity         | FAIL     |
-| PIT independence       | FAIL     |
-| Coverage error         | −2.94 pp |
-| Overall classification | **RED**  |
+| Criterion              | Status                  |
+|------------------------|-------------------------|
+| PIT uniformity         | FAIL                    |
+| PIT independence       | FAIL                    |
+| Interval coverage      | −2.94 pp (under)        |
+| Overall classification | **RED**                 |
+
+Risk reasons: uniformity strongly rejected (min p ≈ 0); independence
+strongly rejected (min Ljung–Box p ≈ 0).
 
 ---
 
 ### 1.5 Rolling Evaluation
 
-Rolling-window diagnostics were conducted under two schemes: non-overlapping
-(window = 250, step = 250) and overlapping (window = 250, step = 50) windows.
-Across both specifications, PIT uniformity is frequently rejected, independence
+Rolling diagnostics were conducted under non-overlapping (window = 250,
+step = 250) and overlapping (window = 250, step = 50) schemes. Across both
+specifications, PIT uniformity is frequently rejected, independence
 violations persist, and both tails breach above nominal rates recurrently.
-Overlapping windows produce smoother diagnostic trajectories but confirm the
-same structural deficiencies. The consistency across both schemes indicates the
-miscalibration is persistent across time rather than localised to isolated
-regimes.
+The consistency across specifications indicates that miscalibration is not
+localised to isolated regimes but is persistent across time.
 
 ---
 
-## 2. PV — Long-Term Solar Generation Simulation
+## 2. Long-Term PV Generation (run_002)
 
-**Dataset:** Hourly resolution, 2013–2015  
-**Raw observations:** n = 26,280  
-**Nighttime exclusion:** 10,036 rows where both simulation and actuals are
-below 1 × 10⁻⁹ are excluded from calibration evaluation. These are structural
-nighttime zeros for PV generation, not forecast errors; including them would
-artificially inflate coverage metrics and distort PIT diagnostics.  
-**Evaluable observations after nighttime exclusion and warmup:** n = 4,287  
-**Nominal coverage target:** 90% (α = 0.1)  
-**Base reconstruction method:** Rolling empirical quantiles with 24-bucket
-hour-of-day conditioning. Window W = 720 trailing same-hour observations
-(~30 days). Justified by 3 years of hourly data (~1,095 observations per
-hour-bucket), ensuring stable quantile estimation.
+**Dataset:** pv_student.csv, hourly, 2013–2015.
+**Evaluable observations:** n = 4,287 (daytime only; 10,036 nighttime rows
+excluded; 11,957 warmup rows consumed by rolling window).
+**Nominal level:** α = 0.1 (90% central interval).
+**Base interval construction:** Rolling empirical residual quantiles, 24-bucket
+hour-of-day conditioning, W = 720 trailing same-hour observations (~30 days).
+Structural nighttime zeros (both Simulation and Actuals < 10⁻⁹) excluded from
+calibration evaluation — consistent with standard industry practice.
 
 ---
 
 ### 2.1 Interval Backtesting (Anfuso Traffic-Light Framework)
 
-| Component  | Breaches | Breach Rate | Nominal | Traffic Light |
-|------------|----------|-------------|---------|---------------|
-| Lower tail | 156      | 3.64%       | 5.00%   | GREEN         |
-| Upper tail | 214      | 4.99%       | 5.00%   | GREEN         |
-| Total      | 370      | 8.63%       | 10.00%  | GREEN         |
+| Component  | Breach Rate | p-value (exceedance) | Traffic Light |
+|------------|-------------|----------------------|---------------|
+| Lower tail | 3.64%       | 0.9999921            | GREEN         |
+| Upper tail | 4.99%       | 0.5196               | GREEN         |
+| Total      | 8.63%       | 0.9989               | GREEN         |
 
-Binomial exceedance p-values:
+Both tails are within nominal bounds. The lower tail is conservative
+(3.64% < 5% expected). Total breach rate of 8.63% is below the 10%
+nominal — the reconstructed intervals are slightly wide rather than too
+narrow. All binomial p-values are far from rejection: the model passes
+interval backtesting at the Anfuso level.
 
-- Lower tail: p ≈ 1.000 (strongly conservative)
-- Upper tail: p ≈ 0.520 (no significant over-breaching)
-- Total:      p ≈ 0.999 (overall conservative)
-
-**Interpretation.** The PV model passes interval backtesting at all levels.
-Total coverage of 91.37% slightly exceeds the 90% nominal target, indicating
-the reconstructed intervals are mildly conservative. The lower tail is
-particularly conservative (3.64% vs 5% nominal), consistent with the physical
-lower bound of zero for solar generation creating a floor effect in the
-residual distribution.
-
-**Statistical power caveat.** With n = 4,287 evaluable daytime observations,
-the binomial test has substantially less power to detect modest over-breaching
-than in the ENTSOG case (n = 209,555). The GREEN classification reflects both
-genuine calibration and reduced detection power, and should be interpreted
-accordingly.
+**Note on statistical power.** With n = 4,287, the binomial test has
+substantially less power than the ENTSO-E run (n = 209,555). A modest
+true over-breaching could go undetected. This limitation is inherent
+to the available evaluation sample after nighttime exclusion and
+rolling warmup.
 
 ---
 
@@ -164,13 +152,11 @@ accordingly.
 
 | Test               | Statistic | p-value              |
 |--------------------|-----------|----------------------|
-| Kolmogorov–Smirnov | 0.1028    | ≈ 7.23 × 10⁻⁴⁰      |
+| Kolmogorov–Smirnov | 0.1028    | ≈ 7.23 × 10⁻⁴⁰       |
 | Cramér–von Mises   | 14.48     | ≈ 1.05 × 10⁻⁹        |
 | Anderson–Darling   | 316.30    | >> critical values   |
 
-All uniformity tests reject U(0,1) strongly, though test statistics are
-substantially smaller than those observed for ENTSOG, reflecting both the
-smaller sample and a less severe departure from uniformity.
+PIT uniformity is strongly rejected despite the GREEN Anfuso result.
 
 #### Independence Tests (Ljung–Box on z = Φ⁻¹(u))
 
@@ -180,89 +166,76 @@ smaller sample and a less severe departure from uniformity.
 | 10  | 4,741     | ≈ 0     |
 | 20  | 5,012     | ≈ 0     |
 
-Serial independence is strongly rejected. PV generation exhibits pronounced
-diurnal and seasonal autocorrelation; the rolling reconstruction partially
-captures this structure but does not eliminate residual serial dependence.
+Serial independence is overwhelmingly rejected.
 
 ---
 
 ### 2.3 Proper Scoring
 
-| Metric             | Value    |
-|--------------------|----------|
-| Mean CRPS          | 0.7937   |
-| Empirical coverage | 91.37%   |
-| Coverage error     | +1.37 pp |
+- Mean CRPS: 0.7937
+- Empirical coverage: 91.37%
+- Coverage error: +1.37 pp
 
-The positive coverage error is consistent with the mildly conservative
-interval classification. The mean CRPS of 0.79 is substantially lower than
-ENTSOG (1,515.23), reflecting the difference in physical scale — PV generation
-is expressed as a capacity factor (0–1 range) rather than absolute load.
+CRPS is low relative to ENTSO-E because PV generation values are
+normalised (capacity factors), not physical load units.
 
 ---
 
 ### 2.4 Governance Classification
 
-| Criterion              | Status   |
-|------------------------|----------|
-| PIT uniformity         | FAIL     |
-| PIT independence       | FAIL     |
-| Coverage error         | +1.37 pp |
-| Overall classification | **RED**  |
+| Criterion              | Status                  |
+|------------------------|-------------------------|
+| PIT uniformity         | FAIL                    |
+| PIT independence       | FAIL                    |
+| Interval coverage      | +1.37 pp (conservative) |
+| Anfuso interval test   | GREEN                   |
+| Overall classification | **RED**                 |
 
-**Key finding.** The PV model receives a RED governance classification despite
-passing the interval backtesting layer. This illustrates a central argument of
-the thesis: naive coverage-based metrics are insufficient for probabilistic
-model validation. A model can produce well-calibrated interval widths on
-average while still exhibiting systematic departures from the assumed
-distributional form and significant serial dependence in its probability
-integral transforms.
+**Key finding.** PV passes interval backtesting (GREEN Anfuso) but fails
+distributional diagnostics. This divergence is precisely the argument for
+multi-layer validation: naive coverage metrics alone would classify PV as
+acceptable, while PIT-based diagnostics reveal systematic structural
+deficiencies in the shape of the predictive distribution.
 
 ---
 
 ### 2.5 Rolling Evaluation
 
-Rolling-window diagnostics were conducted under non-overlapping and overlapping
-schemes (window = 720, step = 168). PIT uniformity rejections and independence
-violations persist across subperiods with no evidence of improvement in later
-windows. The rolling results are consistent with the full-sample findings.
+Rolling diagnostics (window = 720, step = 168) confirm that PIT
+uniformity and independence violations are not localised to specific
+subperiods. The GREEN Anfuso result is also stable across rolling windows,
+reinforcing the interpretation that interval width is approximately
+correct on average but the distributional shape is systematically
+misspecified.
 
 ---
 
-## 3. Wind — Long-Term Wind Generation Simulation
+## 3. Long-Term Wind Generation (run_003)
 
-**Dataset:** Hourly resolution, 2013–2015  
-**Raw observations:** n = 26,280  
-**Nighttime exclusion:** Not applied. Wind generation occurs around the clock;
-no structural zeros are present.  
-**Evaluable observations after warmup:** n = 9,000  
-**Nominal coverage target:** 90% (α = 0.1)  
-**Base reconstruction method:** Rolling empirical quantiles with 24-bucket
-hour-of-day conditioning. Window W = 720 trailing same-hour observations
-(~30 days).
+**Dataset:** wind_student.csv, hourly, 2013–2015.
+**Evaluable observations:** n = 9,000 (no nighttime exclusion; 17,280
+warmup rows consumed by rolling window).
+**Nominal level:** α = 0.1 (90% central interval).
+**Base interval construction:** Same rolling 24-bucket hour-of-day
+conditioning as PV, W = 720.
 
 ---
 
 ### 3.1 Interval Backtesting (Anfuso Traffic-Light Framework)
 
-| Component  | Breaches | Breach Rate | Nominal | Traffic Light |
-|------------|----------|-------------|---------|---------------|
-| Lower tail | 580      | 6.44%       | 5.00%   | RED           |
-| Upper tail | 444      | 4.93%       | 5.00%   | GREEN         |
-| Total      | 1,024    | 11.38%      | 10.00%  | RED           |
+| Component  | Breach Rate | p-value (exceedance) | Traffic Light |
+|------------|-------------|----------------------|---------------|
+| Lower tail | 6.44%       | ≈ 8.97 × 10⁻¹⁰       | RED           |
+| Upper tail | 4.93%       | 0.6209               | GREEN         |
+| Total      | 11.38%      | ≈ 1.02 × 10⁻⁵         | RED           |
 
-Binomial exceedance p-values:
-
-- Lower tail: p ≈ 8.97 × 10⁻¹⁰
-- Upper tail: p ≈ 0.621 (no significant over-breaching)
-- Total:      p ≈ 1.02 × 10⁻⁵
-
-**Interpretation.** Wind exhibits asymmetric tail miscalibration concentrated
-in the lower tail. This is physically interpretable: wind generation is bounded
-below by zero and exhibits extended low-generation periods during calm weather
-that the rolling reconstruction underestimates. The upper tail — representing
-high-generation events — is captured accurately, likely because high-wind
-residuals are more stable across seasons.
+Asymmetric tail failure: the lower tail breaches significantly above its
+5% nominal rate while the upper tail is within tolerance. This is
+physically interpretable — wind generation is bounded below by zero, and
+the model underestimates low-generation risk more than high-generation
+risk. The lower tail asymmetry mirrors the structure observed in the
+original (uncorrected) ENTSO-E run before the lo/hi fix, but here it is
+a genuine feature of the data rather than a reconstruction artefact.
 
 ---
 
@@ -272,13 +245,11 @@ residuals are more stable across seasons.
 
 | Test               | Statistic | p-value              |
 |--------------------|-----------|----------------------|
-| Kolmogorov–Smirnov | 0.1057    | ≈ 5.90 × 10⁻⁸⁸      |
+| Kolmogorov–Smirnov | 0.1057    | ≈ 5.90 × 10⁻⁸⁸       |
 | Cramér–von Mises   | 21.28     | ≈ 2.47 × 10⁻⁹        |
 | Anderson–Darling   | 519.20    | >> critical values   |
 
-All uniformity tests strongly reject U(0,1). Test statistics are larger than
-the PV case, consistent with wind's more complex residual structure and the
-absence of nighttime filtering.
+PIT uniformity strongly rejected.
 
 #### Independence Tests (Ljung–Box on z = Φ⁻¹(u))
 
@@ -288,243 +259,200 @@ absence of nighttime filtering.
 | 10  | 40,250    | ≈ 0     |
 | 20  | 56,247    | ≈ 0     |
 
-Serial independence is strongly rejected. Wind speed exhibits well-known
-meteorological persistence; the Ljung–Box statistics grow substantially with
-lag, indicating autocorrelation extending well beyond short-term dependence.
+Serial independence overwhelmingly rejected.
 
 ---
 
 ### 3.3 Proper Scoring
 
-| Metric             | Value    |
-|--------------------|----------|
-| Mean CRPS          | 1.7893   |
-| Empirical coverage | 88.62%   |
-| Coverage error     | −1.38 pp |
-
-The negative coverage error is consistent with the RED lower-tail
-classification. Mean CRPS of 1.79 is higher than PV (0.79) in absolute terms,
-reflecting the wider residual distribution of wind relative to the bounded
-capacity factor range.
+- Mean CRPS: 1.7893
+- Empirical coverage: 88.62%
+- Coverage error: −1.38 pp
 
 ---
 
 ### 3.4 Governance Classification
 
-| Criterion              | Status   |
-|------------------------|----------|
-| PIT uniformity         | FAIL     |
-| PIT independence       | FAIL     |
-| Coverage error         | −1.38 pp |
-| Overall classification | **RED**  |
+| Criterion              | Status                  |
+|------------------------|-------------------------|
+| PIT uniformity         | FAIL                    |
+| PIT independence       | FAIL                    |
+| Interval coverage      | −1.38 pp (under)        |
+| Lower tail             | RED                     |
+| Upper tail             | GREEN                   |
+| Overall classification | **RED**                 |
 
 ---
 
 ### 3.5 Rolling Evaluation
 
-Rolling-window diagnostics were conducted under non-overlapping and overlapping
-schemes (window = 720, step = 168). Lower-tail over-breaching is recurrent
-across subperiods. PIT independence violations are persistent and grow with
-lag, consistent with meteorological persistence in wind speed. No subperiods
-show sustained improvement across all diagnostic criteria simultaneously.
+Rolling diagnostics confirm that the lower-tail excess breach is persistent
+across subperiods rather than concentrated in any specific weather regime.
+PIT independence violations are similarly stable, consistent with a
+structural misspecification in the wind speed forecast or power curve
+assumption rather than a localised regime failure.
 
 ---
 
-## 4. Simulation — Pricing and Risk Analysis Models (Positive Control)
+## 4. Synthetic Simulation Model (run_004)
 
-**Dataset:** Synthetic joint price–temperature simulation (correlated Gaussian DGP)  
-**Series evaluated:** Price and temperature independently (univariate marginal calibration)  
-**Evaluable observations:** n = 365 (one as-of date per day, h=1 horizon evaluation)  
-**Nominal coverage target:** 90% (α = 0.1)  
-**Specification:** Well-specified — realised values drawn from the same DGP as simulation
-paths (ρ = 0.5, σ_price = 5.0, σ_temp = 3.0). This is a controlled positive-control
-baseline: the diagnostic framework should return GREEN under a correctly specified model.  
-**Reconstruction method:** Empirical α/2 and 1−α/2 quantiles of 5,000 simulation paths
-at h=1 per as-of date. No rolling reconstruction required — the distributional form is
-known exactly.
+**Dataset:** Synthetic price and temperature series generated from a known
+joint Gaussian DGP (correlated, ρ = 0.5) with intraday and seasonal
+seasonality. y_hat computed as empirical quantiles of 5,000 simulation
+paths. This constitutes a **positive control**: the model is correctly
+specified by construction, so the framework should return GREEN.
+**Evaluable observations:** n = 365 (one per as-of date).
+**Nominal level:** α = 0.1.
 
 ---
 
 ### 4.1 Interval Backtesting (Anfuso Traffic-Light Framework)
 
-#### Price
+| Series | Lower Breach | Upper Breach | Total Breach | Lower TL | Upper TL | Total TL |
+|--------|-------------|-------------|-------------|----------|----------|----------|
+| Price  | 6.58%       | 4.93%       | 11.51%      | GREEN    | GREEN    | GREEN    |
+| Temp   | 6.30%       | 4.11%       | 10.41%      | GREEN    | GREEN    | GREEN    |
 
-| Component  | Breaches | Breach Rate | Nominal | Traffic Light |
-|------------|----------|-------------|---------|---------------|
-| Lower tail | 24       | 6.58%       | 5.00%   | GREEN         |
-| Upper tail | 18       | 4.93%       | 5.00%   | GREEN         |
-| Total      | 42       | 11.51%      | 10.00%  | GREEN         |
-
-Binomial exceedance p-values: lower p = 0.107, upper p = 0.558, total p = 0.190.
-
-#### Temperature
-
-| Component  | Breaches | Breach Rate | Nominal | Traffic Light |
-|------------|----------|-------------|---------|---------------|
-| Lower tail | 23       | 6.30%       | 5.00%   | GREEN         |
-| Upper tail | 15       | 4.11%       | 5.00%   | GREEN         |
-| Total      | 38       | 10.41%      | 10.00%  | GREEN         |
-
-Binomial exceedance p-values: lower p = 0.154, upper p = 0.815, total p = 0.422.
-
-**Interpretation.** Both series pass interval backtesting at all levels. Breach
-rates are close to nominal and no p-value falls below conventional significance
-thresholds. This confirms the framework does not produce false positives under a
-correctly specified model — a necessary property of any valid diagnostic system.
-Minor deviations from nominal rates (e.g. price lower tail at 6.58%) are
-consistent with expected sampling noise at n = 365.
+All breach rates within or close to nominal bounds. Binomial exceedance
+p-values comfortably above conventional rejection thresholds (price total
+p = 0.190; temp total p = 0.422). The positive control behaves as expected.
 
 ---
 
-### 4.2 Distributional Diagnostics (PIT-Based)
+### 4.2 Governance Classification
 
-PIT-based uniformity and independence tests were not computed for the simulation
-series. The h=1 evaluation approach provides only the empirical quantile bounds
-(lo/hi) per as-of date, not a full CDF evaluated at each realisation. Computing
-PIT scores would require either saving the full path matrix or evaluating the
-known Gaussian CDF analytically at each realisation. This is a known limitation
-of the current h=1 artifact structure and is noted as a direction for extension.
+| Criterion              | Price   | Temp    |
+|------------------------|---------|---------|
+| Interval coverage      | 88.49%  | 89.59%  |
+| Coverage error         | −1.51pp | −0.41pp |
+| Overall classification | GREEN   | GREEN   |
 
----
-
-### 4.3 Proper Scoring
-
-| Series      | Empirical Coverage | Coverage Error |
-|-------------|-------------------|----------------|
-| Price       | 88.49%            | −1.51 pp       |
-| Temperature | 89.59%            | −0.41 pp       |
-
-Both series fall marginally short of 90% nominal coverage, consistent with
-expected finite-sample variability at n = 365. Neither deviation is
-statistically significant.
+**Note on PIT diagnostics.** Full-sample PIT uniformity and independence
+statistics (min_p_uniformity, min_p_ljungbox) are null for the simulation
+runs because PIT computation requires full distributional samples; the
+run_004 architecture passes only quantile bounds (lo, hi) rather than
+the full 5,000-path sample array. PIT diagnostics are therefore not
+available for this model class under the current pipeline. Extending to
+full PIT evaluation would require persisting the per-horizon empirical
+CDF from the simulation paths, which is deferred as a future extension.
 
 ---
 
-### 4.4 Governance Classification
+## 5. Synthetic Simulation — Misspecification Scenarios (run_004b)
 
-| Series      | PIT Uniformity | PIT Independence | Coverage Error | Overall   |
-|-------------|----------------|------------------|----------------|-----------|
-| Price       | N/A            | N/A              | −1.51 pp       | **GREEN** |
-| Temperature | N/A            | N/A              | −0.41 pp       | **GREEN** |
+Three deliberate misspecification scenarios are evaluated against both the
+price and temperature series to test the framework's discriminative
+validity — its ability to detect and characterise known model failures.
 
-**Key finding.** Both simulation series receive GREEN governance classifications.
-This validates a critical property of the framework: under a well-specified model,
-the diagnostic system does not generate false positive RED classifications. The
-positive-control result strengthens the interpretability of RED findings for
-ENTSOG, PV, and wind — those failures are attributable to genuine model
-deficiencies, not to artefacts of the diagnostic procedure.
+**Scenario definitions:**
 
----
-
-### 4.5 Rolling Evaluation
-
-Rolling-window diagnostics were conducted (window = 50 as-of dates, step = 10),
-yielding approximately 31 non-overlapping windows. Interval coverage remained
-close to nominal across subperiods for both series with no systematic
-deterioration over time, consistent with the stationary DGP — no distributional
-drift is present by construction.
+- **Variance inflation:** Realised values drawn with σ × 2; model intervals
+  built from σ × 1 paths. Intervals are half as wide as needed.
+- **Mean bias:** Realised values drawn with mean shifted by +1σ (price: +5.0,
+  temp: +3.0); model uses unshifted mean. Systematic directional breach on
+  one tail expected.
+- **Heavy tails:** Realised values drawn from t(df=3); model uses Gaussian
+  paths. Excess tail events expected if the framework is sensitive enough
+  to detect them at n = 365.
 
 ---
 
-## 5. Cross-Dataset Synthesis
+### 5.1 Anfuso Results — All Scenarios
 
-### 5.1 Summary Table
-
-| Dataset    | n       | Coverage | Error    | Lower TL | Upper TL | Total TL | PIT Unif | PIT Indep | Overall   |
-|------------|---------|----------|----------|----------|----------|----------|----------|-----------|-----------|
-| ENTSOG     | 209,555 | 87.06%   | −2.94 pp | RED      | RED      | RED      | FAIL     | FAIL      | **RED**   |
-| PV         | 4,287   | 91.37%   | +1.37 pp | GREEN    | GREEN    | GREEN    | FAIL     | FAIL      | **RED**   |
-| Wind       | 9,000   | 88.62%   | −1.38 pp | RED      | GREEN    | RED      | FAIL     | FAIL      | **RED**   |
-| Sim. Price | 365     | 88.49%   | −1.51 pp | GREEN    | GREEN    | GREEN    | N/A      | N/A       | **GREEN** |
-| Sim. Temp  | 365     | 89.59%   | −0.41 pp | GREEN    | GREEN    | GREEN    | N/A      | N/A       | **GREEN** |
-
----
-
-### 5.2 Key Findings
-
-**Finding 1 — The framework correctly distinguishes well-specified from
-misspecified models.**  
-The simulation positive control (GREEN) and the three real-data models (all RED)
-confirm that the diagnostic system is both sensitive and specific: it flags
-genuine miscalibration while avoiding false positives under a correctly specified
-DGP. This is the foundational property required for governance credibility.
-
-**Finding 2 — All real-data models receive RED governance classification.**  
-Despite differences in asset class, data frequency, and reconstruction method,
-ENTSOG, PV, and wind all fail the distributional and independence diagnostic
-layers. Systematic miscalibration is not idiosyncratic to a single model or
-asset class but is a structural feature of simulation and forecasting models
-when evaluated under a rigorous probabilistic validation framework.
-
-**Finding 3 — Interval backtesting alone is insufficient.**  
-PV passes all interval backtesting checks (GREEN across both tails and total)
-yet receives a RED governance classification due to distributional and
-independence failures. This directly validates the multi-layer architecture of
-the framework: a model satisfying naive coverage criteria can still exhibit
-systematic departures from the assumed probabilistic structure.
-
-**Finding 4 — Tail asymmetry is asset-specific and physically interpretable.**  
-ENTSOG exhibits bilateral over-breaching. Wind exhibits lower-tail dominance
-consistent with meteorological persistence and the zero lower bound. PV
-exhibits conservative lower-tail behaviour consistent with the structural zero
-floor from nighttime generation. A unified framework must accommodate
-asset-specific tail behaviour rather than applying symmetric interval
-assumptions.
-
-**Finding 5 — Serial dependence is universal and severe in real-data models.**  
-All three real-data datasets produce Ljung–Box statistics orders of magnitude
-above critical values at all lags tested. None of the base predictive
-distributions adequately capture the temporal autocorrelation structure of
-their respective processes — a finding with direct implications for risk
-aggregation and scenario generation in energy market models. This stands in
-contrast to the simulation positive control, where no serial dependence is
-present by DGP construction.
-
-**Finding 6 — Sample size affects statistical power materially.**  
-The PV evaluable sample (n = 4,287) and simulation series (n = 365) are two
-to three orders of magnitude smaller than ENTSOG (n = 209,555). Traffic-light
-classifications should always be accompanied by sample size reporting and power
-considerations in governance documentation.
-
-**Finding 7 — Joint serial dependence is confirmed across asset classes.**  
-The multivariate Ljung-Box test on the joint PV–wind PIT residual vector
-rejects independence overwhelmingly at all lags, extending the univariate
-serial dependence findings to the joint distribution. This confirms that
-portfolio-level risk aggregation using these marginal distributions would
-propagate miscalibrated dependence structure, not just marginal errors.
+| Scenario            | Series | Lower   | Upper   | Total   | Lower TL | Upper TL | Total TL | Coverage |
+|---------------------|--------|---------|---------|---------|----------|----------|----------|----------|
+| Variance inflation  | Price  | 22.74%  | 21.92%  | 44.66%  | RED      | RED      | RED      | 55.3%    |
+| Mean bias           | Price  | 0.55%   | 29.04%  | 29.59%  | GREEN    | RED      | RED      | ~70.4%   |
+| Heavy tails         | Price  | 4.38%   | 5.48%   | 9.86%   | GREEN    | GREEN    | GREEN    | 90.1%    |
+| Variance inflation  | Temp   | 19.18%  | 18.36%  | 37.53%  | RED      | RED      | RED      | 62.5%    |
+| Mean bias           | Temp   | 0.27%   | 29.32%  | 29.59%  | GREEN    | RED      | RED      | ~70.4%   |
+| Heavy tails         | Temp   | 2.74%   | 4.93%   | 7.67%   | GREEN    | GREEN    | GREEN    | 92.3%    |
 
 ---
 
-## 6. Multivariate Joint Evaluation: PV and Wind
+### 5.2 Interpretation by Scenario
 
-**Assets:** PV (solar) and wind, evaluated jointly on their shared daytime
-hourly index (2013–2015).  
-**Shared evaluable observations:** n = 4,287 (daytime hours where both
-series have evaluable derived artifacts after nighttime exclusion and warmup).  
-**Method:** Marginal PIT scores computed from empirical sample CDFs (500 paths
-per observation), transformed via z = Φ⁻¹(u), then evaluated jointly.
+**Variance inflation** is detected strongly and symmetrically. Both tails
+breach at approximately 4× the nominal rate (22–23% vs 5%), producing
+total breach rates of 44.7% (price) and 37.5% (temp). The bilateral
+symmetry is expected — inflating σ by 2× makes realisations equally
+likely to exceed either tail. Coverage collapses to 55.3% and 62.5%
+respectively. Both series receive RED with extreme p-values
+(p < 10⁻²⁹ per tail).
+
+**Mean bias** produces a clearly asymmetric signal. The upper tail
+accumulates nearly all breaches (29.0%/29.3%) while the lower tail is
+near-zero (0.55%/0.27%), consistent with a rightward shift in the
+realised distribution pushing observations out of the upper prediction
+bound. The lower tail is GREEN (realisations rarely fall below the
+lower bound of an unshifted interval), while the upper tail is strongly
+RED. This asymmetric pattern directly identifies the direction of the
+bias and demonstrates that the traffic-light framework localises the
+failure mode, not just its existence.
+
+**Heavy tails** is not detected by the Anfuso interval test at n = 365.
+Both price and temperature return GREEN, with near-nominal coverage
+(90.1% and 92.3%). This is a genuine finding about the limits of the
+framework's discriminative power at small sample sizes, not an error.
+The t(df=3) distribution produces more extreme realisations than a
+Gaussian, but at n = 365 these excess events are rare and roughly
+symmetric across both tails, so the binomial interval test lacks
+sufficient power to flag them. Detecting heavy-tail misspecification
+reliably requires either a larger evaluation sample or tail-specific
+diagnostics (e.g., extreme value tests or PIT histogram inspection in
+the tails). The temperature series receives YELLOW (coverage error
++2.33pp), a marginal signal that is consistent with mild
+over-conservatism from the heavier tails without reaching RED.
 
 ---
 
-### 6.1 Marginal PIT Summary on Shared Index
+### 5.3 Governance Classification — Misspecification Scenarios
 
-| Series | Mean z  | Std z  | Interpretation                           |
-|--------|---------|--------|------------------------------------------|
-| PV     | +0.104  | 1.941  | Slight positive bias; overdispersed      |
-| Wind   | −0.051  | 1.600  | Near-zero bias; moderately overdispersed |
+| Scenario           | Series | Classification | Primary Signal                        |
+|--------------------|--------|----------------|---------------------------------------|
+| Variance inflation | Price  | RED            | Bilateral symmetric over-breaching    |
+| Variance inflation | Temp   | RED            | Bilateral symmetric over-breaching    |
+| Mean bias          | Price  | RED            | Unilateral upper-tail excess          |
+| Mean bias          | Temp   | RED            | Unilateral upper-tail excess          |
+| Heavy tails        | Price  | GREEN          | Not detected (insufficient power)     |
+| Heavy tails        | Temp   | YELLOW         | Marginal coverage excess (n=365)      |
 
-Under a correctly specified model, z-residuals should have mean ≈ 0 and
-std ≈ 1. Both series show std > 1, consistent with the distributional
-overdispersion identified in the univariate RED findings. PV's higher std
-reflects the greater heterogeneity of daytime solar residuals across seasons.
+The misspecification scenarios validate the framework's discriminative
+capacity for the two largest failure modes (variance inflation and mean
+bias) while exposing a power limitation for distributional shape
+misspecification at small sample sizes.
 
 ---
 
-### 6.2 Multivariate Ljung-Box Test
+## 6. Multivariate Dependency Analysis — PV and Wind (run_005)
 
-Applied to the stacked joint residual matrix Z = [z_pv, z_wind] of shape
-(4,287 × 2). Under H₀ (joint white noise), the Hosking (1980) portmanteau
-statistic follows χ²(k²·h) with k=2.
+**Motivation.** Univariate diagnostics evaluate each asset's calibration
+independently. In practice, a portfolio of renewable assets is exposed to
+shared weather drivers, creating cross-asset dependence in forecast errors.
+run_005 evaluates joint PIT residual dependence between PV and wind on
+their shared hourly evaluation index.
+
+**Shared evaluation index:** n = 4,287 daytime hours (PV daytime restriction
+applied to both series; wind warmup-eligible observations intersected with
+PV daytime timestamps, 2013–2015).
+
+---
+
+### 6.1 Marginal PIT Residuals
+
+| Asset | Mean z = Φ⁻¹(u) | Std z  |
+|-------|-----------------|--------|
+| PV    | +0.1037         | 1.9414 |
+| Wind  | −0.0514         | 1.5997 |
+
+Both series show std(z) > 1.0, consistent with overdispersion in the
+marginal distributions (confirmed RED in univariate runs). PV shows a
+slight positive bias (model slightly underestimates daytime generation);
+wind shows a slight negative bias.
+
+---
+
+### 6.2 Multivariate Ljung–Box (Joint PIT Residual Vector)
 
 | Lag | Statistic | df | p-value |
 |-----|-----------|----|---------|
@@ -532,77 +460,272 @@ statistic follows χ²(k²·h) with k=2.
 | 10  | 20,692    | 40 | ≈ 0     |
 | 20  | 24,714    | 80 | ≈ 0     |
 
-**Verdict: REJECT joint independence at all lags.**
-
-The statistics are orders of magnitude above chi-squared critical values.
-Joint serial dependence in the PIT residual vector is overwhelmingly confirmed.
-This extends the univariate Ljung-Box findings: not only is each series
-individually serially dependent, the joint residual process is not white noise.
-For portfolio-level applications — such as joint generation forecasting or
-renewable energy risk aggregation — this means the marginal predictive
-distributions cannot be combined via independence assumptions without
-materially misrepresenting the joint uncertainty.
+Joint independence is overwhelmingly rejected. The joint residual process
+inherits the severe serial dependence of both individual series.
 
 ---
 
 ### 6.3 Cross-Correlation of PIT Residuals
 
-| Lag | Correlation | Interpretation                                   |
-|-----|-------------|--------------------------------------------------|
-| 0   | −0.040      | Weak negative contemporaneous dependence         |
-| 1   | −0.041      | Near-identical to lag 0; no decay over 1 hour    |
-| 6   | −0.031      | Modest decay over 6 hours                        |
-| 24  | +0.075      | Positive correlation at same hour next day       |
+| Lag | Correlation |
+|-----|-------------|
+| 0   | −0.040      |
+| 1   | −0.041      |
+| 6   | −0.031      |
+| 24  | +0.075      |
 
-The contemporaneous correlation of −0.040 is physically plausible: during
-daytime hours, calm sunny conditions (high PV, low wind) and cloudy windy
-conditions (low PV, high wind) create a weak negative co-movement in
-generation errors. The positive lag-24 correlation reflects shared diurnal
-weather persistence — errors at the same hour on consecutive days tend to
-co-move positively, consistent with multi-day weather regimes. None of the
-cross-correlations are large in magnitude, suggesting approximate
-contemporaneous independence in a practical sense; however, the serial
-structure within each series dominates the joint dependence picture.
+Contemporaneous correlation is weakly negative (lag 0: −0.040), consistent
+with the physical tendency for calm, sunny conditions to correlate with
+lower wind and higher solar irradiance. The lag-24 value (+0.075) reflects
+shared diurnal weather persistence — the same-hour correlation one day
+ahead is positive, indicating that jointly favourable or unfavourable
+weather conditions persist day-to-day. All cross-correlations are modest
+in magnitude, indicating that the two marginal distributions are
+approximately contemporaneously independent while not serially independent.
 
 ---
 
 ### 6.4 Bivariate Energy Score
 
-| Metric                      | Value |
-|-----------------------------|-------|
-| Mean bivariate energy score | 2.017 |
+Bivariate energy score: **2.017**
 
-The bivariate energy score (Gneiting and Raftery, 2007) is a proper scoring
-rule for multivariate predictive distributions. This value serves as the
-pre-conformal baseline for the joint PV–wind predictive distribution, enabling
-future comparison after model improvement or joint conformal augmentation.
+This serves as a reference value for the joint predictive distribution
+under the current base intervals. A correctly calibrated joint predictive
+distribution would achieve a lower score. The value provides a benchmark
+for comparison after conformal augmentation or model improvement.
 
 ---
 
-### 6.5 Governance Implication
+### 6.5 Independence Verdict
 
-| Criterion                    | Status                       |
-|------------------------------|------------------------------|
-| Joint serial independence    | FAIL                         |
-| Contemporaneous independence | MARGINAL (r ≈ −0.04)         |
-| Joint overall classification | **RED**                      |
+**REJECT** — the joint PIT residual process is not white noise.
 
-Portfolio-level applications using these marginal distributions should not
-assume independence between PV and wind generation errors, particularly at
-the same hour across consecutive days. A copula-based or joint conformal
-approach would be required to address the dependence structure beyond
-marginal recalibration.
+The multivariate results confirm that treating PV and wind as independent
+for portfolio risk aggregation would underestimate joint tail exposure.
+Any composite risk measure (e.g., a combined renewable portfolio VaR) must
+account for the persistent serial structure and the lag-24 positive
+cross-correlation.
 
 ---
 
-## 7. Motivation for Conformal Augmentation (RQ2)
+## 7. Cross-Dataset Synthesis
 
-The consistent finding of coverage shortfalls and distributional miscalibration
-across all real-data model classes motivates the conformal prediction
-augmentation layer evaluated in RQ2. Conformal methods offer finite-sample
-marginal coverage guarantees that are distribution-free and do not require the
-base model to be correctly specified. The pre-conformal results reported here
-serve as the baseline against which post-conformal coverage and calibration
-improvements will be assessed. The simulation positive control further confirms
-that conformal augmentation is necessary for the real-data models specifically,
-not an artefact of the validation procedure.
+### 7.1 Summary Table
+
+| Dataset     | n       | Coverage | Cov. Error | Anfuso TL | PIT Uniform | PIT Indep | Overall |
+|-------------|---------|----------|------------|-----------|-------------|-----------|---------|
+| ENTSO-E     | 209,555 | 87.06%   | −2.94 pp   | RED       | FAIL        | FAIL      | **RED** |
+| PV          | 4,287   | 91.37%   | +1.37 pp   | GREEN     | FAIL        | FAIL      | **RED** |
+| Wind        | 9,000   | 88.62%   | −1.38 pp   | RED (lower)| FAIL       | FAIL      | **RED** |
+| Sim (price) | 365     | 88.49%   | −1.51 pp   | GREEN     | n/a         | n/a       | **GREEN** |
+| Sim (temp)  | 365     | 89.59%   | −0.41 pp   | GREEN     | n/a         | n/a       | **GREEN** |
+
+### 7.2 Key Cross-Dataset Findings
+
+**1. PIT diagnostics fail universally on real data, regardless of coverage.**
+All three real-data models (ENTSO-E, PV, wind) strongly reject PIT
+uniformity and serial independence. This holds even for PV, which passes
+interval backtesting. The implication is that interval-coverage metrics
+alone are insufficient for governance classification — a model can appear
+calibrated at the interval level while being systematically misspecified
+at the distributional level.
+
+**2. The positive control confirms framework discriminative validity.**
+The well-specified simulation model returns GREEN across both series and
+all interval diagnostics. The framework correctly distinguishes a
+correctly specified model from miscalibrated ones.
+
+**3. Misspecification scenarios demonstrate targeted failure mode detection.**
+Variance inflation and mean bias are detected strongly and their
+character (bilateral vs. unilateral) is correctly identified by the
+traffic-light tail decomposition. Heavy-tail misspecification is not
+detected at n = 365, exposing a power boundary of the Anfuso interval
+test at small evaluation sample sizes.
+
+**4. Tail asymmetry is dataset-specific and physically interpretable.**
+ENTSO-E shows bilateral over-breaching; wind shows lower-tail dominance
+(bounded-below generation); PV passes the interval test entirely. Each
+pattern is physically motivated by the underlying generation or
+forecasting process.
+
+**5. Joint dependence between PV and wind is modest but present.**
+Cross-asset PIT residuals show weak contemporaneous negative correlation
+and meaningful lag-24 positive correlation. For portfolio risk
+aggregation, ignoring this structure would be conservative in some
+regimes and non-conservative in others.
+
+**6. Conformal augmentation is motivated by the coverage shortfalls.**
+ENTSO-E (−2.94 pp) and wind (−1.38 pp) both show systematic under-coverage
+in the base reconstruction. The conformal augmentation layer (Section 5
+of this chapter, and 04_conformal_wrapping.ipynb) addresses this by
+expanding base intervals to restore near-nominal coverage guarantees,
+as demonstrated on the ENTSO-E development sample.
+
+---
+
+## 8. Conformal Augmentation Results (Reference)
+
+*Full conformal results are reported in 04_conformal_wrapping.ipynb.
+Key finding: base interval + conformal expansion achieves 89.9% empirical
+coverage against a 90% nominal target on the ENTSO-E development sample
+(n = 2,544 test observations), with a 12% width increase over the base
+interval — the best calibration–sharpness trade-off of all methods
+evaluated. See the notebook for full method comparison at α = 0.1 and
+α = 0.2.*
+
+---
+
+## 9. VaR Sensitivity Analysis (run_006)
+
+Two complementary economic distortion analyses are computed across all
+model classes and misspecification scenarios, quantifying the practical
+consequences of miscalibration in terms of regulatory capital and
+operational reserve sizing.
+
+### 9.1 Capital Multiplier Distortion
+
+The Basel Committee (1996) traffic-light framework maps exception counts
+in a 250-day evaluation window to capital multiplier zones. Applying this
+framework at 90% coverage (10% nominal breach rate) requires an adaptation:
+a perfectly calibrated model already produces 250 × 0.10 = 25 exceptions,
+far above Basel's raw RED threshold of 10. The adapted mapping therefore
+operates on *excess exceptions* above the nominal expectation of 25, with
+GREEN defined as ±2 excess, YELLOW as +3 to +8, and RED above +8.
+
+| Dataset | Gov Label | Adapted Zone | Actual Exc | Excess | Multiplier | Distortion |
+|---|---|---|---|---|---|---|
+| ENTSO-E | RED | YELLOW | 32.3 | +7.3 | 3.40 | +13.3% |
+| PV Solar | RED | CONSERVATIVE | 21.6 | −3.4 | 2.80 | −6.7% |
+| Wind | RED | YELLOW | 28.4 | +3.4 | 3.40 | +13.3% |
+| Sim Price (well-spec) | GREEN | YELLOW | 28.8 | +3.8 | 3.40 | +13.3% |
+| Sim Temp (well-spec) | GREEN | GREEN | 26.0 | +1.0 | 3.00 | 0.0% |
+| Sim Price — Var Inflation | RED | RED | 111.6 | +86.6 | 4.00 | +33.3% |
+| Sim Price — Mean Bias | RED | RED | 74.0 | +49.0 | 4.00 | +33.3% |
+| Sim Price — Heavy Tails | GREEN | GREEN | 24.7 | −0.3 | 3.00 | 0.0% |
+| Sim Temp — Var Inflation | RED | RED | 93.8 | +68.8 | 4.00 | +33.3% |
+| Sim Temp — Mean Bias | RED | RED | 74.0 | +49.0 | 4.00 | +33.3% |
+| Sim Temp — Heavy Tails | YELLOW | CONSERVATIVE | 19.2 | −5.8 | 2.80 | −6.7% |
+
+**Key finding — PV divergence.** PV Solar receives a governance RED
+classification under the full diagnostic framework but maps to CONSERVATIVE
+under the capital multiplier analysis (−6.7% distortion). This divergence
+arises because PV's empirical coverage is 91.4% — above nominal — making
+it appear over-conservative to a coverage-only regulatory framework. A
+pure coverage-based regime would reduce capital requirements for PV, while
+the full diagnostic framework correctly identifies systematic distributional
+misspecification and serial dependence. This is the clearest empirical
+demonstration that coverage metrics alone are insufficient for governance
+classification.
+
+**Sampling noise at small n.** The well-specified simulation price series
+(governance GREEN) lands in the YELLOW capital zone (+3.8 excess) due to
+sampling noise at n = 365. The temperature series (GREEN, +1.0 excess)
+correctly maps to GREEN. This confirms that capital zone stability is
+sensitive to evaluation sample size at the margins — a governance policy
+implication for short evaluation horizons.
+
+**Misspecification severity is proportional.** Variance inflation produces
+excess exceptions of +86.6 / +68.8 (price / temp), approximately 1.8×
+worse than mean bias (+49.0 for both). This ordering is consistent with
+the reserve sizing error results below.
+
+---
+
+### 9.2 Operational Reserve Sizing Error
+
+| Dataset | Gov Label | Coverage Error | Reserve Direction |
+|---|---|---|---|
+| ENTSO-E | RED | −2.94 pp | Undersized |
+| PV Solar | RED | +1.37 pp | Oversized |
+| Wind | RED | −1.38 pp | Undersized |
+| Sim Price (well-spec) | GREEN | −1.51 pp | Undersized |
+| Sim Temp (well-spec) | GREEN | −0.41 pp | Undersized |
+| Sim Price — Var Inflation | RED | −34.66 pp | Undersized |
+| Sim Price — Mean Bias | RED | −19.59 pp | Undersized |
+| Sim Price — Heavy Tails | GREEN | +0.14 pp | Oversized |
+| Sim Temp — Var Inflation | RED | −27.53 pp | Undersized |
+| Sim Temp — Mean Bias | RED | −19.59 pp | Undersized |
+| Sim Temp — Heavy Tails | YELLOW | +2.33 pp | Oversized |
+
+ENTSO-E and wind produce undersized reserves (−2.94 pp and −1.38 pp
+respectively), meaning that operational reserves sized from these models'
+90% intervals would be systematically insufficient. For a grid operator
+relying on wind generation intervals to size balancing reserves, a −1.38 pp
+shortfall corresponds to roughly 1 in 7 hours being outside the reserved
+range rather than the intended 1 in 10.
+
+PV produces oversized reserves (+1.37 pp) — a conservative error that
+wastes reserve capacity but does not create shortfall risk. The governance
+RED classification for PV therefore reflects distributional shape failure
+rather than operational risk in the conventional reserve-sizing sense.
+
+The misspecification scenarios illustrate the magnitude of economic
+distortion under severe miscalibration: variance inflation produces reserve
+undersizing of 27–35 pp, meaning reserves would need to be 2.7–3.5×
+larger than modelled to achieve the intended coverage. Mean bias produces
+undersizing of ~20 pp, with the entire shortfall concentrated on one tail.
+
+---
+
+## 10. Traffic-Light Stability Analysis (run_007)
+
+### 10.1 Real-Data Models — Absorbing RED States
+
+| Dataset | Scheme | n Windows | % RED | T_RR | H (bits) | Stability |
+|---|---|---|---|---|---|---|
+| ENTSO-E | Non-overlapping | 838 | 100% | 1.000 | 0.000 | Stable |
+| ENTSO-E | Overlapping | 4,187 | 100% | 1.000 | 0.000 | Stable |
+| PV Solar | Non-overlapping | 5 | 100% | 1.000 | 0.000 | Stable |
+| Wind | Non-overlapping | 12 | 100% | 1.000 | 0.000 | Stable |
+
+All three real-data models show T_RR = 1.0 across both rolling schemes —
+once a window enters RED it never leaves. Stationary entropy H = 0 bits
+confirms a degenerate absorbing state: the RED classification is not a
+transient regime localised to specific subperiods but a persistent
+structural property of the model's miscalibration. For ENTSO-E this is
+confirmed across 838 non-overlapping windows and 4,187 overlapping windows,
+leaving no ambiguity. The finding strengthens the governance implication:
+these models require structural intervention, not routine monitoring.
+
+### 10.2 Simulation Well-Specified — Expected Instability at Small n
+
+| Dataset | Scheme | n Windows | % GREEN | % YELLOW | % RED | H (bits) | Stability |
+|---|---|---|---|---|---|---|---|
+| Sim Price (well-spec) | Non-overlapping | 7 | 28.6% | 42.9% | 28.6% | 1.571 | Unstable |
+| Sim Temp (well-spec) | Non-overlapping | 7 | 14.3% | 85.7% | 0.0% | 0.650 | Moderate |
+
+The well-specified simulation model shows high entropy (1.571 bits for
+price) and mixed classifications across 7 windows. This is expected
+behaviour: at n = 250 per window with a 10% nominal breach rate, the
+binomial sampling noise is sufficient to push rolling coverage across
+zone boundaries. The temperature series, which had the smallest full-sample
+coverage error (−0.41 pp), shows more stable YELLOW-dominant behaviour
+(H = 0.650). Neither result indicates genuine model instability — both
+reflect the statistical limits of small rolling windows on a correctly
+specified model.
+
+### 10.3 Misspecification Scenarios — Stable vs Ambiguous Signals
+
+| Scenario | n Windows | Distribution | T_RR | H (bits) | Stability |
+|---|---|---|---|---|---|
+| Price — Var Inflation | 7 | 100% RED | 1.000 | 0.000 | Stable |
+| Price — Mean Bias | 7 | 100% RED | 1.000 | 0.000 | Stable |
+| Price — Heavy Tails | 7 | 100% YELLOW | — | 0.000 | Stable |
+| Temp — Var Inflation | 7 | 100% RED | 1.000 | 0.000 | Stable |
+| Temp — Mean Bias | 7 | 100% RED | 1.000 | 0.000 | Stable |
+| Temp — Heavy Tails | 7 | 14% GREEN / 57% YELLOW / 28% RED | — | 1.371 | Unstable |
+
+Variance inflation and mean bias produce stable absorbing RED states
+(H = 0, T_RR = 1.0), consistent with large systematic miscalibration.
+Heavy tails is more nuanced: the price series locks into a stable
+YELLOW absorbing state across all 7 non-overlapping windows, while
+temperature fluctuates across all three zones (H = 1.371, unstable).
+
+The consistently YELLOW classification for price heavy-tails across
+rolling windows is more informative than the full-sample GREEN result:
+while the full-sample Anfuso test lacks power to reject at n = 365,
+the rolling analysis reveals that every subperiod produces marginal
+YELLOW signals. This suggests the heavy-tail misspecification is
+detectable at the rolling level even when the full-sample test does
+not formally reject — a finding that motivates rolling-window
+diagnostics as a complementary detection tool for subtle misspecification.

@@ -1,0 +1,8 @@
+empirical_coverage,window_start,window_end,window_len,window_step,window_mode,governance_label,reason_codes,reason_summary
+0.88,0,50,50,50,non_overlapping,YELLOW,['coverage_warn'],Coverage mildly off-target by 0.020 (target=0.900).
+0.9,50,100,50,50,non_overlapping,GREEN,['all_clear'],All monitored diagnostic signals within policy thresholds.
+0.86,100,150,50,50,non_overlapping,YELLOW,['coverage_warn'],Coverage mildly off-target by 0.040 (target=0.900).
+0.88,150,200,50,50,non_overlapping,YELLOW,['coverage_warn'],Coverage mildly off-target by 0.020 (target=0.900).
+0.88,200,250,50,50,non_overlapping,YELLOW,['coverage_warn'],Coverage mildly off-target by 0.020 (target=0.900).
+0.92,250,300,50,50,non_overlapping,YELLOW,['coverage_warn'],Coverage mildly off-target by 0.020 (target=0.900).
+0.94,300,350,50,50,non_overlapping,YELLOW,['coverage_warn'],Coverage mildly off-target by 0.040 (target=0.900).

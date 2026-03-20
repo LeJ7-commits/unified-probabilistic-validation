@@ -1,0 +1,8 @@
+empirical_coverage,window_start,window_end,window_len,window_step,window_mode,governance_label,reason_codes,reason_summary
+0.64,0,50,50,50,non_overlapping,RED,['undercoverage'],Coverage off-target by 0.260 (target=0.900).
+0.7,50,100,50,50,non_overlapping,RED,['undercoverage'],Coverage off-target by 0.200 (target=0.900).
+0.74,100,150,50,50,non_overlapping,RED,['undercoverage'],Coverage off-target by 0.160 (target=0.900).
+0.66,150,200,50,50,non_overlapping,RED,['undercoverage'],Coverage off-target by 0.240 (target=0.900).
+0.7,200,250,50,50,non_overlapping,RED,['undercoverage'],Coverage off-target by 0.200 (target=0.900).
+0.74,250,300,50,50,non_overlapping,RED,['undercoverage'],Coverage off-target by 0.160 (target=0.900).
+0.72,300,350,50,50,non_overlapping,RED,['undercoverage'],Coverage off-target by 0.180 (target=0.900).
