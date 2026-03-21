@@ -1,9 +1,11 @@
 {
   "model_id": "simulation_temp",
-  "final_label": "RED",
-  "reason_codes": [],
+  "final_label": "GREEN",
+  "reason_codes": [
+    "all_clear"
+  ],
   "regime_tag": "regime_normal",
-  "decided_at": "2026-03-21T18:36:03.537394Z",
+  "decided_at": "2026-03-21T18:42:34.081736Z",
   "metric_snapshot": {
     "empirical_coverage": 0.89589,
     "mean_pinball": 0.306569,

@@ -309,7 +309,7 @@ class DecisionEngine:
 
         # ── Classify risk ──────────────────────────────────────────────────
         governance = classify_risk(metrics, policy=policy)
-        final_label = governance.get("traffic_light", "RED")
+        final_label = governance.get("risk_label", governance.get("traffic_light", "RED"))
         reason_codes = self._extract_reason_codes(governance, metrics, policy)
 
         provenance["governance_raw"] = {
@@ -338,7 +338,7 @@ class DecisionEngine:
         """Extract ReasonCode list from governance classification output."""
         codes: list[ReasonCode] = []
 
-        label = governance.get("traffic_light", "RED")
+        label = governance.get("risk_label", governance.get("traffic_light", "RED"))
 
         # Coverage
         emp_cov = metrics.get("empirical_coverage")
@@ -373,5 +373,10 @@ class DecisionEngine:
         # Clean: no issues
         if not codes and label == "GREEN":
             codes.append(ReasonCode.ALL_CLEAR)
+        elif not codes:
+            # governance_raw reported all_clear but label not GREEN — add ALL_CLEAR anyway
+            gov_codes = governance.get("reason_codes", [])
+            if "all_clear" in gov_codes:
+                codes.append(ReasonCode.ALL_CLEAR)
 
         return codes
