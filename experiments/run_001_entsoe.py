@@ -80,3 +80,33 @@ if __name__ == "__main__":
     print("Run completed. Artifacts:")
     for k, v in paths.items():
         print(f"{k}: {v}")
+
+# --- DecisionEngine governance decision ---
+    import json
+    from src.diagnostics.diagnostics_input import Diagnostics_Input
+    from src.governance.decision_engine import DecisionEngine
+    from src.governance.risk_classification import RiskPolicy
+
+    di = Diagnostics_Input(alpha=alpha)
+    dro = di.from_arrays(
+        y=y,
+        t=np.arange(len(y)),
+        model_id="entsoe_load",
+        lo=lower,
+        hi=upper,
+        quantiles=quantiles,
+        samples=samples,
+    )
+    engine = DecisionEngine(
+        alpha=alpha,
+        global_policy=RiskPolicy(coverage_target=0.90),
+    )
+    decision = engine.decide(dro)
+
+    decision_path = out_dir / "governance_decision.json"
+    with open(decision_path, "w", encoding="utf-8") as f:
+        json.dump(decision.to_dict(), f, indent=2, ensure_ascii=False)
+
+    print(f"\nGovernance decision : {decision.final_label}")
+    print(f"Reason codes        : {[str(rc) for rc in decision.reason_codes]}")
+    print(f"Decision artifact   : {decision_path}")

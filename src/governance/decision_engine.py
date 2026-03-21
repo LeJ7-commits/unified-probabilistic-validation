@@ -110,7 +110,7 @@ class GovernanceDecision:
         return {
             "model_id":      self.model_id,
             "final_label":   self.final_label,
-            "reason_codes":  [str(rc) for rc in self.reason_codes],
+            "reason_codes":  [rc.value if hasattr(rc, 'value') else str(rc) for rc in self.reason_codes],
             "regime_tag":    self.regime_tag,
             "decided_at":    self.decided_at,
             "metric_snapshot": {
