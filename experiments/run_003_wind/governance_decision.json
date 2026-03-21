@@ -1,0 +1,72 @@
+{
+  "model_id": "wind_onshore",
+  "final_label": "RED",
+  "reason_codes": [
+    "PIT_uniformity_fail",
+    "ACF_dependence_fail"
+  ],
+  "regime_tag": "regime_normal",
+  "decided_at": "2026-03-21T18:36:01.650397Z",
+  "metric_snapshot": {
+    "pit_ks_stat": 0.105667,
+    "pit_ks_pvalue": 0.0,
+    "pit_cvm_stat": 21.283854,
+    "pit_cvm_pvalue": 0.0,
+    "pit_ad_stat": 519.1952,
+    "pit_ad_pvalue": 0.01,
+    "pit_lb_stat_lag5": 25553.392558,
+    "pit_lb_pvalue_lag5": 0.0,
+    "pit_lb_stat_lag10": 40249.975933,
+    "pit_lb_pvalue_lag10": 0.0,
+    "pit_lb_stat_lag20": 56247.181462,
+    "pit_lb_pvalue_lag20": 0.0,
+    "pit_lb_input": "z=Phi^{-1}(u)",
+    "empirical_coverage": 0.886222,
+    "crps_mean": 1.789286,
+    "mean_pinball": 0.334105,
+    "anfuso_traffic_light_total": "RED",
+    "anfuso_traffic_light_lower": "RED",
+    "anfuso_traffic_light_upper": "GREEN",
+    "total_breach_rate": 0.113778,
+    "lower_breach_rate": 0.064444,
+    "upper_breach_rate": 0.049333,
+    "mean_width": 11.579003,
+    "sharpness_label": "uninformative",
+    "coverage_error": -0.013778
+  },
+  "policy": {
+    "coverage_target": 0.9
+  },
+  "provenance": {
+    "computed": [
+      "pit_uniformity",
+      "pit_autocorrelation",
+      "empirical_coverage",
+      "crps",
+      "pinball",
+      "anfuso",
+      "sharpness"
+    ],
+    "skipped": [],
+    "model_id": "wind_onshore",
+    "regime_tag": "regime_normal",
+    "policy_source": "global",
+    "governance_raw": {
+      "risk_label": "RED",
+      "risk_reasons": [
+        "Uniformity strongly rejected (min p=5.9e-88).",
+        "Independence strongly rejected (min Ljung-Box p=0)."
+      ],
+      "reason_codes": [
+        "PIT_uniformity_fail",
+        "ACF_dependence_fail"
+      ],
+      "risk_signals": {
+        "min_p_uniformity": 5.901899020111696e-88,
+        "min_p_ljungbox": 0.0,
+        "empirical_coverage": 0.8862222222222222,
+        "coverage_error": -0.013777777777777778
+      }
+    }
+  }
+}

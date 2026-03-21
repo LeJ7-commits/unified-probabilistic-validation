@@ -1,0 +1,59 @@
+{
+  "model_id": "simulation_price",
+  "final_label": "RED",
+  "reason_codes": [],
+  "regime_tag": "regime_normal",
+  "decided_at": "2026-03-21T18:36:03.518971Z",
+  "metric_snapshot": {
+    "empirical_coverage": 0.884932,
+    "mean_pinball": 0.523551,
+    "anfuso_traffic_light_total": "GREEN",
+    "anfuso_traffic_light_lower": "GREEN",
+    "anfuso_traffic_light_upper": "GREEN",
+    "total_breach_rate": 0.115068,
+    "lower_breach_rate": 0.065753,
+    "upper_breach_rate": 0.049315,
+    "mean_width": 16.446545,
+    "sharpness_label": "acceptable",
+    "coverage_error": -0.015068
+  },
+  "policy": {
+    "coverage_target": 0.9
+  },
+  "provenance": {
+    "computed": [
+      "empirical_coverage",
+      "pinball",
+      "anfuso",
+      "sharpness"
+    ],
+    "skipped": [
+      {
+        "diagnostic": "pit",
+        "reason": "no samples or CDF available"
+      },
+      {
+        "diagnostic": "crps",
+        "reason": "no samples available"
+      }
+    ],
+    "model_id": "simulation_price",
+    "regime_tag": "regime_normal",
+    "policy_source": "global",
+    "governance_raw": {
+      "risk_label": "GREEN",
+      "risk_reasons": [
+        "All monitored diagnostic signals within policy thresholds."
+      ],
+      "reason_codes": [
+        "all_clear"
+      ],
+      "risk_signals": {
+        "min_p_uniformity": null,
+        "min_p_ljungbox": null,
+        "empirical_coverage": 0.8849315068493151,
+        "coverage_error": -0.015068493150684925
+      }
+    }
+  }
+}

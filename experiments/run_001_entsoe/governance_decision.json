@@ -1,0 +1,75 @@
+{
+  "model_id": "entsoe_load",
+  "final_label": "RED",
+  "reason_codes": [
+    "undercoverage",
+    "PIT_uniformity_fail",
+    "ACF_dependence_fail"
+  ],
+  "regime_tag": "regime_normal",
+  "decided_at": "2026-03-21T18:34:35.155906Z",
+  "metric_snapshot": {
+    "pit_ks_stat": 0.161453,
+    "pit_ks_pvalue": 0.0,
+    "pit_cvm_stat": 2032.081508,
+    "pit_cvm_pvalue": 0.0,
+    "pit_ad_stat": 6136.342146,
+    "pit_ad_pvalue": 0.01,
+    "pit_lb_stat_lag5": 846048.956626,
+    "pit_lb_pvalue_lag5": 0.0,
+    "pit_lb_stat_lag10": 1563118.674611,
+    "pit_lb_pvalue_lag10": 0.0,
+    "pit_lb_stat_lag20": 2699488.912503,
+    "pit_lb_pvalue_lag20": 0.0,
+    "pit_lb_input": "z=Phi^{-1}(u)",
+    "empirical_coverage": 0.870631,
+    "crps_mean": 1515.231774,
+    "mean_pinball": 177.946442,
+    "anfuso_traffic_light_total": "RED",
+    "anfuso_traffic_light_lower": "RED",
+    "anfuso_traffic_light_upper": "RED",
+    "total_breach_rate": 0.129369,
+    "lower_breach_rate": 0.06656,
+    "upper_breach_rate": 0.062809,
+    "mean_width": 5376.044298,
+    "sharpness_label": "sharp",
+    "coverage_error": -0.029369
+  },
+  "policy": {
+    "coverage_target": 0.9
+  },
+  "provenance": {
+    "computed": [
+      "pit_uniformity",
+      "pit_autocorrelation",
+      "empirical_coverage",
+      "crps",
+      "pinball",
+      "anfuso",
+      "sharpness"
+    ],
+    "skipped": [],
+    "model_id": "entsoe_load",
+    "regime_tag": "regime_normal",
+    "policy_source": "global",
+    "governance_raw": {
+      "risk_label": "RED",
+      "risk_reasons": [
+        "Uniformity strongly rejected (min p=0).",
+        "Independence strongly rejected (min Ljung-Box p=0).",
+        "Coverage mildly off-target by 0.029 (target=0.900)."
+      ],
+      "reason_codes": [
+        "PIT_uniformity_fail",
+        "ACF_dependence_fail",
+        "coverage_warn"
+      ],
+      "risk_signals": {
+        "min_p_uniformity": 0.0,
+        "min_p_ljungbox": 0.0,
+        "empirical_coverage": 0.870630622032402,
+        "coverage_error": -0.029369377967597976
+      }
+    }
+  }
+}

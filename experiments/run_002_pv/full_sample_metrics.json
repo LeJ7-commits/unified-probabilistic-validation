@@ -4,20 +4,7 @@
   "pit_cvm_stat": 14.480741278252513,
   "pit_cvm_pvalue": 1.0508416359300554e-09,
   "pit_ad_stat": 316.2980607970958,
-  "pit_ad_critvals": [
-    0.561,
-    0.631,
-    0.752,
-    0.873,
-    1.035
-  ],
-  "pit_ad_siglevels": [
-    15.0,
-    10.0,
-    5.0,
-    2.5,
-    1.0
-  ],
+  "pit_ad_pvalue": 0.01,
   "pit_lb_stat_lag5": 3986.18992562993,
   "pit_lb_pvalue_lag5": 0.0,
   "pit_lb_stat_lag10": 4740.940072292186,
@@ -31,6 +18,10 @@
   "risk_reasons": [
     "Uniformity strongly rejected (min p=7.23e-40).",
     "Independence strongly rejected (min Ljung-Box p=0)."
+  ],
+  "reason_codes": [
+    "PIT_uniformity_fail",
+    "ACF_dependence_fail"
   ],
   "risk_signals": {
     "min_p_uniformity": 7.230341839333545e-40,

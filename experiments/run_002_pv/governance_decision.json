@@ -1,0 +1,72 @@
+{
+  "model_id": "pv_solar",
+  "final_label": "RED",
+  "reason_codes": [
+    "PIT_uniformity_fail",
+    "ACF_dependence_fail"
+  ],
+  "regime_tag": "regime_normal",
+  "decided_at": "2026-03-21T18:35:04.352655Z",
+  "metric_snapshot": {
+    "pit_ks_stat": 0.102761,
+    "pit_ks_pvalue": 0.0,
+    "pit_cvm_stat": 14.480741,
+    "pit_cvm_pvalue": 0.0,
+    "pit_ad_stat": 316.298061,
+    "pit_ad_pvalue": 0.01,
+    "pit_lb_stat_lag5": 3986.189926,
+    "pit_lb_pvalue_lag5": 0.0,
+    "pit_lb_stat_lag10": 4740.940072,
+    "pit_lb_pvalue_lag10": 0.0,
+    "pit_lb_stat_lag20": 5011.609832,
+    "pit_lb_pvalue_lag20": 0.0,
+    "pit_lb_input": "z=Phi^{-1}(u)",
+    "empirical_coverage": 0.913693,
+    "crps_mean": 0.793705,
+    "mean_pinball": 0.167606,
+    "anfuso_traffic_light_total": "GREEN",
+    "anfuso_traffic_light_lower": "GREEN",
+    "anfuso_traffic_light_upper": "GREEN",
+    "total_breach_rate": 0.086307,
+    "lower_breach_rate": 0.036389,
+    "upper_breach_rate": 0.049918,
+    "mean_width": 5.609709,
+    "sharpness_label": "acceptable",
+    "coverage_error": 0.013693
+  },
+  "policy": {
+    "coverage_target": 0.9
+  },
+  "provenance": {
+    "computed": [
+      "pit_uniformity",
+      "pit_autocorrelation",
+      "empirical_coverage",
+      "crps",
+      "pinball",
+      "anfuso",
+      "sharpness"
+    ],
+    "skipped": [],
+    "model_id": "pv_solar",
+    "regime_tag": "regime_normal",
+    "policy_source": "global",
+    "governance_raw": {
+      "risk_label": "RED",
+      "risk_reasons": [
+        "Uniformity strongly rejected (min p=7.23e-40).",
+        "Independence strongly rejected (min Ljung-Box p=0)."
+      ],
+      "reason_codes": [
+        "PIT_uniformity_fail",
+        "ACF_dependence_fail"
+      ],
+      "risk_signals": {
+        "min_p_uniformity": 7.230341839333545e-40,
+        "min_p_ljungbox": 0.0,
+        "empirical_coverage": 0.9136925588989969,
+        "coverage_error": 0.013692558898996898
+      }
+    }
+  }
+}
