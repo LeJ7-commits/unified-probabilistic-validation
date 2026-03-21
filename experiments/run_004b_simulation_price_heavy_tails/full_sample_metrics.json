@@ -4,6 +4,9 @@
   "risk_reasons": [
     "All monitored diagnostic signals within policy thresholds."
   ],
+  "reason_codes": [
+    "all_clear"
+  ],
   "risk_signals": {
     "min_p_uniformity": null,
     "min_p_ljungbox": null,

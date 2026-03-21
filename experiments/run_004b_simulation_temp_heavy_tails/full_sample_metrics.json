@@ -4,6 +4,9 @@
   "risk_reasons": [
     "Coverage mildly off-target by 0.023 (target=0.900)."
   ],
+  "reason_codes": [
+    "coverage_warn"
+  ],
   "risk_signals": {
     "min_p_uniformity": null,
     "min_p_ljungbox": null,

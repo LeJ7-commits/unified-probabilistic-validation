@@ -4,10 +4,13 @@
   "risk_reasons": [
     "Coverage off-target by 0.347 (target=0.900)."
   ],
+  "reason_codes": [
+    "undercoverage"
+  ],
   "risk_signals": {
     "min_p_uniformity": null,
     "min_p_ljungbox": null,
     "empirical_coverage": 0.5534246575342465,
-    "coverage_error": 0.3465753424657535
+    "coverage_error": -0.3465753424657535
   }
 }
