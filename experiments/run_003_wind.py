@@ -95,5 +95,5 @@ if __name__ == "__main__":
         json.dump(decision.to_dict(), f, indent=2, ensure_ascii=False)
 
     print(f"\nGovernance decision : {decision.final_label}")
-    print(f"Reason codes        : {[str(rc) for rc in decision.reason_codes]}")
+    print(f"Reason codes        : {[rc.value if hasattr(rc, 'value') else str(rc) for rc in decision.reason_codes]}")
     print(f"Decision artifact   : {decision_path}")

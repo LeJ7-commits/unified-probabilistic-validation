@@ -131,7 +131,7 @@ def run_series(
         json.dump(decision.to_dict(), f, indent=2, ensure_ascii=False)
 
     print(f"[{series}] Governance decision : {decision.final_label}")
-    print(f"[{series}] Reason codes        : {[str(rc) for rc in decision.reason_codes]}")
+    print(f"[{series}] Reason codes        : {[rc.value if hasattr(rc, 'value') else str(rc) for rc in decision.reason_codes]}")
     print(f"[{series}] Decision artifact   : {decision_path}")
 
 
