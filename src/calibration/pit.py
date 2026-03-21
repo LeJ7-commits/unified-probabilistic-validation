@@ -72,12 +72,16 @@ def pit_gof_tests(pit_values: np.ndarray) -> dict:
     # CvM test vs Uniform(0,1) (has p-value in scipy)
     cvm_res = cramervonmises(u, "uniform")
 
-    # AD for normality after inverse-normal transform
-    # (no p-value, but includes critical values)
+
+    # AD for normality after inverse-normal transform.
+    # scipy >= 1.17 requires method parameter; method='auto' returns a pvalue.
+    # pit_ad_critvals and pit_ad_siglevels are kept as empty lists for
+    # backwards compatibility — use pit_ad_pvalue for hypothesis testing.
     from scipy.stats import anderson  # local import
 
     z = pit_inverse_normal(u)
-    ad_res = anderson(z, dist="norm")
+
+    ad_res = anderson(z, dist="norm", method="interpolate")
 
     return {
         "pit_ks_stat": float(ks_stat),
@@ -85,10 +89,8 @@ def pit_gof_tests(pit_values: np.ndarray) -> dict:
         "pit_cvm_stat": float(cvm_res.statistic),
         "pit_cvm_pvalue": float(cvm_res.pvalue),
         "pit_ad_stat": float(ad_res.statistic),
-        "pit_ad_critvals": [float(x) for x in ad_res.critical_values],
-        "pit_ad_siglevels": [float(x) for x in ad_res.significance_level],
+        "pit_ad_pvalue": float(ad_res.pvalue),
     }
-
 
 def pit_independence_tests(
     pit_values: np.ndarray,
