@@ -63,12 +63,12 @@ historical residuals (see Section 3).
 
 The PV dataset contains hourly photovoltaic generation simulations and
 corresponding actual generation measurements for a European solar site,
-covering 2013–2015 (n = 26,280 raw rows). The simulation y_hat represents
-the expected power output derived from a wind speed forecast via a power
-curve transformation: forecasted irradiance is converted to expected
-generation using the turbine or panel's characteristic response function,
-adjusted for air density, system efficiency, and estimated downtime. This
-is a standard physical-parametric approach and does not produce a
+covering 2013–2015 (n = 26,280 raw rows). The simulation y_hat represents the expected power output derived from a
+wind speed forecast via a power curve transformation: forecasted irradiance
+is converted to expected generation using the turbine or panel's
+characteristic response function, adjusted for air density, system
+efficiency, and estimated downtime. This is a standard physical-parametric
+approach (Lorenz et al., 2009) and does not produce a
 distributional output; the predictive distribution is reconstructed from
 residuals. Structural nighttime hours — defined as observations where both
 simulation and actuals fall below a threshold of 10⁻⁹ — are excluded from
@@ -252,16 +252,16 @@ Under correct probabilistic calibration, u_t ~ U(0, 1) i.i.d. (Dawid,
 **Uniformity** — whether the empirical distribution of {u_t} is consistent
 with U(0,1):
 - Kolmogorov–Smirnov (KS) test: nonparametric distance between empirical
-  and uniform CDF.
+  and uniform CDF (Kolmogorov, 1933; Smirnov, 1948).
 - Cramér–von Mises (CvM) test: weighted quadratic distance, more sensitive
-  to distributional centre.
+  to distributional centre (Cramér, 1928).
 - Anderson–Darling (AD) test: weighted KS with enhanced sensitivity to
-  distribution tails.
+  distribution tails (Anderson and Darling, 1952).
 
 **Independence** — whether the sequence {u_t} is serially independent.
 Following Berkowitz (2001), PIT values are transformed to standard normal
-scores z_t = Φ⁻¹(u_t), and the Ljung–Box portmanteau test is applied to
-{z_t} at lags 5, 10, and 20. Serial dependence in z_t indicates that the
+scores z_t = Φ⁻¹(u_t), and the the Ljung–Box portmanteau test (Ljung and Box, 1978) is applied to
+{z_t} at lags 5, 10, and 20.. Serial dependence in z_t indicates that the
 model's predictive distribution fails to capture temporal autocorrelation
 in the process.
 
@@ -301,7 +301,9 @@ are therefore computed under two complementary schemes:
 There is no standard window length for rolling energy market diagnostics
 (Rikard Engström, personal communication, 2026); the choice is
 context-dependent and should reflect the trade-off between local
-adaptivity and estimation stability. The window parameters used in this
+adaptivity and estimation stability. Rolling evaluation is particularly
+valuable for detecting localised forecast failures and structural breaks
+(Giacomini and Rossi, 2010). The window parameters used in this
 study are:
 
 | Dataset | Window | Step (non-overlapping) | Step (overlapping) |
@@ -318,8 +320,9 @@ days, and a step of 168 corresponds to one week.
 
 ## 5. Conformal Augmentation
 
-Conformal prediction (Vovk et al., 2005; Tibshirani et al., 2019) provides
-distribution-free finite-sample coverage guarantees under exchangeability.
+Conformal prediction (Vovk, Gammerman and Shafer, 2005; Shafer and Vovk, 2008;
+Tibshirani et al., 2019) provides distribution-free finite-sample coverage
+guarantees under exchangeability.
 In this framework, conformal augmentation is applied as a post-hoc
 recalibration layer on top of the residual-based base intervals, not as
 an alternative evaluation method.
@@ -409,9 +412,9 @@ to probabilistic energy market models replaces exceedance counts with
 the broader multi-layer diagnostic battery described above, and extends
 the governance logic to cover distributional shape (PIT uniformity) and
 temporal dependence (Ljung–Box independence) in addition to coverage.
-This is consistent with the REMIT regulatory environment, which requires
-that energy market participants maintain demonstrably reliable models for
-fundamental price formation and risk quantification.
+This is consistent with the REMIT regulatory environment (European Parliament,
+2011), which requires that energy market participants maintain demonstrably
+reliable models for fundamental price formation and risk quantification.
 
 ---
 
@@ -431,7 +434,7 @@ index (n = 4,287 observations) using:
 - **Cross-correlation matrix** of PIT residuals at lags 0, 1, 6, and 24,
   characterising contemporaneous and lagged dependence between the two
   series.
-- **Bivariate energy score** (Gneiting and Raftery, 2007) as a joint proper
+- **Bivariate energy score** (Gneiting et al., 2008) as a joint proper
   scoring rule providing a summary measure of the joint predictive
   distribution quality.
 
@@ -593,8 +596,8 @@ by type) and raw numpy arrays, with validation on all inputs.
 Two scoring components complement the existing CRPS implementation:
 
 **Score_Pinball** (`src/scoring/pinball.py`) computes pinball (quantile)
-loss L_p(q, y) = (y − q)·p if y ≥ q, else (q − y)·(1 − p), across all
-quantile levels in the grid. The mean pinball loss averaged over a dense
+loss (Koenker and Bassett, 1978) L_p(q, y) = (y − q)·p if y ≥ q, else
+(q − y)·(1 − p), across all quantile levels in the grid. The mean pinball loss averaged over a dense
 level grid approximates CRPS; the per-level breakdown reveals which
 quantile regions are most miscalibrated. Regime-stratified losses are
 computed if regime tags are provided, enabling diagnostic decomposition
