@@ -322,6 +322,16 @@ except Exception as e:
     st.error(f"Failed to read CSV: {e}")
     st.stop()
 
+MAX_ROWS = 50_000
+if len(df_raw) > MAX_ROWS:
+    st.warning(
+        f"Large dataset: {len(df_raw):,} rows. "
+        f"Subsampling to {MAX_ROWS:,} rows for cloud performance. "
+        "Run locally for full-dataset validation.",
+        icon="⚠️"
+    )
+    df_raw = df_raw.tail(MAX_ROWS).reset_index(drop=True)
+
 # Show detection results
 with st.expander("🔍 Detected column mapping", expanded=False):
     for role, col in col_map.items():
