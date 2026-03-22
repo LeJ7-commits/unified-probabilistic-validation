@@ -150,6 +150,27 @@ The primary contributions of this thesis are:
    grounding in the Basel backtesting literature and the REMIT context,
    and a multivariate extension evaluating joint PIT residual dependence
    across correlated renewable assets.
+7. A **production-grade validation architecture** implementing eleven
+   software components — DataContract, three model-class adapters
+   (Adapter_PointForecast, Adapter_SimulationJoint, Adapter_Quantiles),
+   a distribution builder (BuildDist_FromResiduals), a diagnostics gateway
+   (Diagnostics_Input), two scoring components (Score_Pinball,
+   Interval_Sharpness), a regime tagger (RegimeTagger), a threshold
+   calibrator (ThresholdCalibrator), and a decision engine (DecisionEngine)
+   — together comprising 451 passing unit and integration tests. The
+   architecture enforces strict input validation via a canonical data
+   contract, routes heterogeneous model types through appropriate
+   transformations, and produces structured governance decisions with full
+   provenance audit trails.
+
+8. An **AI-powered narrative generation layer** (NarrativeGenerator) that
+   converts structured governance decisions into both technical summaries
+   (for quantitative risk officers) and plain-language explanations (for
+   non-technical stakeholders) via the Anthropic API, and a **Streamlit
+   web application** deployed at
+   `unified-probabilistic-validation.streamlit.app` that exposes the full
+   validation pipeline to non-Python users via CSV upload, enabling
+   governance classification without local installation.
 
 The framework does not develop new forecasting algorithms, optimise
 trading strategies, or guarantee conditional coverage under arbitrary
@@ -213,7 +234,10 @@ operating across diverse model classes.
 
 **Chapter 2 — Methodology** describes the unified validation architecture:
 distribution reconstruction, diagnostic evaluation, conformal augmentation,
-governance classification, and the multivariate extension.
+governance classification, the multivariate extension, and the production
+integration layer comprising the data contract, model-class adapters,
+distribution builder, diagnostics gateway, scoring components, regime
+tagger, threshold calibrator, decision engine, and deployment interfaces.
 
 **Chapter 3 — Results** reports empirical findings across all four model
 classes and misspecification scenarios, structured as a cross-dataset
@@ -227,3 +251,5 @@ the broader literature.
 into practical governance recommendations, with reference to Basel and
 REMIT regulatory frameworks and the role of conformal augmentation in
 model risk management.
+
+
