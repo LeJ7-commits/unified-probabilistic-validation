@@ -117,6 +117,33 @@ def run_one(
         f"risk_label={label}"
     )
 
+    # --- DecisionEngine governance decision ---
+    import json
+    from src.diagnostics.diagnostics_input import Diagnostics_Input
+    from src.governance.decision_engine import DecisionEngine
+    from src.governance.risk_classification import RiskPolicy
+
+    di = Diagnostics_Input(alpha=ALPHA)
+    dro = di.from_arrays(
+        y=y,
+        t=np.arange(len(y)),
+        model_id=f"simulation_{series}_{scenario}",
+        lo=lower,
+        hi=upper,
+        quantiles=quantiles,
+        samples=samples,
+    )
+    engine = DecisionEngine(
+        alpha=ALPHA,
+        global_policy=RiskPolicy(coverage_target=0.90),
+    )
+    decision = engine.decide(dro)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    decision_path = out_dir / "governance_decision.json"
+    with open(decision_path, "w", encoding="utf-8") as f:
+        json.dump(decision.to_dict(), f, indent=2, ensure_ascii=False)
+        
     return paths
 
 

@@ -1,0 +1,61 @@
+{
+  "model_id": "simulation_price_variance_inflation",
+  "final_label": "RED",
+  "reason_codes": [
+    "undercoverage"
+  ],
+  "regime_tag": "regime_normal",
+  "decided_at": "2026-03-22T11:44:33.973086Z",
+  "metric_snapshot": {
+    "empirical_coverage": 0.553425,
+    "mean_pinball": 1.728612,
+    "anfuso_traffic_light_total": "RED",
+    "anfuso_traffic_light_lower": "RED",
+    "anfuso_traffic_light_upper": "RED",
+    "total_breach_rate": 0.446575,
+    "lower_breach_rate": 0.227397,
+    "upper_breach_rate": 0.219178,
+    "mean_width": 16.454475,
+    "sharpness_label": "acceptable",
+    "coverage_error": -0.346575
+  },
+  "policy": {
+    "coverage_target": 0.9
+  },
+  "provenance": {
+    "computed": [
+      "empirical_coverage",
+      "pinball",
+      "anfuso",
+      "sharpness"
+    ],
+    "skipped": [
+      {
+        "diagnostic": "pit",
+        "reason": "no samples or CDF available"
+      },
+      {
+        "diagnostic": "crps",
+        "reason": "no samples available"
+      }
+    ],
+    "model_id": "simulation_price_variance_inflation",
+    "regime_tag": "regime_normal",
+    "policy_source": "global",
+    "governance_raw": {
+      "risk_label": "RED",
+      "risk_reasons": [
+        "Coverage off-target by 0.347 (target=0.900)."
+      ],
+      "reason_codes": [
+        "undercoverage"
+      ],
+      "risk_signals": {
+        "min_p_uniformity": null,
+        "min_p_ljungbox": null,
+        "empirical_coverage": 0.5534246575342465,
+        "coverage_error": -0.3465753424657535
+      }
+    }
+  }
+}
