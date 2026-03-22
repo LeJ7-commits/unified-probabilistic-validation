@@ -489,8 +489,8 @@ approximately contemporaneously independent while not serially independent.
 
 Bivariate energy score: **2.017**
 
-This serves as a reference value for the joint predictive distribution
-under the current base intervals. A correctly calibrated joint predictive
+The bivariate energy score (Gneiting et al., 2008) serves as a reference
+value for the joint predictive distribution under the current base intervals. A correctly calibrated joint predictive
 distribution would achieve a lower score. The value provides a benchmark
 for comparison after conformal augmentation or model improvement.
 
@@ -501,7 +501,9 @@ for comparison after conformal augmentation or model improvement.
 **REJECT** — the joint PIT residual process is not white noise.
 
 The multivariate results confirm that treating PV and wind as independent
-for portfolio risk aggregation would underestimate joint tail exposure.
+for portfolio risk aggregation would underestimate joint tail exposure,
+consistent with findings on cross-asset forecast error dependence in
+renewable portfolios (Pinson and Girard, 2012).
 Any composite risk measure (e.g., a combined renewable portfolio VaR) must
 account for the persistent serial structure and the lag-24 positive
 cross-correlation.
@@ -524,7 +526,9 @@ cross-correlation.
 
 **1. PIT diagnostics fail universally on real data, regardless of coverage.**
 All three real-data models (ENTSO-E, PV, wind) strongly reject PIT
-uniformity and serial independence. This holds even for PV, which passes
+uniformity and serial independence. This result is consistent with
+industry evaluations of probabilistic load forecasts finding systematic
+PIT non-uniformity even in operationally deployed models (Chen et al., 2024). This holds even for PV, which passes
 interval backtesting. The implication is that interval-coverage metrics
 alone are insufficient for governance classification — a model can appear
 calibrated at the interval level while being systematically misspecified
@@ -588,9 +592,11 @@ The Basel Committee (1996) traffic-light framework maps exception counts
 in a 250-day evaluation window to capital multiplier zones. Applying this
 framework at 90% coverage (10% nominal breach rate) requires an adaptation:
 a perfectly calibrated model already produces 250 × 0.10 = 25 exceptions,
-far above Basel's raw RED threshold of 10. The adapted mapping therefore
-operates on *excess exceptions* above the nominal expectation of 25, with
-GREEN defined as ±2 excess, YELLOW as +3 to +8, and RED above +8.
+far above Basel's raw RED threshold of 10. The adapted mapping therefore operates on *excess exceptions* above the
+nominal expectation of 25, with GREEN defined as ±2 excess, YELLOW as
++3 to +8, and RED above +8 — an adaptation of the original Basel zones
+(Basel Committee, 1996; McNeil, Frey and Embrechts, 2005) to the
+probabilistic forecasting context.
 
 | Dataset | Gov Label | Adapted Zone | Actual Exc | Excess | Multiplier | Distortion |
 |---|---|---|---|---|---|---|
@@ -725,7 +731,9 @@ The consistently YELLOW classification for price heavy-tails across
 rolling windows is more informative than the full-sample GREEN result:
 while the full-sample Anfuso test lacks power to reject at n = 365,
 the rolling analysis reveals that every subperiod produces marginal
-YELLOW signals. This suggests the heavy-tail misspecification is
+YELLOW signals. Rolling evaluation thereby complements full-sample
+testing, recovering signal that aggregate statistics obscure (Diebold,
+2015; Giacomini and Rossi, 2010). This suggests the heavy-tail misspecification is
 detectable at the rolling level even when the full-sample test does
 not formally reject — a finding that motivates rolling-window
 diagnostics as a complementary detection tool for subtle misspecification.
