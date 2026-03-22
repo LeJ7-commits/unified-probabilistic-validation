@@ -729,3 +729,82 @@ YELLOW signals. This suggests the heavy-tail misspecification is
 detectable at the rolling level even when the full-sample test does
 not formally reject — a finding that motivates rolling-window
 diagnostics as a complementary detection tool for subtle misspecification.
+
+---
+
+## 11. Governance Decisions and Narrative Generation (run_008)
+
+### 11.1 Structured Governance Decisions
+
+The `DecisionEngine` produces a structured `governance_decision.json`
+artifact for each evaluated dataset, consolidating all diagnostic signals
+into a single machine-readable governance record. The full-sample
+classification results across all eleven datasets are summarised below:
+
+| Dataset | Final Label | Reason Codes | Empirical Coverage |
+|---|---|---|---|
+| ENTSO-E | RED | undercoverage, PIT_uniformity_fail, ACF_dependence_fail | 87.1% |
+| PV Solar | RED | PIT_uniformity_fail, ACF_dependence_fail | 91.4% |
+| Wind | RED | PIT_uniformity_fail, ACF_dependence_fail | 88.6% |
+| Sim Price (well-spec) | GREEN | all_clear | 88.5% |
+| Sim Temp (well-spec) | GREEN | all_clear | 89.6% |
+| Sim Price — Var Inflation | RED | undercoverage | 55.3% |
+| Sim Price — Mean Bias | RED | undercoverage | 70.4% |
+| Sim Price — Heavy Tails | GREEN | all_clear | 90.1% |
+| Sim Temp — Var Inflation | RED | undercoverage | 62.5% |
+| Sim Temp — Mean Bias | RED | undercoverage | 70.4% |
+| Sim Temp — Heavy Tails | YELLOW | — | 92.3% |
+
+The reason code vocabulary directly identifies which diagnostic branch
+triggered each classification. ENTSO-E is the only dataset to trigger
+`undercoverage` alongside distributional failures — its −2.94 pp coverage
+shortfall crosses the policy tolerance threshold in addition to failing
+PIT diagnostics. PV and wind trigger only distributional reason codes,
+confirming their coverage is near-nominal while their distributional shape
+and temporal structure are systematically misspecified. The misspecification
+scenarios uniformly trigger `undercoverage`, reflecting that variance
+inflation and mean bias produce interval failures severe enough to dominate
+the classification regardless of distributional diagnostics.
+
+Each decision record includes a full provenance audit trail: the list of
+computed diagnostics, skipped diagnostics and reasons, policy source
+(global or regime-calibrated), and decision timestamp. This enables
+post-hoc inspection of exactly which evidence produced each classification.
+
+### 11.2 AI-Generated Governance Narratives
+
+The `NarrativeGenerator` component converts each `GovernanceDecision`
+into two parallel narrative registers via the Anthropic API. The technical
+narrative for the ENTSO-E dataset illustrates the output for a RED
+classification with multiple reason codes:
+
+> *The uploaded electricity load forecast model has been classified RED
+> under our probabilistic validation framework, triggering immediate
+> remediation requirements and a potential Basel III capital multiplier
+> escalation. The model exhibits severe undercoverage with empirical
+> coverage of 61.94% against the 90% target (coverage error of −28.06%),
+> indicating systematic underestimation of forecast uncertainty. PIT
+> uniformity diagnostics show complete distributional failure with
+> Kolmogorov–Smirnov p-value of 4×10⁻⁶ and Cramér–von Mises p-value
+> effectively zero, while Ljung–Box tests reveal significant temporal
+> dependence in forecast errors across all tested lags (5, 10, 20) with
+> p-values of zero. The Anfuso traffic-light system confirms RED
+> classification across all breach categories (total breach rate 38.1%
+> vs. expected 10%), necessitating immediate model suspension under REMIT
+> Article 15 reporting obligations and triggering enhanced capital adequacy
+> requirements.*
+
+The plain-language register for the same dataset translates this into
+non-technical terms suitable for management or commercial teams. The two
+registers are generated from the same structured input in a single API
+call at a cost of approximately $0.005 per dataset, ensuring consistency
+between technical and non-technical accounts while extending the reach of
+the governance framework to audiences who could not otherwise engage with
+the diagnostic outputs.
+
+Narrative artifacts are written to each experiment directory alongside
+the existing diagnostic artifacts: `narrative_technical.md`,
+`narrative_plain.md`, and `narrative_combined.md`. If no API key is
+configured, clearly labelled stub narratives are written and the pipeline
+continues without interruption, ensuring the governance decision artifacts
+remain complete regardless of API availability.
