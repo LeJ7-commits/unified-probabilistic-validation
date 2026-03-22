@@ -42,9 +42,9 @@ space without imposing methodological homogenisation.
 
 The most important single finding for RQ1 is the PV result. PV passes
 interval backtesting (GREEN Anfuso, 91.4% coverage) but fails PIT
-uniformity and independence diagnostics (both strongly rejected). This
-divergence directly demonstrates that coverage-only governance — the
-standard practice in many institutions — would classify PV as acceptable
+uniformity and independence diagnostics (both strongly rejected). This divergence directly demonstrates that coverage-only governance — the
+dominant evaluation paradigm in energy forecasting practice (Weron, 2014;
+Nowotarski and Weron, 2018) — would classify PV as acceptable
 while a distributional-layer diagnostic correctly flags systematic
 misspecification. This is not a theoretical argument: it is an empirical
 finding on real industry data.
@@ -105,7 +105,11 @@ and confirms that conformal augmentation is effective when:
 
 This result is consistent with Tibshirani et al. (2019), who show that
 weighted conformal prediction achieves valid marginal coverage under
-covariate shift provided the density ratio is correctly estimated. The
+covariate shift provided the density ratio is correctly estimated.
+Adaptive conformal methods for time series (Zaffran et al., 2022) address
+similar non-stationarity concerns through online quantile updates, though
+their application here was constrained by the step-size issue described
+in Section 2.2. The
 temporal covariate (elapsed time with cyclic encodings) provides a
 well-identified shift direction in this context.
 
@@ -171,10 +175,11 @@ all layers to achieve GREEN. The conservative direction is appropriate
 for model governance: the cost of a false GREEN (using a miscalibrated
 model) exceeds the cost of a false RED (triggering unnecessary review).
 
-This logic follows the Basel framework (Basel Committee, 1996; 2010),
-where the yellow and red zones are defined conservatively: models with
-more than 10 VaR exceedances over 250 days are automatically red-flagged
-regardless of other performance indicators. The extension in this thesis
+This logic follows the Basel framework (Basel Committee, 1996; 2010;
+McNeil, Frey and Embrechts, 2005), where the yellow and red zones are
+defined conservatively: models with more than 10 VaR exceedances over
+250 days are automatically red-flagged regardless of other performance
+indicators. The extension in this thesis
 adds distributional and independence layers that Basel's simpler
 exceedance count does not include, reflecting the richer diagnostic
 information available from full density forecast evaluation.
@@ -311,11 +316,13 @@ portfolio risk management.
 ### 4.5 Exchangeability assumption in conformal prediction
 
 Conformal prediction's finite-sample coverage guarantee relies on the
-exchangeability of calibration and test observations. Energy market data
-are not exchangeable — they exhibit serial dependence, seasonal structure,
-and structural breaks. The covariate-shift weighting partially addresses
-this by reweighting calibration observations, but it does not provide
-formal guarantees under strong temporal dependence. The conformal results
+exchangeability of calibration and test observations (Vovk, Gammerman
+and Shafer, 2005). Energy market data are not exchangeable — they exhibit
+serial dependence, seasonal structure, and structural breaks. Extensions
+of conformal prediction beyond exchangeability exist (Barber et al., 2023)
+but require additional structural assumptions. The covariate-shift
+weighting partially addresses this by reweighting calibration observations,
+but it does not provide formal guarantees under strong temporal dependence. The conformal results
 should therefore be interpreted as approximately valid rather than
 strictly valid in the theoretical sense.
 
@@ -336,7 +343,11 @@ The conformal prediction results extend Tibshirani et al. (2019) to an
 energy market context, confirming that covariate-shift-aware conformal
 methods are effective under temporal distribution shift while identifying
 the conditions (scale mismatch, constant-width construction) under which
-they fail. The online CP step-size failure specifically corroborates and
+they fail. Prior applications of conformal prediction to electricity price
+forecasting (Kath and Ziel, 2021; O'Connor et al., 2025) demonstrate
+reliable coverage in day-ahead markets; this thesis extends that evidence
+to load and renewable generation forecasting and embeds it within a
+governance classification architecture. The online CP step-size failure specifically corroborates and
 extends the practical guidance in Angelopoulos et al. (2024), whose
 theoretical results on decaying step sizes are motivated by exactly the
 kind of scale sensitivity observed here.
