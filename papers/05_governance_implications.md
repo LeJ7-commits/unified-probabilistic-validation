@@ -131,9 +131,10 @@ First, the diagnostic battery is broadened. Basel's framework tests only
 exceedance frequency (whether the observed breach rate exceeds the nominal
 rate). This thesis adds PIT uniformity and serial independence as
 mandatory governance criteria, reflecting the finding that interval
-coverage alone is insufficient (the PV case). This is consistent with
-the direction of Basel III and IV, which have progressively expanded the
-scope of backtesting beyond simple VaR exceedance counting.
+coverage alone is insufficient (the PV case). This is consistent with the direction of Basel III and IV (Basel
+Committee, 2010; McNeil, Frey and Embrechts, 2005), which have
+progressively expanded the scope of backtesting beyond simple VaR
+exceedance counting.
 
 Second, the framework is applied across heterogeneous model classes.
 Basel's framework was designed for a single model type (internal market
@@ -145,9 +146,8 @@ described in Chapter 2.
 
 ### 4.2 REMIT Regulatory Context
 
-The REMIT regulation (Regulation on Wholesale Energy Market Integrity and
-Transparency) requires that energy market participants maintain reliable
-and auditable models for fundamental price formation and risk
+The REMIT regulation (European Parliament, 2011) requires that energy
+market participants maintain reliable and auditable models for fundamental price formation and risk
 quantification. While REMIT does not prescribe specific backtesting
 methodologies, the governance framework developed here — with its
 structured RED/YELLOW/GREEN classification, documented diagnostic
@@ -185,9 +185,8 @@ and it does not correct distributional shape failures — it corrects
 interval width. The distinction matters:
 
 - If a model fails on **interval coverage only** (breach rate too high
-  but PIT diagnostics acceptable), conformal expansion is an appropriate
-  post-hoc correction that restores nominal coverage with finite-sample
-  guarantees.
+  but PIT diagnostics acceptable), conformal expansion is an appropriate post-hoc correction that restores
+  nominal coverage with finite-sample guarantees (Angelopoulos and Bates, 2023).
 - If a model fails on **PIT uniformity or independence** (the ENTSO-E,
   PV, and wind cases), conformal expansion can restore marginal interval
   coverage but does not fix the underlying distributional misspecification.
@@ -261,7 +260,9 @@ volatility regime may be performing as well as can reasonably be expected,
 while the same coverage in a stable regime would indicate a clear failure.
 Applying the same 90% threshold uniformly penalises the model for the
 inherent difficulty of the forecasting task rather than for genuine
-miscalibration.
+miscalibration. This concern motivates regime-stratified evaluation,
+consistent with the broader literature on forecast comparison in unstable
+environments (Giacomini and Rossi, 2010).
 
 The `RegimeTagger` and `ThresholdCalibrator` components address this by
 enabling regime-conditioned governance — calibrating GREEN/YELLOW/RED
