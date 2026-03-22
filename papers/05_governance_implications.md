@@ -162,6 +162,19 @@ rigour. This addresses a practical gap: statistical calibration results
 are often not directly consumable by institutional decision-makers
 without a translation layer.
 
+The production architecture developed in this thesis directly addresses
+this gap through two mechanisms. The `DecisionEngine` produces a
+machine-readable `governance_decision.json` artifact containing the
+classification, reason codes, full metric snapshot, and provenance audit
+trail — suitable for archival in a model risk management system and
+presentation to independent validation units. The `NarrativeGenerator`
+component converts this structured record into plain-language summaries
+calibrated for non-technical stakeholders, ensuring that a RED
+classification is communicated with the specific diagnostic evidence that
+produced it rather than as a bare label. Together these components satisfy
+the REMIT auditability requirement in a form that is both technically
+rigorous and institutionally accessible.
+
 ---
 
 ## 5. The Role of Conformal Augmentation in Governance
@@ -233,3 +246,86 @@ conformal feasibility study uses the 90-day ENTSO-E development sample
 extension to PV and wind are deferred. The governance implications of
 conformal augmentation for the renewable datasets — where the
 pre-conformal coverage shortfalls are smaller — remain to be quantified.
+
+---
+
+## 7. Regime-Conditioned Governance
+
+### 7.1 Motivation
+
+The governance framework described in Sections 2–5 applies a single
+global policy threshold across all evaluation windows. This is appropriate
+as a baseline but may be overly conservative in heterogeneous market
+environments: a model that achieves 87% empirical coverage in a high
+volatility regime may be performing as well as can reasonably be expected,
+while the same coverage in a stable regime would indicate a clear failure.
+Applying the same 90% threshold uniformly penalises the model for the
+inherent difficulty of the forecasting task rather than for genuine
+miscalibration.
+
+The `RegimeTagger` and `ThresholdCalibrator` components address this by
+enabling regime-conditioned governance — calibrating GREEN/YELLOW/RED
+thresholds separately for each identified market regime.
+
+### 7.2 Regime Tagging
+
+`RegimeTagger` assigns a regime label to each rolling evaluation window
+using a composable rule system. Three built-in rules are available:
+
+- **SeasonalRule:** assigns `regime_winter` (November–February) or
+  `regime_summer` (May–August) based on the dominant month in the window.
+  This captures the demand-driven seasonality in electricity load and the
+  irradiance-driven seasonality in PV generation.
+- **VolatilityRule:** assigns `regime_high_vol` or `regime_low_vol` based
+  on the window's standard deviation relative to pre-computed percentile
+  thresholds across all calibration windows. This captures periods of
+  market turbulence (e.g., extreme weather, supply shocks) that are known
+  to strain probabilistic models.
+- **BreakFlagRule:** flags windows where the variance ratio between the
+  first and second halves exceeds a threshold, identifying structural
+  breaks within a rolling window.
+
+Rules are evaluated in priority order; the first matching rule wins. Custom
+rules can be added as callables with signature `(t, y) → str | None`,
+making the tagger extensible to commodity-specific regime definitions
+without modifying core framework code.
+
+### 7.3 Threshold Calibration
+
+`ThresholdCalibrator` uses the empirical distribution of coverage values
+observed in calibration windows per regime to set regime-specific GREEN
+thresholds. The GREEN threshold for regime $r$ is set at the
+$q_{\text{green}}$-th percentile of observed coverage in calibration
+windows assigned to $r$ (default: 10th percentile). This ensures the
+threshold reflects what is achievable in that regime rather than a
+fixed nominal target.
+
+A `relax_factor` parameter bounds the maximum downward adjustment from
+the global target (default: 15 percentage points), preventing
+over-relaxation on sparsely populated regimes. Regimes with fewer than
+`N_min_hard` calibration windows (default: 10) fall back to the global
+policy, ensuring statistical discipline is maintained even when
+regime-specific calibration data is limited.
+
+### 7.4 Governance Implications
+
+Regime-conditioned governance has two practical implications. First, it
+reduces false RED classifications in inherently difficult regimes — winter
+peak demand, low-wind periods — where a model achieving 85% coverage may
+be performing optimally given the available information. Treating these
+windows under the same threshold as stable periods conflates model failure
+with task difficulty.
+
+Second, it exposes regime-specific weaknesses that aggregate analysis
+obscures. A model that achieves 91% average coverage but only 82% in
+high-volatility windows is not uniformly calibrated — its risk
+contribution is concentrated in the regimes where it matters most.
+Regime-stratified governance surfaced this structure explicitly, enabling
+targeted remediation rather than global re-estimation.
+
+The current thesis does not evaluate regime-conditioned governance on the
+empirical datasets — the rolling CSVs do not include pre-computed regime
+tags, and calibration of the `ThresholdCalibrator` requires a dedicated
+holdout period. These components are implemented, tested (451 passing
+tests), and available for deployment; their empirical evaluation on the
+ENTSO-E and renewable datasets is identified as a priority next step.
