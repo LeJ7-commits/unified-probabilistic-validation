@@ -29,3 +29,5 @@ from src.adapters.quantile_adapter import (
     QuantileAdapterError,
     QuantileFunctionObject,
 )
+
+from src.adapters.build_dist_from_residuals import BuildDist_FromResiduals, SampleMatrix
