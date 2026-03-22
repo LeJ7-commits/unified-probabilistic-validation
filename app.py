@@ -522,8 +522,8 @@ with col_metrics:
     def _fmt(v, pct=False):
         if v is None: return "—"
         if pct: return f"{v:.1%}"
-        if isinstance(v, float) and v < 0.001 and v > 0:
-            return f"{v:.2e}"
+        if isinstance(v, float) and v < 0.001:
+            return f"{v:.2e}" if v > 0 else "< 1e-300"
         return f"{v:.4f}"
 
     emp_cov = snap.get("empirical_coverage")
