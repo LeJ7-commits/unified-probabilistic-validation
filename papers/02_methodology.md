@@ -22,6 +22,21 @@ reproducible Python pipeline; all build scripts, run scripts, and diagnostic
 modules are version-controlled at
 `github.com/LeJ7-commits/unified-probabilistic-validation`.
 
+A fifth layer — **production integration** — wraps the above into a
+unified execution architecture suitable for deployment in operational
+settings. This layer comprises: a canonical data contract (DataContract)
+that validates and normalises heterogeneous model inputs; a set of
+model-class-specific adapters that convert raw outputs into evaluable
+predictive distributions; a diagnostics gateway (Diagnostics_Input) that
+routes inputs to the appropriate diagnostic branches based on available
+data representations; a standalone decision engine (DecisionEngine) that
+orchestrates the full diagnostic pipeline and produces a structured
+governance decision with full provenance; an AI-powered narrative generator
+(NarrativeGenerator) that converts structured decisions into plain-language
+and technical governance summaries; and a Streamlit web application that
+exposes the full pipeline to non-technical users via CSV upload. The
+production layer is documented in Section 9.
+
 ---
 
 ## 2. Model Classes and Datasets
@@ -446,6 +461,262 @@ but are not the source of official results. Official results are produced
 exclusively by the `experiments/run_*.py` scripts and stored as JSON
 artifacts alongside rolling diagnostic CSVs. Random seeds are fixed
 throughout (seed = 42 for all build scripts; independent seeds per
-misspecification scenario). All experiments can be reproduced by running
-the build and run scripts in sequence from a clean environment using the
-`requirements.txt` specification.
+misspecification scenario). All experiments can be reproduced by running the build and run scripts in
+sequence from a clean environment using the `requirements.txt` specification.
+A single orchestrator script — `run_all.py` — automates the full sequence of
+ten pipeline stages (build → run_001 through run_008), with progress
+reporting and graceful error handling. Non-Python users may access the
+framework through a Streamlit web application deployed at
+`unified-probabilistic-validation.streamlit.app`, which accepts a forecast
+CSV and executes the core validation pipeline (DataContract → Adapter →
+BuildDist → Diagnostics_Input → DecisionEngine → NarrativeGenerator)
+directly in the browser without requiring local installation. A SKILL.md
+file (`skills/upv/SKILL.md`) documents the framework architecture and
+operational procedures in a machine-readable format, enabling automated
+orchestration by AI assistants.
+
+---
+
+## 9. Production Architecture
+
+### 9.1 Motivation
+
+The diagnostic pipeline described in Sections 3–7 is implemented as a set
+of experiment scripts that operate on pre-built derived artifacts. While
+this is sufficient for reproducible thesis results, a production deployment
+requires a more robust architecture: one that validates inputs before
+processing, routes heterogeneous model types through appropriate
+transformations, and produces structured, auditable outputs that
+non-technical stakeholders can consume. This section documents the
+production architecture layer built on top of the diagnostic pipeline.
+
+### 9.2 Data Contract and Standardised Model Objects
+
+All inputs enter the framework through a DataContract validator
+(`src/core/data_contract.py`) that enforces a canonical schema before any
+downstream processing occurs. The contract validates:
+
+- **Required fields:** timestamp array t (monotone, no gaps), realisation
+  array y (no NaN), model identifier, split label.
+- **Optional fields:** point forecast y_hat, quantile arrays Q_t(p),
+  Monte Carlo sample paths S ∈ ℝ^(M×d), covariates x.
+- **Sanity checks:** monotone timestamps, no NaN or Inf in samples, quantile
+  non-crossing (1e-8 tolerance), sample size M ≥ threshold, consistent
+  array lengths.
+
+Split labels follow a controlled vocabulary: `train`, `test`, `window_{int}`
+(rolling window identification), or `regime_{tag}` (regime-tagged windows,
+e.g. `regime_winter`). Invalid inputs raise a `DataContractError` with a
+precise diagnostic message; no silent failures occur.
+
+Validated inputs are encapsulated in a frozen `StandardizedModelObject`
+— an immutable dataclass that all downstream components consume. Freezing
+prevents accidental mutation of shared state in a pipeline where the same
+object flows through multiple components.
+
+### 9.3 Model-Class Adapters
+
+Three adapters convert `StandardizedModelObject` instances into
+distribution representations appropriate for their model class:
+
+**Adapter_PointForecast** (`src/adapters/point_forecast.py`) accepts a
+point forecast y_hat and builds a bucket-conditioned residual pool via a
+configurable `bucket_fn` callable. The bucketing strategy is pluggable:
+`bucket_hourly_24` (24-bucket hour-of-day, default for renewables),
+`bucket_coarse_4` (4-bucket coarse time-of-day, for ENTSO-E), or
+`bucket_none` (global pool, no conditioning). Making the bucket function a
+parameter rather than hardcoding it is the production-correct design choice:
+different commodities have structurally different residual patterns, and
+the framework must adapt to each without modifying core adapter code.
+Sanity checks flag bias (|pool mean| > tolerance × scale), structural
+breaks (variance ratio > threshold), and pool sizes below hard and soft
+minimum thresholds.
+
+**Adapter_SimulationJoint** (`src/adapters/simulation_joint.py`) accepts
+either a sims_dict (the dict-of-dicts format produced by simulation
+notebooks) or a 3D numpy array (n_timestamps, M, d). Both formats are
+auto-detected. The adapter produces a `JointSimulationObject` containing
+both per-variable marginal outputs (compatible with univariate diagnostics)
+and the full joint sample array (required for Energy Score computation).
+
+**Adapter_Quantiles** (`src/adapters/quantile_adapter.py`) accepts
+pre-computed quantile arrays Q_t(p) for p in a grid. Quantile crossings
+are detected and fixed via the Pool Adjacent Violators Algorithm (PAVA)
+isotonic regression with a warning; non-crossing quantiles are required
+for downstream CDF interpolation. A PCHIP (Piecewise Cubic Hermite
+Interpolating Polynomial) monotone spline interpolator is fitted to the
+quantile function at each observation, enabling PIT computation from
+quantile-only inputs.
+
+### 9.4 Distribution Reconstruction from Residuals
+
+`BuildDist_FromResiduals` (`src/adapters/build_dist_from_residuals.py`)
+converts a ResidualPool (output of Adapter_PointForecast) into a Monte
+Carlo sample matrix of shape (n_obs, M) by reconstructing the predictive
+distribution per observation. Two modes are available:
+
+- **Non-parametric (default):** bootstrap resamples M residuals from the
+  trailing residual pool at each t. Preserves skewness, heavy tails, and
+  non-Gaussian structure. Correct for energy forecasts with asymmetric
+  errors.
+- **Parametric (Gaussian):** fits N(bias_t, scale_t) to the residual pool
+  at each t using the pool_bias and pool_scale stored in the ResidualPool.
+  Faster but understates tail risk for heavy-tailed commodities.
+
+This component closes the gap between point-forecast model classes (which
+produce only lo/hi bounds from the adapter) and PIT-based diagnostics
+(which require sample paths). The reconstructed samples are directly
+compatible with `evaluate_distribution()`, CRPS computation, and the
+`Diagnostics_Input` gateway.
+
+### 9.5 Diagnostics Gateway
+
+`Diagnostics_Input` (`src/diagnostics/diagnostics_input.py`) normalises
+adapter outputs or raw arrays into a `DiagnosticsReadyObject` — a
+capability-annotated container that downstream diagnostic components
+query before attempting computation. The capability interface exposes:
+
+- `can_compute_pit` — True if samples or CDF callable available
+- `can_compute_crps` — True if samples available
+- `can_compute_pinball` — True if quantile arrays available
+- `can_compute_interval` — True if lo/hi bounds available
+- `can_compute_energy_score` — True if joint samples (d ≥ 2) available
+
+This design prevents silent missing-data failures: a diagnostic component
+calls `dro.require("crps")` before computing, which raises a
+`DiagnosticsInputError` with an informative message if the capability is
+unavailable. The gateway accepts both adapter output objects (auto-detected
+by type) and raw numpy arrays, with validation on all inputs.
+
+### 9.6 Scoring Components
+
+Two scoring components complement the existing CRPS implementation:
+
+**Score_Pinball** (`src/scoring/pinball.py`) computes pinball (quantile)
+loss L_p(q, y) = (y − q)·p if y ≥ q, else (q − y)·(1 − p), across all
+quantile levels in the grid. The mean pinball loss averaged over a dense
+level grid approximates CRPS; the per-level breakdown reveals which
+quantile regions are most miscalibrated. Regime-stratified losses are
+computed if regime tags are provided, enabling diagnostic decomposition
+by market condition.
+
+**Interval_Sharpness** (`src/diagnostics/interval_sharpness.py`) computes
+interval width and the sharpness-coverage tradeoff: mean and median width,
+standard deviation of widths, and a human-readable interpretation label
+(sharp / acceptable / wide / uninformative) based on the ratio of mean
+width to the interquartile range of the target variable. A risk label
+(safe / risky / over-cautious / acceptable) is assigned based on the
+deviation of empirical coverage from nominal. This operationalises the
+diagnostic principle that good probabilistic forecasts should be
+simultaneously sharp and calibrated: narrow intervals that under-cover
+are risky, wide intervals that over-cover are uninformative.
+
+### 9.7 Regime Tagging and Threshold Calibration
+
+`RegimeTagger` (`src/governance/regime_tagger.py`) assigns regime labels
+to rolling windows using a composable rule system. Rules are callable
+objects with signature `(t, y) → str | None`; the first non-None result
+wins. Three built-in rules are provided:
+
+- **SeasonalRule:** assigns `winter` (months 11–2) or `summer` (months
+  5–8) based on the dominant month in the window, with a configurable
+  majority threshold.
+- **VolatilityRule:** assigns `high_vol` or `low_vol` based on the window's
+  standard deviation relative to pre-computed percentile thresholds. Must
+  be fitted on a reference set of window statistics before tagging.
+- **BreakFlagRule:** detects structural breaks by comparing the variance
+  ratio between the first and second halves of the window.
+
+Regime tags follow the SplitLabel vocabulary (`regime_{tag}`) for
+compatibility with the DataContract.
+
+`ThresholdCalibrator` (`src/governance/threshold_calibrator.py`) calibrates
+GREEN/YELLOW/RED coverage thresholds per regime using a calibration split.
+For each regime with sufficient data (N_min_hard ≥ 10 by default), the
+GREEN coverage threshold is set at a specified quantile of the observed
+coverage distribution in calibration windows (default: 10th percentile).
+This data-driven approach extends the Basel fixed-cutoff framework to
+heterogeneous market conditions: if `high_vol` windows systematically
+achieve lower empirical coverage, the GREEN threshold is relaxed for that
+regime rather than uniformly applied. A relax_factor parameter bounds
+the maximum downward adjustment from the global target, preventing
+over-relaxation on sparse regimes. Regimes with insufficient calibration
+data fall back to the global policy.
+
+### 9.8 Decision Engine
+
+`DecisionEngine` (`src/governance/decision_engine.py`) is the top-level
+orchestrator. A single call to `.decide(dro, regime_tag)` executes the
+full diagnostic pipeline — computing only what the `DiagnosticsReadyObject`
+is capable of, applying the regime-conditioned policy, and returning a
+`GovernanceDecision` with:
+
+- **final_label:** GREEN, YELLOW, or RED
+- **reason_codes:** list of `ReasonCode` enum values indicating which
+  diagnostic branches triggered the classification
+- **metric_snapshot:** all computed diagnostic values in a flat dict
+- **policy_used:** the RiskPolicy applied (global or regime-calibrated)
+- **provenance:** full audit trail — which diagnostics were computed,
+  which were skipped and why, policy source, decision timestamp
+
+The DecisionEngine does not re-implement any diagnostic logic; it delegates
+entirely to the existing `evaluate_distribution()`, `anfuso_interval_backtest()`,
+`Score_Pinball`, `Interval_Sharpness`, and `classify_risk()` functions.
+This preserves full backwards compatibility: the existing
+`run_diagnostics_policy()` / `write_run_artifacts()` pipeline continues to
+operate unchanged, with the DecisionEngine as an additive layer producing
+a structured `governance_decision.json` artifact alongside the existing
+outputs.
+
+### 9.9 Narrative Generation
+
+`NarrativeGenerator` (`src/governance/narrative_generator.py`) converts
+a `GovernanceDecision` into plain-language governance summaries using the
+Anthropic API (Claude Sonnet). Two narrative modes are produced per
+dataset in a single API call:
+
+- **Technical narrative:** 3–5 sentences for quantitative risk officers.
+  References specific metric values, names the diagnostic branches that
+  failed, quantifies deviations from nominal, and states the governance
+  implication (capital multiplier impact, REMIT reporting obligation).
+- **Plain language narrative:** 3–5 sentences for non-technical
+  stakeholders. No jargon; uses analogies where appropriate; focuses on
+  the business implication and required action.
+
+The structured prompt injects the full `GovernanceDecision.to_dict()`
+output, model class, and commodity context. A `<<<PLAIN>>>` delimiter
+separates the two sections in the model response, enabling deterministic
+parsing. If the API is unavailable (no key configured, insufficient
+credits, or network failure), clearly labelled stub narratives are written
+and the pipeline continues without interruption. At a cost of approximately
+$0.005 per dataset, narrative generation for the full 11-dataset thesis
+pipeline costs under $0.10 total.
+
+### 9.10 Deployment and Accessibility
+
+The full framework is accessible through three interfaces:
+
+**Command-line orchestrator** (`run_all.py`): executes all ten pipeline
+stages (build → run_001 through run_008) in sequence, with per-stage
+progress reporting and graceful error handling on optional stages.
+Supports `--skip-build`, `--stages`, and `--dry-run` flags.
+
+**Streamlit web application** (`app.py`, deployed at
+`unified-probabilistic-validation.streamlit.app`): a production-grade
+browser interface that accepts a forecast CSV upload and executes the
+core pipeline (DataContract → Adapter_PointForecast →
+BuildDist_FromResiduals → Diagnostics_Input → DecisionEngine →
+NarrativeGenerator) directly, without requiring local installation or
+Python knowledge. Results are displayed with colour-coded governance
+labels, metric cards, Anfuso backtest table, AI narratives (technical and
+plain language tabs), decision provenance, and a downloadable ZIP of all
+artifacts. The application enforces a 50,000-row limit for cloud
+deployment and falls back to stub narratives if no API key is configured.
+
+**SKILL.md documentation** (`skills/upv/SKILL.md`): a machine-readable
+skill file that documents the full framework architecture, pipeline stages,
+component map, CSV format requirements, governance interpretation guide,
+and step-by-step instructions for adding new commodity classes. This
+enables AI-assisted orchestration: a new analyst can ingest the skill
+file and receive guided instructions for extending the framework to
+additional commodities without modifying core source code.
