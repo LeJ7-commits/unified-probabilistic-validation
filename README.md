@@ -1,150 +1,170 @@
-# Unified Probabilistic Validation
+# Unified Probabilistic Validation Framework
 
-A modular reliability architecture for probabilistic simulation and forecasting models.
+A production-grade reliability architecture for probabilistic energy market models.
 
-This repository implements a unified statistical validation framework designed to evaluate heterogeneous model classes within a shared probabilistic reliability space. The framework integrates distributional calibration diagnostics, strictly proper scoring rules, conformal prediction augmentation, and governance-oriented aggregation into a coherent validation stack.
-
-Status: Research prototype (Master Thesis, Lund University)
-
----
-
-## Motivation
-
-Energy-market models span diverse categories including Monte Carlo simulation engines, short-term operational forecasting systems, and long-horizon renewable generation models.  
-
-Despite their structural differences, these systems share a common objective: producing probabilistic statements about uncertain future quantities.
-
-However, evaluation practices are typically fragmented:
-
-- Simulation models are backtested via exceedance testing.
-- Forecasting models are assessed via point-error metrics (MAE, RMSE).
-- Quantile models rely on pinball loss without structured calibration diagnostics.
-
-This repository proposes a unified architecture that evaluates all model classes under a common probabilistic reliability framework.
+**Authors:** Jia Yang Le & Komila Askarova  
+**Institution:** Lund University, Faculty of Engineering  
+**Industry Partner:** Energy Quant Solutions Sweden AB (EnBW Group)  
+**Live Demo:** [unified-probabilistic-validation.streamlit.app](https://unified-probabilistic-validation.streamlit.app)
 
 ---
 
-## Conceptual Architecture
+## What this is
 
-The framework maps heterogeneous model outputs into a unified evaluation pipeline:
+A unified statistical validation framework that evaluates heterogeneous energy market model classes — Monte Carlo simulation, short-term operational forecasting, long-term renewable generation — within a shared probabilistic reliability space.
 
-Model Output  
-- Predictive Distribution
-- Calibration Diagnostics
-- Proper Scoring Evaluation
-- Governance Aggregation  
-
-The architecture explicitly separates:
-
-1. **Distribution availability**  
-2. **Distribution reconstruction (for deterministic forecasts)**  
-3. **Calibration and sharpness diagnostics**  
-4. **Governance-oriented risk classification**
-
-Each layer is modular and independently testable.
+**451 passing tests. 11 components. 3 model classes. 1 governance decision per dataset.**
 
 ---
 
-## Core Statistical Principle
+## Quick start
+```bash
+# Clone and install
+git clone https://github.com/LeJ7-commits/unified-probabilistic-validation
+pip install -r requirements.txt
 
-The central calibration diagnostic relies on the Probability Integral Transform (PIT):
+# Run full pipeline (skips build if derived data exists)
+python run_all.py --skip-build
 
-u_t = F_t(y_t)
-
-Under correct model specification:
-
-u_t ~ Uniform(0,1)
-
-Calibration, independence, and tail adequacy are assessed via transformed PIT sequences and formal statistical testing procedures.
-
----
-
-## Methodological Components
-
-The framework integrates four complementary layers:
-
-### 1. Calibration Diagnostics
-- Probability Integral Transform (PIT)
-- Uniformity and independence testing
-- Density forecast evaluation
-
-### 2. Strictly Proper Scoring Rules
-- Continuous Ranked Probability Score (CRPS)
-- Quantile (Pinball) loss
-- Multivariate Energy Score (planned)
-
-### 3. Conformal Prediction Augmentation
-- Finite-sample marginal coverage guarantees
-- Covariate-shift-aware conformal methods
-- Adaptive online recalibration (planned)
-
-### 4. Governance Aggregation
-- Hierarchical diagnostic thresholding
-- Traffic-light style classification
-- Rolling stability analysis (planned)
+# Or use the web app — no installation required
+# https://unified-probabilistic-validation.streamlit.app
+```
 
 ---
 
-## Repository Structure
+## Architecture
+```
+CSV / Simulation Paths
+        │
+        ▼
+DataContract              ← validates schema, timestamps, NaN, crossings
+        │
+        ▼
+Adapters
+  Adapter_PointForecast   ← residual pool, bucket-conditioned intervals
+  Adapter_SimulationJoint ← joint Monte Carlo paths (d-dimensional)
+  Adapter_Quantiles       ← pre-computed quantiles + PAVA crossing fix
+        │
+        ▼
+BuildDist_FromResiduals   ← bootstrap or Gaussian sample reconstruction
+        │
+        ▼
+Diagnostics_Input         ← capability-aware gateway (PIT/CRPS/pinball/ES)
+        │
+        ├── PIT uniformity + independence (KS, CvM, AD, Ljung-Box)
+        ├── Anfuso interval backtest (bilateral, Basel-style)
+        ├── Score_Pinball (quantile loss, regime-stratified)
+        ├── Interval_Sharpness (width + coverage tradeoff)
+        └── CRPS (proper scoring)
+        │
+        ▼
+RegimeTagger              ← seasonal / volatility / break-flag rules
+ThresholdCalibrator       ← regime-conditioned GREEN/YELLOW/RED thresholds
+        │
+        ▼
+DecisionEngine            ← single .decide() → GovernanceDecision + provenance
+        │
+        ▼
+NarrativeGenerator        ← AI technical + plain language summaries (Anthropic API)
+        │
+        ▼
+Governance_ReportCard     ← rolling window table, stability, label band PNG
+```
 
+---
+
+## Empirical results
+
+| Dataset | Classification | Key finding |
+|---------|---------------|-------------|
+| ENTSO-E electricity load | RED | Undercoverage + PIT failure + ACF dependence |
+| PV solar generation | RED | PIT failure without interval failure |
+| Onshore wind generation | RED | Asymmetric lower-tail failure |
+| Simulation (well-specified) | GREEN | Positive control confirmed |
+| Simulation (variance inflation) | RED | Bilateral severe miscalibration |
+| Simulation (mean bias) | RED | Directional tail failure |
+| Simulation (heavy tails) | GREEN | Detection boundary at n=365 |
+
+The PV result is the key finding: coverage-only governance would classify PV as acceptable (91.4% coverage); multi-layer governance correctly returns RED (PIT uniformity and independence strongly rejected). A coverage-only regulator would reduce capital for a structurally misspecified model.
+
+---
+
+## Pipeline stages
+
+| Stage | Script | Description |
+|-------|--------|-------------|
+| 1 | `scripts/build_*.py` | Build derived artifacts from raw CSV |
+| 2–4 | `experiments/run_001–003.py` | ENTSO-E, PV, Wind diagnostics |
+| 5–6 | `experiments/run_004–004b.py` | Simulation + misspecification |
+| 7 | `experiments/run_005.py` | Multivariate PV+Wind joint diagnostics |
+| 8 | `experiments/run_006.py` | VaR capital distortion analysis |
+| 9 | `experiments/run_007.py` | Rolling label stability + transitions |
+| 10 | `experiments/run_008.py` | Report cards + AI narratives |
+
+Run all stages: `python run_all.py --skip-build`
+
+---
+
+## Repository structure
 ```
 unified-probabilistic-validation/
-│
+├── app.py                          Streamlit web application
+├── run_all.py                      Full pipeline orchestrator
 ├── src/
-│   ├── calibration/
-│   ├── scoring/
-│   ├── conformal/
-│   ├── governance/
-│   └── utils/
-│
-├── experiments/
-├── notebooks/
-├── tests/
-├── docs/
-├── paper/
-└── data/
+│   ├── core/data_contract.py       DataContract + StandardizedModelObject
+│   ├── adapters/                   PointForecast, SimulationJoint, Quantiles, BuildDist
+│   ├── diagnostics/                Diagnostics_Input, Interval_Sharpness, evaluator, rolling
+│   ├── calibration/                PIT computation + GOF tests
+│   ├── scoring/                    CRPS, Score_Pinball
+│   └── governance/                 Anfuso, RiskPolicy, ReasonCodes, RegimeTagger,
+│                                   ThresholdCalibrator, DecisionEngine, NarrativeGenerator,
+│                                   ReportCard, Stability
+├── experiments/                    run_001 through run_008 + outputs
+├── scripts/                        build_entsoe_derived, build_renewables_derived,
+│                                   build_simulation_derived, build_simulation_misspec
+├── tests/                          451 pytest tests
+├── papers/                         Thesis chapters (01–05)
+├── skills/upv/SKILL.md             Machine-readable framework documentation
+└── data/                           Raw CSV files (derived artifacts excluded)
 ```
 
+---
+
+## Datasets
+
+| Dataset | Source | n (eval) | Model class |
+|---------|--------|----------|-------------|
+| ENTSO-E electricity load | Public ENTSO-E Transparency Platform | 209,555 | Short-term |
+| PV solar generation | Anonymised student dataset | 4,287 (daytime) | Long-term |
+| Onshore wind generation | Anonymised student dataset | 9,000 | Long-term |
+| Synthetic simulation | Generated (joint Gaussian DGP) | 365 as-of dates | Simulation |
+
+Raw CSV files are included. Derived `.npy` artifacts are excluded and regenerated by `scripts/build_*.py`.
 
 ---
 
-## Data Policy
+## Requirements
+```bash
+pip install -r requirements.txt
+```
 
-Raw datasets are intentionally excluded from version control.
-The framework is dataset-agnostic and can be applied to:
-
-- Operational load forecasts
-- Renewable generation forecasts
-- Simulation-based price scenarios
-- TBC
-
-See `data/README.md` for details.
-
----
-
-## Scope
-
-This repository focuses exclusively on probabilistic validation and governance translation.
-
-It does not:
-- Develop forecasting algorithms
-- Optimize trading strategies
-- Guarantee conditional coverage under arbitrary covariate partitions
-
-The emphasis is on reliability diagnostics and structured evaluation.
-
----
-
-## Development Roadmap
-- [ ] Implement PIT diagnostics module
-- [ ] Implement CRPS and scoring layer
-- [ ] Add multivariate Energy Score
-- [ ] Integrate conformal augmentation
-- [ ] Develop governance classification engine
-- [ ] Rolling regime-partitioned evaluation
+Optional — AI narrative generation:
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...   # Mac/Linux
+set ANTHROPIC_API_KEY=sk-ant-...      # Windows
+```
 
 ---
 
 ## License
-License to be determined upon supervisor approval.
 
+MIT License. See LICENSE file.
+
+---
+
+## Citation
+```
+Le, J.Y. & Askarova, K. (2026). Reliable Uncertainty in Energy Markets:
+A Unified Calibration Framework for Simulation and Forecasting Models.
+Master's Thesis, Lund University.
+```
