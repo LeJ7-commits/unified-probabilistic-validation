@@ -197,6 +197,19 @@ bias as RED with the appropriate tail signature (bilateral for inflation,
 unilateral for bias). These results confirm that the classification is
 statistically defensible: it responds correctly to known model states.
 
+The production architecture reinforces this defensibility through a
+structured provenance mechanism. Every `GovernanceDecision` produced by
+the `DecisionEngine` records which diagnostic branches were computed,
+which were skipped and why, which policy was applied, and the timestamp
+of the decision — a full audit trail in machine-readable JSON. This is
+not merely an engineering convenience: it is a direct response to the
+governance requirement that classification decisions be explainable and
+reproducible. An institution presenting a RED classification to a regulator
+or internal risk committee can accompany it with the exact metric snapshot,
+reason codes, and policy parameters that produced it, satisfying the
+auditability requirements implicit in REMIT Article 15 and the Basel
+backtesting documentation obligations.
+
 ### 3.3 The heavy-tail boundary
 
 The heavy-tails scenario receiving GREEN at n = 365 is a genuine
@@ -216,6 +229,34 @@ alongside the interval backtesting layer. This is consistent with the
 Basel framework's requirement for a minimum 250-trading-day evaluation
 window, extended here to account for the lower frequency of the
 renewable datasets.
+
+### 3.4 Governance Communication via AI Narratives
+
+A governance classification is only useful if it can be communicated to
+the right decision-makers in the right form. The `NarrativeGenerator`
+component addresses this by converting structured `GovernanceDecision`
+objects into two parallel narrative registers: a technical summary for
+quantitative risk officers that references specific metric values, names
+failed diagnostic branches, and states capital multiplier implications;
+and a plain-language summary for non-technical stakeholders that explains
+the classification without jargon and identifies the required action.
+
+Both registers are generated from the same structured input in a single
+API call, ensuring consistency between the technical and non-technical
+accounts. This is architecturally significant: the narrative is downstream
+of the classification, not upstream. The governance decision is produced
+deterministically by the diagnostic pipeline; the language model only
+translates it. This preserves the statistical defensibility of the
+classification while extending its reach to audiences who could not
+otherwise engage with the underlying diagnostics.
+
+The Streamlit web application (`unified-probabilistic-validation.streamlit.app`)
+operationalises this for non-technical users: a non-Python analyst at an
+energy trading firm can upload a forecast CSV, receive a governance
+decision with full metric snapshot and AI narrative, and download all
+artifacts as a ZIP — without installing software or writing code. This
+closes the last gap between the statistical framework and practical
+institutional deployment.
 
 ---
 
