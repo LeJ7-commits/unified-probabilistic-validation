@@ -22,10 +22,10 @@ engines used for pricing and risk analysis — are typically assessed via
 Value-at-Risk (VaR) exceedance testing and other coverage-based backtesting
 procedures. Short-term operational forecasting models are most commonly
 evaluated using deterministic error metrics such as MAE or RMSE, which
-carry no information about distributional reliability. Quantile regression
-and probabilistic forecasting models are evaluated via pinball loss, which
-penalises individual quantile violations but does not diagnose the shape
-or serial structure of the full predictive distribution. Each model class
+carry no information about distributional reliability. Quantile regression and probabilistic forecasting models are evaluated via
+pinball loss (Koenker and Bassett, 1978), which penalises individual
+quantile violations but does not diagnose the shape or serial structure
+of the full predictive distribution. Each model class
 has inherited its own evaluation culture; none of these cultures shares a
 common language, and none provides a complete picture of probabilistic
 reliability on its own.
@@ -203,22 +203,32 @@ diagnostic instrument, the field has developed strictly proper scoring
 rules (Gneiting and Raftery, 2007) and the principle of maximising
 sharpness subject to calibration (Gneiting and Katzfuss, 2014). More
 recently, conformal prediction provides distribution-free finite-sample
-coverage guarantees (Tibshirani et al., 2019), with adaptive online
+coverage guarantees (Vovk, Gammerman and Shafer, 2005; Tibshirani et al., 2019), with adaptive online
 variants for non-stationary environments (Angelopoulos et al., 2024).
 
 The second is **probabilistic forecasting in energy systems**. Industrial
 practice has shifted from deterministic to probabilistic modelling (Goude
-and Nédellec, 2015), with large-scale competitions such as GEFCOM
-underscoring quantile-based evaluation (Hong et al., 2016). Recent work
-documents benefits of integrating probabilistic forecasts into electricity
-price forecasting (Uniejewski and Ziel, 2025). However, evaluation practice
-remains predominantly metric-driven with limited systematic integration
-across heterogeneous model classes.
+and Nédellec, 2015), and probabilistic load forecasting has matured into
+a standard operational tool (Hong and Fan, 2016). Large-scale competitions
+such as GEFCom have underscored quantile-based evaluation (Hong et al.,
+2016), while the broader electricity price forecasting literature has
+documented the benefits of distributional over point forecasts (Weron,
+2014; Nowotarski and Weron, 2018). Conformal prediction has recently been
+applied directly to electricity price forecasting, demonstrating reliable
+interval coverage under market regime shifts (Kath and Ziel, 2021;
+O'Connor et al., 2025). Evaluation of probabilistic demand forecasts using
+PIT, CRPS, and pinball loss in industry settings confirms the multi-metric
+approach adopted here (Chen et al., 2024). Recent work further documents
+benefits of integrating probabilistic inputs into electricity price
+forecasting (Uniejewski and Ziel, 2025). However, systematic multi-class
+evaluation integrating calibration theory with governance classification
+remains limited.
 
-The third is **financial backtesting and governance**. From Kupiec (1995)
-and Christoffersen (1998) through Berkowitz (2001), statistical backtesting
-procedures constitute the backbone of Basel regulatory traffic-light systems
-(Basel Committee, 1996; 2010), extended to counterparty credit risk by
+The third is **financial backtesting and governance**. From Kupiec (1995) and Christoffersen (1998) through Berkowitz (2001),
+statistical backtesting procedures constitute the backbone of Basel
+regulatory traffic-light systems (Basel Committee, 1996; 2010). The
+quantitative risk management literature has formalised VaR backtesting
+as a governance mechanism (McNeil, Frey and Embrechts, 2005) extended to counterparty credit risk by
 Ruiz (2012) and Kenyon and Stamm (2012). The translation of these
 governance-oriented paradigms into energy analytics remains comparatively
 limited.
