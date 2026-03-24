@@ -17,7 +17,7 @@ from entsoe import EntsoePandasClient
 from pathlib import Path
 
 # ── Config ────────────────────────────────────────────────────────────────────
-API_TOKEN  = "your-token-here"     # paste your token from transparency.entsoe.eu
+API_TOKEN  = "deaff98a-6262-43d6-9726-f4ca0287c4db"     # paste your token from transparency.entsoe.eu
 ZONE       = "DE_LU"               # Germany-Luxembourg bidding zone
 START = pd.Timestamp("2020-01-01", tz="Europe/Berlin")
 END   = pd.Timestamp("2026-01-01", tz="Europe/Berlin")
