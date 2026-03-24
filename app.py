@@ -41,10 +41,10 @@ st.set_page_config(
 # ── Custom CSS ───────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
 
   html, body, [class*="css"] {
-    font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   }
 
   .main { background-color: #0d1117; }
