@@ -5,11 +5,9 @@ in the unified probabilistic validation framework. Results are organised by
 dataset: ENTSO-E short-term electricity load forecasting (run_001), long-term PV
 generation (run_002), long-term wind generation (run_003), the synthetic
 simulation positive control and misspecification scenarios (run_004,
-run_004b), and a joint multivariate dependency analysis of PV and wind
-(run_005). Each dataset is evaluated under the same diagnostic architecture:
-Anfuso traffic-light interval backtesting, PIT-based distributional and
-independence diagnostics, proper scoring via CRPS, and rolling-window
-stability analysis.
+run_004b), a joint multivariate dependency analysis of PV and wind
+(run_005), and two additional ENTSO-E renewable generation datasets for
+Germany 2020–2026: onshore wind (run_009) and solar PV (run_010).
 
 ---
 
@@ -514,13 +512,20 @@ cross-correlation.
 
 ### 7.1 Summary Table
 
-| Dataset     | n       | Coverage | Cov. Error | Anfuso TL | PIT Uniform | PIT Indep | Overall |
-|-------------|---------|----------|------------|-----------|-------------|-----------|---------|
-| ENTSO-E     | 209,555 | 87.06%   | −2.94 pp   | RED       | FAIL        | FAIL      | **RED** |
-| PV          | 4,287   | 91.37%   | +1.37 pp   | GREEN     | FAIL        | FAIL      | **RED** |
-| Wind        | 9,000   | 88.62%   | −1.38 pp   | RED (lower)| FAIL       | FAIL      | **RED** |
-| Sim (price) | 365     | 88.49%   | −1.51 pp   | GREEN     | n/a         | n/a       | **GREEN** |
-| Sim (temp)  | 365     | 89.59%   | −0.41 pp   | GREEN     | n/a         | n/a       | **GREEN** |
+| Dataset              | n       | Coverage | Cov. Error | Anfuso TL   | KS stat | PIT Uniform | PIT Indep | Overall    |
+|----------------------|---------|----------|------------|-------------|---------|-------------|-----------|------------|
+| ENTSO-E load         | 209,555 | 87.06%   | −2.94 pp   | RED         | 0.1615  | FAIL        | FAIL      | **RED**    |
+| PV (student)         | 4,287   | 91.37%   | +1.37 pp   | GREEN       | 0.1028  | FAIL        | FAIL      | **RED**    |
+| Wind (student)       | 9,000   | 88.62%   | −1.38 pp   | RED (lower) | 0.1057  | FAIL        | FAIL      | **RED**    |
+| Sim (price)          | 365     | 88.49%   | −1.51 pp   | GREEN       | n/a     | n/a         | n/a       | **GREEN**  |
+| Sim (temp)           | 365     | 89.59%   | −0.41 pp   | GREEN       | n/a     | n/a         | n/a       | **GREEN**  |
+| ENTSO-E Wind (DE)    | 51,933  | 89.16%   | −0.84 pp   | GREEN       | 0.0083  | FAIL†       | FAIL†     | **RED†**   |
+| ENTSO-E Solar (DE)   | 51,933  | 89.94%   | −0.06 pp   | GREEN       | 0.0258  | FAIL†       | FAIL†     | **RED†**   |
+
+† See Section 7.3 — RED classification driven by large-n test sensitivity,
+not substantive distributional failure. KS statistics of 0.0083 and 0.0258
+indicate practically negligible deviations from uniformity relative to the
+student datasets (KS > 0.10).
 
 ### 7.2 Key Cross-Dataset Findings
 
@@ -564,6 +569,26 @@ in the base reconstruction. The conformal augmentation layer (Section 5
 of this chapter, and 04_conformal_wrapping.ipynb) addresses this by
 expanding base intervals to restore near-nominal coverage guarantees,
 as demonstrated on the ENTSO-E development sample.
+
+**7. ENTSO-E official forecasts are near-nominally calibrated at the interval level.**
+The German wind and solar day-ahead forecasts from the ENTSO-E Transparency
+Platform (run_009, run_010) achieve near-nominal interval coverage (89.2%
+and 89.9% respectively) against a 90% target, with both Anfuso tests
+returning GREEN. This contrasts with the student datasets which exhibit
+meaningful interval failures. The result is consistent with professionally
+produced operational forecasts incorporating better uncertainty
+quantification than the academic benchmark datasets.
+
+**8. Large-n statistical power inflates rejection rates on well-calibrated models.**
+At n = 51,933, PIT uniformity and independence tests achieve near-infinite
+power, formally rejecting even negligible deviations. The ENTSO-E wind KS
+statistic of 0.0083 represents a maximum 0.83 percentage-point departure
+from uniform — orders of magnitude smaller than the student datasets (KS
+> 0.10). The RED classification for run_009 and run_010 is technically
+correct under the fixed-threshold policy but reflects residual weather-driven
+temporal structure rather than substantive model failure. Practitioners
+should complement p-value thresholds with effect-size thresholds at large n
+(Diebold, 2015).
 
 ---
 
@@ -760,8 +785,10 @@ classification results across all eleven datasets are summarised below:
 | Sim Price — Mean Bias | RED | undercoverage | 70.4% |
 | Sim Price — Heavy Tails | GREEN | all_clear | 90.1% |
 | Sim Temp — Var Inflation | RED | undercoverage | 62.5% |
-| Sim Temp — Mean Bias | RED | undercoverage | 70.4% |
-| Sim Temp — Heavy Tails | YELLOW | — | 92.3% |
+| Sim Temp — Mean Bias       | RED    | undercoverage                           | 70.4% |
+| Sim Temp — Heavy Tails     | YELLOW | —                                       | 92.3% |
+| ENTSO-E Wind (DE, run_009) | RED†   | PIT_uniformity_fail, ACF_dependence_fail | 89.2% |
+| ENTSO-E Solar (DE, run_010)| RED†   | PIT_uniformity_fail, ACF_dependence_fail | 89.9% |
 
 The reason code vocabulary directly identifies which diagnostic branch
 triggered each classification. ENTSO-E is the only dataset to trigger
@@ -772,7 +799,9 @@ confirming their coverage is near-nominal while their distributional shape
 and temporal structure are systematically misspecified. The misspecification
 scenarios uniformly trigger `undercoverage`, reflecting that variance
 inflation and mean bias produce interval failures severe enough to dominate
-the classification regardless of distributional diagnostics.
+the classification regardless of distributional diagnostics. The run_009 and run_010 RED classifications (†) are driven by large-n
+test sensitivity rather than substantive miscalibration — see Section 7.3
+for full discussion.
 
 Each decision record includes a full provenance audit trail: the list of
 computed diagnostics, skipped diagnostics and reasons, policy source
