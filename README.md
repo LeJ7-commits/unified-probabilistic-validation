@@ -3,7 +3,7 @@
 A production-grade reliability architecture for probabilistic energy market models.
 
 **Authors:** Jia Yang Le & Komila Askarova  
-**Institution:** Lund University, Faculty of Engineering  
+**Institution:** Lund University 
 **Industry Partner:** Energy Quant Solutions Sweden AB (EnBW Group)  
 **Live Demo:** [unified-probabilistic-validation.streamlit.app](https://unified-probabilistic-validation.streamlit.app)
 
