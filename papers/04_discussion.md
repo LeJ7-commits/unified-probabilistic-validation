@@ -326,6 +326,40 @@ but it does not provide formal guarantees under strong temporal dependence. The 
 should therefore be interpreted as approximately valid rather than
 strictly valid in the theoretical sense.
 
+### 4.6 Large-sample sensitivity of PIT hypothesis tests
+
+At evaluation samples of n > 50,000 (ENTSO-E wind Germany, run_009;
+ENTSO-E solar Germany, run_010), PIT uniformity and independence tests
+achieve near-infinite statistical power, formally rejecting the null
+hypothesis for deviations that are statistically detectable but
+practically negligible. The ENTSO-E wind dataset (n = 51,933) produces
+a KS statistic of 0.0083 — a maximum departure from uniform of less
+than one percentage point — yet this is formally rejected at p = 0.0016
+purely due to sample size. The solar dataset produces KS = 0.0258, also
+small relative to the student datasets where KS exceeds 0.10 in all
+cases.
+
+This is a known limitation of fixed-threshold hypothesis testing at
+large n (Diebold, 2015): statistical significance and practical
+significance diverge as the evaluation sample grows. The RED
+classifications for run_009 and run_010 are technically correct under
+the current policy thresholds but should be interpreted as reflecting
+residual weather-driven temporal structure inherent to hourly renewable
+generation — not the substantive distributional misspecification
+observed in the student datasets. The Ljung–Box rejection at these
+sample sizes is similarly expected: hourly wind speed and irradiance
+are physically autocorrelated processes, and any residual-based
+reconstruction will inherit some of that structure.
+
+Practitioners applying this framework to large operational datasets
+should complement p-value thresholds with effect-size thresholds —
+for example, requiring KS > 0.05 rather than p < 0.05 as the
+distributional failure criterion. Alternatively, sample-size-adjusted
+critical values or subsampling-based tests (Giacomini and Rossi, 2010)
+can be used to restore size control at large n. This extension is
+identified as a priority refinement for production deployment of the
+framework.
+
 ---
 
 ## 5. Relation to Prior Work
