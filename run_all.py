@@ -21,6 +21,8 @@ PIPELINE STAGES:
   Stage 8  — Run 006: VaR sensitivity analysis
   Stage 9  — Run 007: Transition metrics
   Stage 10 — Run 008: Report cards + AI narratives
+  Stage 11 — Run 009: ENTSO-E Wind Germany diagnostics
+  Stage 12 — Run 010: ENTSO-E Solar Germany diagnostics
 
 OUTPUTS:
   experiments/run_001_entsoe/          ENTSO-E results + governance decision
@@ -88,10 +90,11 @@ STAGES = [
         "id":          1,
         "name":        "Build derived artifacts",
         "scripts":     [
-            "scripts/build_entsoe_derived.py",
-            "scripts/build_renewables_derived.py",
-            "scripts/build_simulation_derived.py",
-        ],
+                    "scripts/build_entsoe_derived.py",
+                    "scripts/build_renewables_derived.py",
+                    "scripts/build_entsoe_renewables_derived.py",
+                    "scripts/build_simulation_derived.py",
+                ],
         "optional":    True,   # can skip if derived data already exists
         "description": "Preprocesses raw CSV data into derived .npy artifacts",
     },
@@ -157,6 +160,20 @@ STAGES = [
         "scripts": ["experiments/run_008_report_cards.py"],
         "optional": False,
         "description": "Governance report cards and AI-generated narratives",
+    },
+    {
+        "id":      11,
+        "name":    "ENTSO-E Wind Germany diagnostics",
+        "scripts": ["experiments/run_009_entsoe_wind.py"],
+        "optional": False,
+        "description": "PIT + coverage + Anfuso for ENTSO-E onshore wind Germany 2020-2026",
+    },
+    {
+        "id":      12,
+        "name":    "ENTSO-E Solar Germany diagnostics",
+        "scripts": ["experiments/run_010_entsoe_solar.py"],
+        "optional": False,
+        "description": "PIT + coverage + Anfuso for ENTSO-E solar PV Germany 2020-2026",
     },
 ]
 
