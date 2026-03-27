@@ -330,53 +330,22 @@ class DecisionEngine:
     # ── Private helpers ────────────────────────────────────────────────────
 
     def _extract_reason_codes(
-        self,
-        governance: dict,
-        metrics:    dict,
-        policy:     RiskPolicy,
+    self,
+    governance: dict,
+    metrics:    dict,
+    policy:     RiskPolicy,
     ) -> list[ReasonCode]:
-        """Extract ReasonCode list from governance classification output."""
-        codes: list[ReasonCode] = []
-
-        label = governance.get("risk_label", governance.get("traffic_light", "RED"))
-
-        # Coverage
-        emp_cov = metrics.get("empirical_coverage")
-        if emp_cov is not None:
-            target = policy.coverage_target
-            if emp_cov < target - 0.02:
-                codes.append(ReasonCode.UNDERCOVERAGE)
-            elif emp_cov > target + 0.05:
-                codes.append(ReasonCode.OVERCOVERAGE)
-
-        # PIT uniformity
-        ks_p = metrics.get("pit_ks_pvalue")
-        if ks_p is not None and ks_p < 0.05:
-            codes.append(ReasonCode.PIT_UNIFORMITY_FAIL)
-
-        # PIT independence
-        for lag in self.lb_lags:
-            lb_p = metrics.get(f"pit_lb_pvalue_lag{lag}")
-            if lb_p is not None and lb_p < 0.05:
-                codes.append(ReasonCode.ACF_DEPENDENCE_FAIL)
-                break  # one ACF code is enough
-
-        # Anfuso
-        anf_total = metrics.get("anfuso_traffic_light_total")
-        if anf_total in ("RED", "YELLOW"):
-            # Anfuso breach → undercoverage if coverage is below target
-            emp_cov = metrics.get("empirical_coverage", 1.0)
-            if emp_cov < (policy.coverage_target - 0.02):
-                if ReasonCode.UNDERCOVERAGE not in codes:
-                    codes.append(ReasonCode.UNDERCOVERAGE)
-
-        # Clean: no issues
-        if not codes and label == "GREEN":
-            codes.append(ReasonCode.ALL_CLEAR)
-        elif not codes:
-            # governance_raw reported all_clear but label not GREEN — add ALL_CLEAR anyway
-            gov_codes = governance.get("reason_codes", [])
-            if "all_clear" in gov_codes:
-                codes.append(ReasonCode.ALL_CLEAR)
-
-        return codes
+        """Extract ReasonCode list directly from TrafficLight_Labeler output."""
+        # Read reason codes directly from classify_risk() output — which already
+        # applies the dual-criterion KS effect-size floor via TrafficLight_Labeler.
+        # Do NOT re-derive from raw metrics: that would bypass the floor logic.
+        raw_codes = governance.get("reason_codes", [])
+        
+        result = []
+        for code_str in raw_codes:
+            try:
+                result.append(ReasonCode(code_str))
+            except ValueError:
+                pass  # unknown code string — skip gracefully
+        
+        return result if result else [ReasonCode.ALL_CLEAR]
