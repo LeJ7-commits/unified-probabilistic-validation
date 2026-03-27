@@ -6,7 +6,7 @@
     "ACF_dependence_fail"
   ],
   "regime_tag": "regime_normal",
-  "decided_at": "2026-03-22T10:41:51.094310Z",
+  "decided_at": "2026-03-27T19:58:01.570211Z",
   "metric_snapshot": {
     "pit_ks_stat": 0.102761,
     "pit_ks_pvalue": 0.0,
@@ -21,6 +21,7 @@
     "pit_lb_stat_lag20": 5011.609832,
     "pit_lb_pvalue_lag20": 0.0,
     "pit_lb_input": "z=Phi^{-1}(u)",
+    "pit_acf_lag1": 0.660357,
     "empirical_coverage": 0.913693,
     "crps_mean": 0.793705,
     "mean_pinball": 0.167606,
@@ -54,8 +55,8 @@
     "governance_raw": {
       "risk_label": "RED",
       "risk_reasons": [
-        "Uniformity strongly rejected (min p=7.23e-40).",
-        "Independence strongly rejected (min Ljung-Box p=0)."
+        "Uniformity strongly rejected (min p=7.23e-40, KS=0.1028).",
+        "Independence strongly rejected (min Ljung-Box p=0, |ACF lag-1|=0.6604)."
       ],
       "reason_codes": [
         "PIT_uniformity_fail",
@@ -63,7 +64,9 @@
       ],
       "risk_signals": {
         "min_p_uniformity": 7.230341839333545e-40,
+        "ks_stat": 0.10276137158852339,
         "min_p_ljungbox": 0.0,
+        "acf_lag1": 0.6603570807890599,
         "empirical_coverage": 0.9136925588989969,
         "coverage_error": 0.013692558898996898
       }

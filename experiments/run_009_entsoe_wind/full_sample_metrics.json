@@ -12,20 +12,23 @@
   "pit_lb_stat_lag20": 120758.83351735192,
   "pit_lb_pvalue_lag20": 0.0,
   "pit_lb_input": "z=Phi^{-1}(u)",
+  "pit_acf_lag1": 0.8605540709028535,
   "crps_mean": 818.2913077394484,
   "empirical_coverage": 0.891591088517898,
   "risk_label": "RED",
   "risk_reasons": [
-    "Uniformity strongly rejected (min p=0.000835).",
-    "Independence strongly rejected (min Ljung-Box p=0)."
+    "Uniformity rejected (min p=0.000835) but KS=0.0083 below effect-size floor (0.05): large-n sensitivity, not structural failure.",
+    "Independence strongly rejected (min Ljung-Box p=0, |ACF lag-1|=0.8606)."
   ],
   "reason_codes": [
-    "PIT_uniformity_fail",
+    "PIT_uniformity_warn",
     "ACF_dependence_fail"
   ],
   "risk_signals": {
     "min_p_uniformity": 0.0008346566336966399,
+    "ks_stat": 0.00829099031444358,
     "min_p_ljungbox": 0.0,
+    "acf_lag1": 0.8605540709028535,
     "empirical_coverage": 0.891591088517898,
     "coverage_error": -0.008408911482101988
   }

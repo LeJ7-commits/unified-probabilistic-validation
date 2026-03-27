@@ -9,7 +9,9 @@
   ],
   "risk_signals": {
     "min_p_uniformity": null,
+    "ks_stat": null,
     "min_p_ljungbox": null,
+    "acf_lag1": null,
     "empirical_coverage": 0.7041095890410959,
     "coverage_error": -0.19589041095890414
   }

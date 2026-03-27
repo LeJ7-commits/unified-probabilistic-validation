@@ -5,7 +5,7 @@
     "undercoverage"
   ],
   "regime_tag": "regime_normal",
-  "decided_at": "2026-03-22T11:44:34.019960Z",
+  "decided_at": "2026-03-27T19:59:00.830417Z",
   "metric_snapshot": {
     "empirical_coverage": 0.70411,
     "mean_pinball": 0.504656,
@@ -52,7 +52,9 @@
       ],
       "risk_signals": {
         "min_p_uniformity": null,
+        "ks_stat": null,
         "min_p_ljungbox": null,
+        "acf_lag1": null,
         "empirical_coverage": 0.7041095890410959,
         "coverage_error": -0.19589041095890414
       }
