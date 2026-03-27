@@ -2,11 +2,11 @@
   "model_id": "entsoe_wind_de",
   "final_label": "RED",
   "reason_codes": [
-    "PIT_uniformity_fail",
+    "PIT_uniformity_warn",
     "ACF_dependence_fail"
   ],
   "regime_tag": "regime_normal",
-  "decided_at": "2026-03-27T20:05:21.267713Z",
+  "decided_at": "2026-03-27T20:30:19.071789Z",
   "metric_snapshot": {
     "pit_ks_stat": 0.008291,
     "pit_ks_pvalue": 0.001577,
