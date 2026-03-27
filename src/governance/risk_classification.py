@@ -55,6 +55,14 @@ class RiskPolicy:
     pvalue_red:    float = 0.01   # strongly reject → RED
     pvalue_yellow: float = 0.05   # weakly reject   → YELLOW
 
+    # 2026-03-27: effect-size floors for large-n guard ─────────────────────
+    ks_effect_floor:  float = 0.05   # KS stat must exceed this for RED/YELLOW on uniformity
+    acf_effect_floor: float = 0.05   # |ACF lag-1| must exceed this for RED/YELLOW on independence
+
+    # 2026-03-27: effect-size floors (large-n guard) ──────────────────────────
+    ks_effect_floor:  float = 0.05   # KS stat must exceed this to trigger RED/YELLOW
+    acf_effect_floor: float = 0.05   # |ACF lag-1| must exceed this to trigger RED/YELLOW
+
     # Coverage tolerance (in probability units, e.g. 0.02 = 2pp)
     coverage_target:     float | None = None
     coverage_tol_red:    float = 0.05   # |error| > 5pp → RED
@@ -160,14 +168,28 @@ class TrafficLight_Labeler:
             and v is not None
         ]
         min_p_uniform = min(pit_pvals) if pit_pvals else None
+        ks_stat       = metrics.get("pit_ks_stat", None)
         sigs["min_p_uniformity"] = min_p_uniform
+        sigs["ks_stat"]          = ks_stat
 
         if min_p_uniform is not None:
+            effect_meaningful = (
+                ks_stat is None or ks_stat > p.ks_effect_floor
+            )
             if min_p_uniform < p.pvalue_red:
-                codes.append(ReasonCode.PIT_UNIFORMITY_FAIL)
-                msgs.append(
-                    f"Uniformity strongly rejected (min p={min_p_uniform:.3g})."
-                )
+                if effect_meaningful:
+                    codes.append(ReasonCode.PIT_UNIFORMITY_FAIL)
+                    msgs.append(
+                        f"Uniformity strongly rejected "
+                        f"(min p={min_p_uniform:.3g}, KS={ks_stat:.4f})."
+                    )
+                else:
+                    codes.append(ReasonCode.PIT_UNIFORMITY_WARN)
+                    msgs.append(
+                        f"Uniformity rejected (min p={min_p_uniform:.3g}) but "
+                        f"KS={ks_stat:.4f} below effect-size floor "
+                        f"({p.ks_effect_floor}): large-n sensitivity, not structural failure."
+                    )
             elif min_p_uniform < p.pvalue_yellow:
                 codes.append(ReasonCode.PIT_UNIFORMITY_WARN)
                 msgs.append(
@@ -180,14 +202,32 @@ class TrafficLight_Labeler:
             if k.startswith("pit_lb_pvalue_lag") and v is not None
         ]
         min_p_lb = min(lb_pvals) if lb_pvals else None
+        acf_lag1 = metrics.get("pit_acf_lag1", None)
         sigs["min_p_ljungbox"] = min_p_lb
+        sigs["acf_lag1"]       = acf_lag1
 
         if min_p_lb is not None:
+            effect_meaningful = (
+                acf_lag1 is None or abs(acf_lag1) > p.acf_effect_floor
+            )
             if min_p_lb < p.pvalue_red:
-                codes.append(ReasonCode.ACF_DEPENDENCE_FAIL)
-                msgs.append(
-                    f"Independence strongly rejected (min Ljung-Box p={min_p_lb:.3g})."
-                )
+                if effect_meaningful:
+                    codes.append(ReasonCode.ACF_DEPENDENCE_FAIL)
+                    # REPLACE the f-string with this:
+                    acf_str = f"|ACF lag-1|={abs(acf_lag1):.4f}" if acf_lag1 is not None else "ACF lag-1=n/a"
+                    msgs.append(
+                        f"Independence strongly rejected "
+                        f"(min Ljung-Box p={min_p_lb:.3g}, {acf_str})."
+                    )
+                else:
+                    codes.append(ReasonCode.ACF_DEPENDENCE_WARN)
+                    # REPLACE the f-string with this:
+                    acf_str = f"|ACF lag-1|={abs(acf_lag1):.4f}" if acf_lag1 is not None else "ACF lag-1=n/a"
+                    msgs.append(
+                        f"Independence rejected (min p={min_p_lb:.3g}) but "
+                        f"{acf_str} below effect-size floor "
+                        f"({p.acf_effect_floor}): large-n sensitivity."
+                    )
             elif min_p_lb < p.pvalue_yellow:
                 codes.append(ReasonCode.ACF_DEPENDENCE_WARN)
                 msgs.append(

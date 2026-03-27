@@ -136,4 +136,9 @@ def pit_independence_tests(
         out[f"pit_lb_pvalue_lag{lag}"] = float(df.loc[lag, "lb_pvalue"])
 
     out["pit_lb_input"] = "z=Phi^{-1}(u)" if use_inverse_normal else "u"
+
+    # ACF at lag 1 — effect size for large-n Ljung-Box guard
+    acf_lag1 = float(np.corrcoef(x[:-1], x[1:])[0, 1]) if len(x) > 1 else 0.0
+    out["pit_acf_lag1"] = acf_lag1
+
     return out
