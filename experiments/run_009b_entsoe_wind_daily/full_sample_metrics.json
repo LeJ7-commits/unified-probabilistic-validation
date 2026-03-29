@@ -1,0 +1,37 @@
+{
+  "pit_ks_stat": 0.24621072088724583,
+  "pit_ks_pvalue": 5.144141812472895e-116,
+  "pit_cvm_stat": 52.98375177315436,
+  "pit_cvm_pvalue": 2.4611735316426575e-08,
+  "pit_ad_stat": 57.663932772438784,
+  "pit_ad_pvalue": 0.01,
+  "pit_lb_stat_lag5": 115.94731259669582,
+  "pit_lb_pvalue_lag5": 2.2633849465089435e-23,
+  "pit_lb_stat_lag10": 121.22719399557302,
+  "pit_lb_pvalue_lag10": 2.851315505114738e-21,
+  "pit_lb_stat_lag20": 148.772904554595,
+  "pit_lb_pvalue_lag20": 1.0793908385963066e-21,
+  "pit_lb_input": "z=Phi^{-1}(u)",
+  "pit_acf_lag1": 0.20403364308664407,
+  "crps_mean": 643.6781087595558,
+  "empirical_coverage": 0.9658040665434381,
+  "risk_label": "RED",
+  "risk_reasons": [
+    "Uniformity strongly rejected (min p=5.14e-116, KS=0.2462).",
+    "Independence strongly rejected (min Ljung-Box p=2.26e-23, |ACF lag-1|=0.2040).",
+    "Coverage off-target by 0.066 (target=0.900)."
+  ],
+  "reason_codes": [
+    "PIT_uniformity_fail",
+    "ACF_dependence_fail",
+    "overcoverage"
+  ],
+  "risk_signals": {
+    "min_p_uniformity": 5.144141812472895e-116,
+    "ks_stat": 0.24621072088724583,
+    "min_p_ljungbox": 2.2633849465089435e-23,
+    "acf_lag1": 0.20403364308664407,
+    "empirical_coverage": 0.9658040665434381,
+    "coverage_error": 0.06580406654343807
+  }
+}

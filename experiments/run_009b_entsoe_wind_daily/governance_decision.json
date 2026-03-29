@@ -1,0 +1,78 @@
+{
+  "model_id": "entsoe_wind_de_daily",
+  "final_label": "RED",
+  "reason_codes": [
+    "PIT_uniformity_fail",
+    "ACF_dependence_fail",
+    "overcoverage"
+  ],
+  "regime_tag": "regime_normal",
+  "decided_at": "2026-03-29T09:05:08.475818Z",
+  "metric_snapshot": {
+    "pit_ks_stat": 0.246211,
+    "pit_ks_pvalue": 0.0,
+    "pit_cvm_stat": 52.983752,
+    "pit_cvm_pvalue": 0.0,
+    "pit_ad_stat": 57.663933,
+    "pit_ad_pvalue": 0.01,
+    "pit_lb_stat_lag5": 115.947313,
+    "pit_lb_pvalue_lag5": 0.0,
+    "pit_lb_stat_lag10": 121.227194,
+    "pit_lb_pvalue_lag10": 0.0,
+    "pit_lb_stat_lag20": 148.772905,
+    "pit_lb_pvalue_lag20": 0.0,
+    "pit_lb_input": "z=Phi^{-1}(u)",
+    "pit_acf_lag1": 0.204034,
+    "empirical_coverage": 0.965804,
+    "crps_mean": 643.678109,
+    "mean_pinball": 130.071993,
+    "anfuso_traffic_light_total": "GREEN",
+    "anfuso_traffic_light_lower": "GREEN",
+    "anfuso_traffic_light_upper": "GREEN",
+    "total_breach_rate": 0.034196,
+    "lower_breach_rate": 0.022643,
+    "upper_breach_rate": 0.011553,
+    "mean_width": 4792.349504,
+    "sharpness_label": "sharp",
+    "coverage_error": 0.065804
+  },
+  "policy": {
+    "coverage_target": 0.9
+  },
+  "provenance": {
+    "computed": [
+      "pit_uniformity",
+      "pit_autocorrelation",
+      "empirical_coverage",
+      "crps",
+      "pinball",
+      "anfuso",
+      "sharpness"
+    ],
+    "skipped": [],
+    "model_id": "entsoe_wind_de_daily",
+    "regime_tag": "regime_normal",
+    "policy_source": "global",
+    "governance_raw": {
+      "risk_label": "RED",
+      "risk_reasons": [
+        "Uniformity strongly rejected (min p=5.14e-116, KS=0.2462).",
+        "Independence strongly rejected (min Ljung-Box p=2.26e-23, |ACF lag-1|=0.2040).",
+        "Coverage off-target by 0.066 (target=0.900)."
+      ],
+      "reason_codes": [
+        "PIT_uniformity_fail",
+        "ACF_dependence_fail",
+        "overcoverage"
+      ],
+      "risk_signals": {
+        "min_p_uniformity": 5.144141812472895e-116,
+        "ks_stat": 0.24621072088724583,
+        "min_p_ljungbox": 2.2633849465089435e-23,
+        "acf_lag1": 0.20403364308664407,
+        "empirical_coverage": 0.9658040665434381,
+        "coverage_error": 0.06580406654343807
+      }
+    }
+  }
+}
