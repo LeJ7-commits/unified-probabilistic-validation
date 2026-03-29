@@ -528,7 +528,7 @@ with c1:
         "<h1>UNIFIED PROBABILISTIC VALIDATION</h1>"
         "<p style='color:#6B6B6B;font-family:DM Mono,monospace;font-size:0.82rem;"
         "letter-spacing:0.05em;margin-top:-0.5rem'>"
-        "Basel governance classification · PIT diagnostics · Conformal augmentation"
+        "Basel-style governance classification · PIT diagnostics · Conformal augmentation"
         "</p>",
         unsafe_allow_html=True)
 with c2:
@@ -779,14 +779,11 @@ with ca:
         f'<table class="anf-table">{tbl}</table>',
         unsafe_allow_html=True)
 with cb:
-    disp = {k: (round(float(v), 6) if isinstance(v, (float, int)) else v)
-            for k, v in snap.items()}
-    snap_df = pd.DataFrame.from_dict(
-        {k: [str(v)] for k, v in snap.items()},
-        orient="columns"
-    ).T
-    snap_df.columns = ["value"]
-    st.dataframe(snap_df, width="stretch", height=220)
+    snap_rows = {"metric": list(snap.keys()),
+               "value": [str(round(v,6)) if isinstance(v,(float,int)) else str(v)
+                         for v in snap.values()]}
+    snap_df = pd.DataFrame(snap_rows).set_index("metric")
+    st.dataframe(snap_df, height=220)
 
 # ── Visualizations ────────────────────────────────────────────────────────────
 if show_pit_plots:
@@ -893,4 +890,3 @@ st.download_button(
     file_name=f"upv_{label.lower()}_{decision.model_id}.zip",
     mime="application/zip",
 )
-
