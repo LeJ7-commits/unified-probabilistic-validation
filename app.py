@@ -528,7 +528,7 @@ with c1:
         "<h1>UNIFIED PROBABILISTIC VALIDATION</h1>"
         "<p style='color:#6B6B6B;font-family:DM Mono,monospace;font-size:0.82rem;"
         "letter-spacing:0.05em;margin-top:-0.5rem'>"
-        "Basel-style governance classification · PIT diagnostics · Conformal augmentation"
+        "Basel governance classification · PIT diagnostics · Conformal augmentation"
         "</p>",
         unsafe_allow_html=True)
 with c2:
@@ -781,8 +781,12 @@ with ca:
 with cb:
     disp = {k: (round(float(v), 6) if isinstance(v, (float, int)) else v)
             for k, v in snap.items()}
-    st.dataframe(pd.DataFrame.from_dict(disp, orient="index", columns=["value"]),
-                 use_container_width=True, height=220)
+    snap_df = pd.DataFrame.from_dict(
+        {k: [str(v)] for k, v in snap.items()},
+        orient="columns"
+    ).T
+    snap_df.columns = ["value"]
+    st.dataframe(snap_df, width="stretch", height=220)
 
 # ── Visualizations ────────────────────────────────────────────────────────────
 if show_pit_plots:
@@ -793,7 +797,7 @@ if show_pit_plots:
     n_eval = len(u)
     fig = fig_pit_diagnostics(u,
         f"PIT Diagnostics — uploaded model  (n={n_eval:,})")
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig)
     plt.close(fig)
 
 if show_rolling_cov and enable_rolling:
@@ -812,7 +816,7 @@ if show_rolling_cov and enable_rolling:
     if len(cov_series) >= 2:
         fig = fig_rolling_coverage(cov_series, list(range(len(cov_series))),
                                    coverage_target)
-        st.pyplot(fig, use_container_width=True)
+        st.pyplot(fig)
         plt.close(fig)
     else:
         st.info(f"Need ≥2 windows for rolling chart "
@@ -824,7 +828,7 @@ if show_power_plot:
                 unsafe_allow_html=True)
     with st.spinner("Computing power curves (~20s)…"):
         fig = fig_power_vs_n(n_uploaded=pool.n_obs)
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig)
     plt.close(fig)
 
 # ── Narratives ────────────────────────────────────────────────────────────────
@@ -889,3 +893,4 @@ st.download_button(
     file_name=f"upv_{label.lower()}_{decision.model_id}.zip",
     mime="application/zip",
 )
+
