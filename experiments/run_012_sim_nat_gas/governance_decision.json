@@ -1,0 +1,63 @@
+{
+  "model_id": "simulation_nat_gas",
+  "final_label": "GREEN",
+  "reason_codes": [
+    "all_clear"
+  ],
+  "regime_tag": "regime_normal",
+  "decided_at": "2026-03-29T09:55:02.319907Z",
+  "metric_snapshot": {
+    "empirical_coverage": 0.915068,
+    "mean_pinball": 0.811064,
+    "anfuso_traffic_light_total": "GREEN",
+    "anfuso_traffic_light_lower": "GREEN",
+    "anfuso_traffic_light_upper": "GREEN",
+    "total_breach_rate": 0.084932,
+    "lower_breach_rate": 0.032877,
+    "upper_breach_rate": 0.052055,
+    "mean_width": 26.299367,
+    "sharpness_label": "wide",
+    "coverage_error": 0.015068
+  },
+  "policy": {
+    "coverage_target": 0.9
+  },
+  "provenance": {
+    "computed": [
+      "empirical_coverage",
+      "pinball",
+      "anfuso",
+      "sharpness"
+    ],
+    "skipped": [
+      {
+        "diagnostic": "pit",
+        "reason": "no samples or CDF available"
+      },
+      {
+        "diagnostic": "crps",
+        "reason": "no samples available"
+      }
+    ],
+    "model_id": "simulation_nat_gas",
+    "regime_tag": "regime_normal",
+    "policy_source": "global",
+    "governance_raw": {
+      "risk_label": "GREEN",
+      "risk_reasons": [
+        "All monitored diagnostic signals within policy thresholds."
+      ],
+      "reason_codes": [
+        "all_clear"
+      ],
+      "risk_signals": {
+        "min_p_uniformity": null,
+        "ks_stat": null,
+        "min_p_ljungbox": null,
+        "acf_lag1": null,
+        "empirical_coverage": 0.915068493150685,
+        "coverage_error": 0.015068493150684925
+      }
+    }
+  }
+}
