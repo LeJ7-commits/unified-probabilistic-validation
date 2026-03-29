@@ -450,7 +450,7 @@ def fig_rolling_coverage(coverage_series: list[float], window_labels: list,
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### ▣ UPV TERMINAL")
+    st.markdown("### UPV TERMINAL")
     st.markdown(
         "<small style='color:#6B6B6B;font-family:DM Mono,monospace'>"
         "Unified Probabilistic Validation<br>"
@@ -565,7 +565,7 @@ if uploaded is None:
      background:#131313;margin-top:1rem'>
   <div style='font-family:DM Mono,monospace;font-size:0.9rem;
        color:#4A4A4A;letter-spacing:0.1em'>
-    ▣ DROP FORECAST CSV TO BEGIN VALIDATION
+    // DROP FORECAST CSV TO BEGIN VALIDATION
   </div>
 </div>""", unsafe_allow_html=True)
     st.stop()
