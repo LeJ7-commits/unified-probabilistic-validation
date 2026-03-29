@@ -24,7 +24,6 @@ from scipy.stats import norm, kstest, chi2, beta as beta_dist
 
 st.set_page_config(
     page_title="UPV — Validation Terminal",
-    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -530,7 +529,7 @@ with c1:
         "<h1>UNIFIED PROBABILISTIC VALIDATION</h1>"
         "<p style='color:#6B6B6B;font-family:DM Mono,monospace;font-size:0.82rem;"
         "letter-spacing:0.05em;margin-top:-0.5rem'>"
-        "Basel-style governance classification · PIT diagnostics · Conformal augmentation"
+        "Basel framework governance classification · PIT diagnostics · Conformal augmentation"
         "</p>",
         unsafe_allow_html=True)
 with c2:
@@ -897,5 +896,6 @@ st.download_button(
     file_name=f"upv_{label.lower()}_{decision.model_id}.zip",
     mime="application/zip",
 )
+
 
 
