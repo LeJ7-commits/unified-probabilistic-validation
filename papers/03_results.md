@@ -70,6 +70,8 @@ indicates severe autocorrelation in the probability integral transforms,
 consistent with the model failing to capture persistent temporal structure
 in electricity load.
 
+![PIT diagnostic plots for ENTSO-E electricity load (n=209,555). Left to right: PIT histogram vs Uniform(0,1); ACF of Φ⁻¹(u) showing severe lag-1 autocorrelation (ACF=0.926); time series of PIT values; Q-Q plot against Uniform. All four panels indicate systematic distributional failure.](../figures/pit_diagnostics_entsoe.png)
+
 ---
 
 ### 1.3 Proper Scoring
@@ -167,6 +169,8 @@ PIT uniformity is strongly rejected despite the GREEN Anfuso result.
 
 Serial independence is overwhelmingly rejected.
 
+![PIT diagnostic plots for PV Solar (n=4,287). The histogram shows non-uniform shape despite GREEN Anfuso result; ACF indicates serial dependence (ACF(1)=0.660); Q-Q plot departs from the diagonal.](../figures/pit_diagnostics_pv.png)
+
 ---
 
 ### 2.3 Proper Scoring
@@ -259,6 +263,8 @@ PIT uniformity strongly rejected.
 | 20  | 56,247    | ≈ 0     |
 
 Serial independence overwhelmingly rejected.
+
+![PIT diagnostic plots for Wind (n=9,000). Strong lower-tail concentration visible in histogram; ACF(1)=0.855 indicates persistent serial dependence; Q-Q plot shows systematic departure.](../figures/pit_diagnostics_wind.png)
 
 ---
 
@@ -373,6 +379,8 @@ failure — the DGP is correctly specified by construction. With σ = 12
 (the largest volatility in the five-dimensional system), the 90% quantile
 bounds are more variable across 365 draws, making occasional mild
 overcoverage statistically expected.
+
+![PIT diagnostic plots for Synthetic Simulation — Price positive control (n=365). Histogram approximately uniform; ACF within confidence bands; Q-Q plot close to diagonal. Confirms well-specified DGP produces near-ideal PIT.](../figures/pit_diagnostics_sim.png)
 
 ### 4b.2 Extended Positive Control Interpretation
 
@@ -750,6 +758,8 @@ hourly resolution. Serial independence rejection remains FAIL for both
 genuine structural autocorrelation. The overall RED classification is
 therefore driven by real serial dependence, not statistical over-rejection
 from large n.
+
+![Diagnostic positioning of all model classes. Left: KS statistic vs sample size. Right: |ACF lag-1| vs sample size. The effect-size floor (dashed) separates AMBER (large-n sensitivity, run_009/010) from RED (genuine miscalibration, run_001/002/003). GREEN positive control sits at bottom-left.](../figures/model_diagnostic_positioning.png)
 
 ### 7.4 Daily Aggregation Robustness — run_009b and run_010b
 

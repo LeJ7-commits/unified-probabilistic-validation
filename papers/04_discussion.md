@@ -360,6 +360,8 @@ can be used to restore size control at large n. This extension is
 identified as a priority refinement for production deployment of the
 framework.
 
+![Theoretical rejection rate vs sample size under a small fixed alternative. Left: KS test — Beta(1.05,1.05) alternative (KS≈0.01) achieves near-100% rejection at n=50k despite negligible practical deviation. Right: Ljung-Box test — AR(1,φ=0.03) alternative shows same pattern. Both panels demonstrate that the run_009/010 large-n rejections reflect statistical sensitivity, not substantive failure.](../figures/power_vs_n.png)
+
 ---
 
 ## 5. Relation to Prior Work
