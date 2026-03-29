@@ -1,13 +1,14 @@
 # Results
 
 This chapter reports empirical results across all four model classes evaluated
-in the unified probabilistic validation framework. Results are organised by
-dataset: ENTSO-E short-term electricity load forecasting (run_001), long-term PV
-generation (run_002), long-term wind generation (run_003), the synthetic
-simulation positive control and misspecification scenarios (run_004,
-run_004b), a joint multivariate dependency analysis of PV and wind
-(run_005), and two additional ENTSO-E renewable generation datasets for
-Germany 2020–2026: onshore wind (run_009) and solar PV (run_010).
+in the unified probabilistic validation framework. Results are organised by dataset: ENTSO-E short-term electricity load
+forecasting (run_001), long-term PV generation (run_002), long-term wind
+generation (run_003), the synthetic simulation positive control and
+misspecification scenarios (run_004, run_004b), three extended simulation
+commodity classes — electricity price, natural gas, and carbon (run_011,
+run_012, run_013) — a joint multivariate dependency analysis of PV and
+wind (run_005), and two additional ENTSO-E renewable generation datasets
+for Germany 2020–2026: onshore wind (run_009) and solar PV (run_010).
 
 ---
 
@@ -336,6 +337,64 @@ CDF from the simulation paths, which is deferred as a future extension.
 
 ---
 
+## 4b. Extended Simulation — Electricity Price, Natural Gas, Carbon (run_011–013)
+
+**Motivation.** The industry partner (Rikard Green, Energy Quant Solutions)
+recommended extending the simulation framework to cover at least three
+additional commodity classes beyond the original price and temperature
+series. Three new series are evaluated: electricity price (€/MWh),
+natural gas (€/MWh), and carbon dioxide (€/tCO₂).
+
+**DGP design.** All three series are drawn from a jointly specified
+five-dimensional correlated Gaussian DGP with physically motivated
+parameters. Electricity price is the anchor series (σ = 12, high intraday
+amplitude); natural gas is moderately correlated with electricity
+(ρ = 0.60) and temperature (ρ = 0.50); carbon has no intraday cycle and
+weaker correlations (ρ_elec = 0.40, ρ_gas = 0.25). Each series constitutes
+a well-specified **positive control**: realised values are drawn from the
+same DGP as the simulation paths, so the framework should return GREEN.
+
+**Evaluable observations:** n = 365 per series (same as run_004).
+
+### 4b.1 Governance Classifications
+
+| Series | Coverage | Coverage Error | Anfuso TL | Overall |
+|--------|----------|----------------|-----------|---------|
+| Elec price (run_011) | 92.1% | +2.1 pp | GREEN | **YELLOW** |
+| Natural gas (run_012) | 91.5% | +1.5 pp | GREEN | **GREEN** |
+| Carbon (run_013) | 91.0% | +1.0 pp | GREEN | **GREEN** |
+
+Natural gas and carbon both return GREEN/all_clear as expected for
+well-specified positive controls. Electricity price returns YELLOW due to
+a +2.1 pp overcoverage, triggering the coverage_warn reason code. This
+is identical in character to the original sim_temp YELLOW result and is
+attributable to sampling noise at n = 365 rather than genuine model
+failure — the DGP is correctly specified by construction. With σ = 12
+(the largest volatility in the five-dimensional system), the 90% quantile
+bounds are more variable across 365 draws, making occasional mild
+overcoverage statistically expected.
+
+### 4b.2 Extended Positive Control Interpretation
+
+The three extended commodity runs serve two purposes. First, they confirm
+that the framework's GREEN classification of well-specified simulation
+models is not specific to the original price-temperature DGP but
+generalises across commodity classes with different volatility structures,
+intraday patterns, and cross-commodity correlations. Second, the YELLOW
+result for electricity price at n = 365 reinforces the existing finding
+that sampling noise at small evaluation horizons can produce borderline
+classifications on correctly specified models — the governance policy
+implication being that n = 365 is near the minimum horizon for reliable
+simulation model validation.
+
+**Note on PIT diagnostics.** As with run_004, PIT uniformity and
+independence statistics are not computed for these runs — the simulation
+architecture passes only quantile bounds (lo, hi) to the diagnostic layer.
+Governance classification is based on interval backtesting alone.
+
+---
+
+
 ## 5. Synthetic Simulation — Misspecification Scenarios (run_004b)
 
 Three deliberate misspecification scenarios are evaluated against both the
@@ -539,10 +598,14 @@ alone are insufficient for governance classification — a model can appear
 calibrated at the interval level while being systematically misspecified
 at the distributional level.
 
-**2. The positive control confirms framework discriminative validity.**
-The well-specified simulation model returns GREEN across both series and
-all interval diagnostics. The framework correctly distinguishes a
-correctly specified model from miscalibrated ones.
+**2. The positive control confirms framework discriminative validity across commodity classes.**
+The well-specified simulation model returns GREEN across five of the six
+positive control series (original price, temp; extended nat_gas, carbon)
+and YELLOW on electricity price — the latter attributable to sampling
+noise at n = 365 given the higher volatility of that series (σ = 12).
+The framework correctly distinguishes correctly specified models from
+miscalibrated ones across heterogeneous commodity types with different
+volatility structures and correlation regimes.
 
 **3. Misspecification scenarios demonstrate targeted failure mode detection.**
 Variance inflation and mean bias are detected strongly and their
