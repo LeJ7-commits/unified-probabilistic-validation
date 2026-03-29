@@ -631,8 +631,13 @@ def run_pipeline(df, col_map, alpha, coverage_target, model_class, commodity,
     y_hat  = df[col_map["y_hat"]].values.astype(float)
     n      = len(y)
     t_col  = col_map.get("t")
-    try:   t = pd.to_datetime(df[t_col]).values if t_col else np.arange(n)
-    except: t = np.arange(n)
+    try:
+        t = pd.to_datetime(df[t_col], utc=True).values if t_col else np.arange(n)
+    except Exception:
+        try:
+            t = pd.to_datetime(df[t_col]).values if t_col else np.arange(n)
+        except Exception:
+            t = np.arange(n)
     lo = df[col_map["lo"]].values.astype(float) if col_map.get("lo") else None
     hi = df[col_map["hi"]].values.astype(float) if col_map.get("hi") else None
 
