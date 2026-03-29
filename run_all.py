@@ -23,6 +23,8 @@ PIPELINE STAGES:
   Stage 10 — Run 008: Report cards + AI narratives
   Stage 11 — Run 009: ENTSO-E Wind Germany diagnostics
   Stage 12 — Run 010: ENTSO-E Solar Germany diagnostics
+  Stage 13 — Run 009b: ENTSO-E Wind DE daily aggregation (optional robustness)
+  Stage 14 — Run 010b: ENTSO-E Solar DE daily aggregation (optional robustness)
 
 OUTPUTS:
   experiments/run_001_entsoe/          ENTSO-E results + governance decision
@@ -174,6 +176,20 @@ STAGES = [
         "scripts": ["experiments/run_010_entsoe_solar.py"],
         "optional": False,
         "description": "PIT + coverage + Anfuso for ENTSO-E solar PV Germany 2020-2026",
+    },
+    {
+        "id":       13,
+        "name":     "ENTSO-E Wind DE — daily aggregation robustness (run_009b)",
+        "scripts":  ["experiments/run_009b_entsoe_wind_daily.py"],
+        "optional": True,
+        "description": "Daily-aggregated sensitivity check for run_009 large-n/horizon diagnosis",
+    },
+    {
+        "id":       14,
+        "name":     "ENTSO-E Solar DE — daily aggregation robustness (run_010b)",
+        "scripts":  ["experiments/run_010b_entsoe_solar_daily.py"],
+        "optional": True,
+        "description": "Daily-aggregated sensitivity check for run_010 large-n/horizon diagnosis",
     },
 ]
 
