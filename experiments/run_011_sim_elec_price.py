@@ -53,7 +53,7 @@ if __name__ == "__main__":
         quantiles              = quantiles,
         alpha                  = ALPHA,
         rolling_window         = 250,
-        rolling_step           = 250,
+        rolling_step           = 50,
         enable_rolling_for_long_term = False,
         lb_lags                = (5, 10, 20),
         coverage_target        = COVERAGE_TARGET,

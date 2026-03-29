@@ -567,6 +567,91 @@ cross-correlation.
 
 ---
 
+---
+
+## 6b. Multivariate Extended Simulation — Five Commodity Series (run_014)
+
+**Motivation.** The supervisor guidance requires the framework to consider
+at least five multivariate commodity series. run_005 evaluates PV and wind
+jointly on real data. run_014 extends multivariate evaluation to the
+simulation model class, using all five correlated series from the extended
+DGP: electricity price, natural gas, carbon, original price, and temperature.
+
+**Methodology note.** The simulation architecture saves only quantile bounds
+(lo, hi), not full sample paths. PIT-based evaluation and energy score are
+therefore unavailable for this model class. Multivariate analysis uses
+interval breach indicators (1 = breach, 0 = inside) as the evaluation
+currency — a binary representation of the joint interval coverage process.
+
+**n = 365 observations, 5 series, 10 pairs.**
+
+### 6b.1 Marginal and Joint Coverage
+
+| Series | Marginal Coverage | Breach Rate |
+|--------|------------------|-------------|
+| Elec price | 92.05% | 7.95% |
+| Natural gas | 91.51% | 8.49% |
+| Carbon | 90.96% | 9.04% |
+| Price (original) | 88.49% | 11.51% |
+| Temperature | 89.59% | 10.41% |
+| **Joint (all 5)** | **63.01%** | — |
+
+Joint coverage of 63.0% exceeds the independence benchmark of 59.1%
+(= 0.90⁵), consistent with mild positive cross-series dependence from the
+correlated DGP structure (ρ_price-temp = 0.5).
+
+### 6b.2 Pairwise Co-Failure Rates
+
+Under marginal independence, the expected pairwise co-failure rate is
+0.10 × 0.10 = 1.0%. Observed rates:
+
+| Pair | Co-failure Rate | vs Expected |
+|------|----------------|-------------|
+| Elec price × nat gas | 1.37% | +37% |
+| Elec price × carbon | 1.37% | +37% |
+| Price × temp | **3.29%** | **+229%** |
+| All other pairs | 0.55%–1.37% | near nominal |
+
+The price × temperature pair shows the largest co-failure elevation (3.29%
+vs 1.0% expected), directly reflecting the ρ = 0.5 correlation in the DGP.
+When the original price simulation breaches, the correlated temperature
+simulation is meaningfully more likely to also breach. All other pairs
+remain close to the independence benchmark.
+
+### 6b.3 Multivariate Independence Test
+
+| Lag | Statistic | df | p-value |
+|-----|-----------|-----|---------|
+| 5 | 127.3 | 125 | 0.426 |
+| 10 | 266.5 | 250 | 0.226 |
+| 20 | 493.1 | 500 | 0.579 |
+
+**FAIL TO REJECT** — the joint breach indicator process is consistent with
+white noise at all tested lags. This is the correct positive control result:
+a well-specified simulation model produces breach events that are not
+serially correlated across commodities.
+
+### 6b.4 Interpretation
+
+The multivariate extended simulation confirms three things. First, the
+framework's positive control property holds across all five commodity
+classes — breaches are not serially correlated over time. Second, the
+correlated DGP structure (ρ_price-temp = 0.5) manifests as elevated
+contemporaneous co-failure between price and temperature, detectable in
+the pairwise co-failure statistics. Third, joint coverage exceeds the
+independence benchmark, indicating that the correlated DGP produces
+slightly fewer joint breaches than pure independence would predict —
+consistent with the mild positive correlations pulling commodity intervals
+in the same direction.
+
+For portfolio risk management, the price × temperature co-failure elevation
+means that reserves sized independently for each commodity would
+underestimate joint tail exposure by approximately 3.3× for that pair.
+The extended simulation thus provides a reference benchmark for
+cross-commodity correlation effects under a known, controlled DGP.
+
+---
+
 ## 7. Cross-Dataset Synthesis
 
 ### 7.1 Summary Table

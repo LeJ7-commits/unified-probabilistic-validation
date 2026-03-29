@@ -1,0 +1,109 @@
+{
+  "n": 365,
+  "k": 5,
+  "series": [
+    "elec_price",
+    "nat_gas",
+    "carbon",
+    "price",
+    "temp"
+  ],
+  "alpha": 0.1,
+  "note": "Multivariate evaluation uses interval breach indicators (binary: 1=breach, 0=inside). Full PIT and energy score are not computed for the simulation class because only quantile bounds (lo, hi) are available \u2014 not full sample paths.",
+  "marginal_coverage": {
+    "elec_price": 0.9205,
+    "nat_gas": 0.9151,
+    "carbon": 0.9096,
+    "price": 0.8849,
+    "temp": 0.8959
+  },
+  "joint_coverage": {
+    "observed": 0.6301,
+    "expected_under_independence": 0.5905,
+    "note": "Expected = 0.90^5 = 0.5905 under marginal independence"
+  },
+  "pairwise_cofailure_rates": {
+    "elec_price_x_nat_gas": 0.0137,
+    "elec_price_x_carbon": 0.0137,
+    "elec_price_x_price": 0.0137,
+    "elec_price_x_temp": 0.0055,
+    "nat_gas_x_carbon": 0.0055,
+    "nat_gas_x_price": 0.011,
+    "nat_gas_x_temp": 0.0082,
+    "carbon_x_price": 0.011,
+    "carbon_x_temp": 0.0082,
+    "price_x_temp": 0.0329
+  },
+  "cross_correlation_lag0": {
+    "elec_price_x_elec_price": 1.0,
+    "elec_price_x_nat_gas": 0.0922,
+    "elec_price_x_carbon": 0.084,
+    "elec_price_x_price": 0.0528,
+    "elec_price_x_temp": -0.0338,
+    "nat_gas_x_elec_price": 0.0922,
+    "nat_gas_x_nat_gas": 1.0,
+    "nat_gas_x_carbon": -0.0275,
+    "nat_gas_x_price": 0.0133,
+    "nat_gas_x_temp": -0.0073,
+    "carbon_x_elec_price": 0.084,
+    "carbon_x_nat_gas": -0.0275,
+    "carbon_x_carbon": 1.0,
+    "carbon_x_price": 0.0061,
+    "carbon_x_temp": -0.0136,
+    "price_x_elec_price": 0.0528,
+    "price_x_nat_gas": 0.0133,
+    "price_x_carbon": 0.0061,
+    "price_x_price": 1.0,
+    "price_x_temp": 0.2144,
+    "temp_x_elec_price": -0.0338,
+    "temp_x_nat_gas": -0.0073,
+    "temp_x_carbon": -0.0136,
+    "temp_x_price": 0.2144,
+    "temp_x_temp": 1.0
+  },
+  "cross_correlation_lag1": {
+    "elec_price_x_elec_price": -0.0116,
+    "elec_price_x_nat_gas": 0.0556,
+    "elec_price_x_carbon": -0.0222,
+    "elec_price_x_price": -0.011,
+    "elec_price_x_temp": 0.0323,
+    "nat_gas_x_elec_price": -0.0534,
+    "nat_gas_x_nat_gas": -0.0226,
+    "nat_gas_x_carbon": -0.0621,
+    "nat_gas_x_price": 0.0746,
+    "nat_gas_x_temp": 0.089,
+    "carbon_x_elec_price": 0.0131,
+    "carbon_x_nat_gas": 0.0408,
+    "carbon_x_carbon": -0.033,
+    "carbon_x_price": 0.0058,
+    "carbon_x_temp": -0.0139,
+    "price_x_elec_price": 0.0208,
+    "price_x_nat_gas": 0.1055,
+    "price_x_carbon": -0.0841,
+    "price_x_price": 0.0311,
+    "price_x_temp": 0.0173,
+    "temp_x_elec_price": 0.0323,
+    "temp_x_nat_gas": 0.0246,
+    "temp_x_carbon": 0.0174,
+    "temp_x_price": 0.0454,
+    "temp_x_temp": -0.0578
+  },
+  "multivariate_ljungbox": {
+    "lag5": {
+      "statistic": 127.29487902600437,
+      "df": 125,
+      "pvalue": 0.4260742260426952
+    },
+    "lag10": {
+      "statistic": 266.5363522178551,
+      "df": 250,
+      "pvalue": 0.2255797644023515
+    },
+    "lag20": {
+      "statistic": 493.05511840357053,
+      "df": 500,
+      "pvalue": 0.5790771585169607
+    }
+  },
+  "independence_verdict": "FAIL TO REJECT"
+}

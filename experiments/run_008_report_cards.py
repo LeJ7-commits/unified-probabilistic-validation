@@ -43,6 +43,11 @@ DATASETS = [
     ("Sim Temp — Var Inflation",  "run_004b_simulation_temp_variance_inflation",   250, 250, "non_overlapping", "simulation", "Monte Carlo temperature simulation with variance inflation misspecification"),
     ("Sim Temp — Mean Bias",      "run_004b_simulation_temp_mean_bias",            250, 250, "non_overlapping", "simulation", "Monte Carlo temperature simulation with mean bias misspecification"),
     ("Sim Temp — Heavy Tails",    "run_004b_simulation_temp_heavy_tails",          250, 250, "non_overlapping", "simulation", "Monte Carlo temperature simulation with heavy-tails misspecification"),
+    ("Sim Elec Price (run_011)",  "run_011_sim_elec_price", 250, 50, "overlapping", "simulation", "Extended simulation positive control — electricity price (base=55 €/MWh, σ=12)"),
+    ("Sim Natural Gas (run_012)", "run_012_sim_nat_gas",    250, 50, "overlapping", "simulation", "Extended simulation positive control — natural gas (base=40 €/MWh, σ=8)"),
+    ("Sim Carbon (run_013)",      "run_013_sim_carbon",     250, 50, "overlapping", "simulation", "Extended simulation positive control — carbon CO2 (base=65 €/tCO2, σ=6)"),
+    ("ENTSO-E Wind (run_009)",        "run_009_entsoe_wind",             250,  50, "overlapping",     "short_term",  "ENTSO-E day-ahead onshore wind generation forecast for Germany 2020-2026"),
+    ("ENTSO-E Solar (run_010)",       "run_010_entsoe_solar",            250,  50, "overlapping",     "short_term",  "ENTSO-E day-ahead solar PV generation forecast for Germany 2020-2026"),
 ]
 
 
