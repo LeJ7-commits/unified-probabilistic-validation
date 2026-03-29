@@ -455,7 +455,7 @@ with st.sidebar:
         "<small style='color:#6B6B6B;font-family:DM Mono,monospace'>"
         "Unified Probabilistic Validation<br>"
         "Energy Market Models<br><br>"
-        "Lund University · LUSEM<br>"
+        "Lund University · Jay & Kamila<br>"
         "Energy Quant Solutions AB</small>",
         unsafe_allow_html=True,
     )

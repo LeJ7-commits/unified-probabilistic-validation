@@ -2,7 +2,7 @@
 # Minimal dependencies for Streamlit Cloud deployment
 # Generated for the Unified Probabilistic Validation Framework
 
-streamlit>=1.32.0
+streamlit==1.44.0
 pandas>=2.0.0
 numpy>=1.26.0
 scipy>=1.11.0
