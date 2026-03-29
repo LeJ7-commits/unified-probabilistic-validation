@@ -24,7 +24,7 @@ from scipy.stats import norm, kstest, chi2, beta as beta_dist
 
 st.set_page_config(
     page_title="UPV — Validation Terminal",
-    page_icon="▣",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -363,7 +363,7 @@ def fig_pit_diagnostics(u: np.ndarray, title: str, n_lags: int = 40) -> plt.Figu
     return fig
 
 
-def fig_power_vs_n() -> plt.Figure:
+def fig_power_vs_n(n_uploaded: int | None = None) -> plt.Figure:
     """Power vs n theoretical figure — fast chi2 approximation."""
     rng    = np.random.default_rng(42)
     n_vals = [100, 250, 500, 1_000, 2_500, 5_000, 10_000, 25_000, 50_000]
@@ -412,8 +412,9 @@ def fig_power_vs_n() -> plt.Figure:
                 label=alt_lbl)
         ax.axhline(alpha, color=GREY, linestyle=":", linewidth=0.9,
                    label=f"α={alpha}")
-        ax.axvline(50_000, color=AMBER, linestyle=":", linewidth=1.0,
-                   label="run_009/010 (n≈52k)")
+        if n_uploaded:
+            ax.axvline(n_uploaded, color=AMBER, linestyle=":", linewidth=1.0,
+                       label=f"this dataset (n={n_uploaded:,})")
         ax.set_xscale("log")
         ax.set_xlabel("n (log scale)");  ax.set_ylabel("Rejection rate")
         ax.set_title(title);  ax.set_ylim(0, 1.05)
@@ -822,7 +823,7 @@ if show_power_plot:
     st.markdown('<div class="section-rule">▸ POWER ANALYSIS</div>',
                 unsafe_allow_html=True)
     with st.spinner("Computing power curves (~20s)…"):
-        fig = fig_power_vs_n()
+        fig = fig_power_vs_n(n_uploaded=pool.n_obs)
     st.pyplot(fig, use_container_width=True)
     plt.close(fig)
 
