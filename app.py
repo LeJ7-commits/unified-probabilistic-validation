@@ -436,6 +436,8 @@ def fig_rolling_coverage(coverage_series: list[float], window_labels: list,
                label=f"Target {target:.0%}")
     ax.axhline(target - 0.05, color=RED, linestyle=":", linewidth=0.8,
                label="RED threshold (−5 pp)")
+    ax.set_ylim(max(0, min(coverage_series) - 0.05),
+                min(1, max(coverage_series) + 0.05))
     ax.fill_between(x, target - 0.02, target + 0.02,
                     color=GREEN, alpha=0.07, label="±2 pp band")
     ax.set_ylabel("Empirical Coverage")
@@ -837,7 +839,7 @@ if show_power_plot:
 st.markdown('<div class="section-rule">▸ GOVERNANCE NARRATIVES</div>',
             unsafe_allow_html=True)
 if not narrative.api_used:
-    st.warning("Add Anthropic API key in sidebar for AI-generated narratives.", icon="▸")
+    st.warning("Add Anthropic API key in sidebar for AI-generated narratives.")
 tab_t, tab_p = st.tabs(["TECHNICAL · RISK OFFICER", "PLAIN LANGUAGE · MANAGEMENT"])
 with tab_t:
     st.markdown(f'<div class="narrative-block">{narrative.technical_narrative}</div>',
@@ -895,3 +897,5 @@ st.download_button(
     file_name=f"upv_{label.lower()}_{decision.model_id}.zip",
     mime="application/zip",
 )
+
+
