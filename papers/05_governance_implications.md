@@ -246,6 +246,16 @@ extension to PV and wind are deferred. The governance implications of
 conformal augmentation for the renewable datasets — where the
 pre-conformal coverage shortfalls are smaller — remain to be quantified.
 
+**Reconstruction is horizon-specific.** The daily aggregation robustness
+checks (run_009b, run_010b) reveal that rolling quantile intervals
+calibrated at hourly resolution produce substantial overcoverage (97–98%)
+when evaluated against daily mean targets. Any production deployment of
+the framework must calibrate the reconstruction at the intended evaluation
+horizon. Transferring hourly-calibrated intervals to daily or weekly
+governance evaluation without re-calibration will produce misleadingly
+conservative coverage estimates and may incorrectly classify a structurally
+sound model as over-conservative.
+
 ---
 
 ## 7. Regime-Conditioned Governance

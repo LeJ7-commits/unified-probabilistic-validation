@@ -590,6 +590,59 @@ temporal structure rather than substantive model failure. Practitioners
 should complement p-value thresholds with effect-size thresholds at large n
 (Diebold, 2015).
 
+### 7.3 Large-n Sensitivity — Effect-Size Floor and Dual-Criterion Rule
+
+The RED classifications for run_009 and run_010 are driven by two
+distinct mechanisms that the dual-criterion rule separates explicitly.
+PIT uniformity rejection is downgraded to WARN for both datasets (KS =
+0.0083 and 0.0258 respectively, both below the 0.05 effect-size floor),
+confirming that the distributional departure is practically negligible at
+hourly resolution. Serial independence rejection remains FAIL for both
+(ACF lag-1 = 0.861 and 0.787, both well above the 0.05 floor), indicating
+genuine structural autocorrelation. The overall RED classification is
+therefore driven by real serial dependence, not statistical over-rejection
+from large n.
+
+### 7.4 Daily Aggregation Robustness — run_009b and run_010b
+
+Daily-aggregated variants (n = 2,164, approximately 6 years of daily
+means) were run as optional robustness checks to test whether the hourly
+serial dependence is purely a within-day reconstruction artefact.
+
+| Metric           | Wind hourly | Wind daily | Solar hourly | Solar daily |
+|------------------|-------------|------------|--------------|-------------|
+| n (eval)         | 51,933      | 2,164      | 51,933       | 2,164       |
+| Coverage         | 89.16%      | 96.58%     | 89.94%       | 98.20%      |
+| KS statistic     | 0.0083      | 0.246      | 0.0258       | 0.224       |
+| ACF lag-1        | 0.861       | 0.204      | 0.787        | 0.270       |
+| LB p-value (lag 5) | ≈0        | ≈0         | ≈0           | ≈0          |
+| Governance label | RED         | RED        | RED          | RED         |
+
+Two effects operate simultaneously. First, coverage inflates from
+near-nominal to 97–98% at the daily level. The hourly-calibrated rolling
+quantile intervals are too wide for daily mean targets because averaging
+24 hourly residuals compresses variance relative to the point-in-time
+spread the intervals were designed to cover. The KS statistic rises
+sharply (0.0083 → 0.246 for wind) as PIT values concentrate in the
+centre of [0,1] due to overcoverage rather than genuine distributional
+improvement. This establishes that the reconstruction is
+**horizon-specific**: intervals calibrated at the hourly level are not
+valid for daily aggregates without re-calibration at the target horizon.
+
+Second, ACF lag-1 decreases substantially after daily aggregation
+(0.861 → 0.204 for wind; 0.787 → 0.270 for solar), confirming that a
+significant portion of the hourly serial dependence is within-day
+structure. However, ACF values remain above the 0.05 effect-size floor
+and Ljung–Box rejects at all lags, demonstrating that **multi-day
+meteorological persistence is genuine** — wind fronts and extended
+irradiance patterns produce cross-day autocorrelation that is not an
+artefact of the reconstruction. The daily robustness runs therefore do
+not weaken the RED classification; they replace one failure mode (hourly
+serial dependence dominated by within-day structure) with two others
+(daily overcoverage from horizon mismatch and persistent cross-day
+dependence). The finding that the reconstruction is horizon-specific is
+an operationally important result for production deployment.
+
 ---
 
 ## 8. Conformal Augmentation Results (Reference)

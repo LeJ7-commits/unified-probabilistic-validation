@@ -461,9 +461,19 @@ The capital multiplier analysis is an adaptation of the Basel framework,
 not a direct application. The original Basel thresholds were calibrated
 for 99% VaR on trading book positions with 1-day horizon; the excess-based
 adaptation for 90% coverage intervals is a methodological contribution
-of this thesis rather than a regulatory standard. Practitioners applying
-this framework should recalibrate the zone thresholds to their specific
-regulatory context.
+of this thesis rather than a regulatory standard. Daily aggregation (run_009b, run_010b) confirms that the serial dependence
+is not purely within-day: ACF lag-1 decreases substantially (0.861 → 0.204
+for wind) but persists above the effect-size floor, confirming genuine
+multi-day meteorological autocorrelation from wind fronts and extended
+irradiance patterns. The aggregation simultaneously exposes a second
+finding: the hourly-calibrated intervals produce 97–98% coverage at the
+daily level, establishing that the rolling quantile reconstruction is
+**horizon-specific** — it does not transfer across time scales without
+re-calibration at the target horizon. Practitioners applying this framework
+to operational datasets should therefore calibrate the rolling quantile
+window at the intended evaluation horizon, complement p-value thresholds
+with effect-size floors (KS > 0.05 implemented here), and treat daily
+aggregation as a standard robustness check when n > 20,000.
 
 The reserve sizing analysis assumes a direct mapping from prediction
 interval coverage to reserve adequacy, which ignores market-clearing
