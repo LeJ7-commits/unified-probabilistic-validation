@@ -95,7 +95,66 @@ recalibration specifically, rather than global interval adjustment.
 
 ---
 
-## 3. The Misspecification Detection Boundary
+## 3. Governance Action Protocol
+
+### 3.1 Traffic-Light to Action Mapping
+
+The governance classification is only operationally useful if it triggers
+defined institutional responses. The following table maps each traffic-light
+outcome to a set of concrete actions, ordered by urgency. The action set
+distinguishes between the failure mode (what failed) and the required
+response (what must happen), recognising that different failure modes
+within the same RED classification warrant different remediation paths.
+
+| Label | Failure Mode | Immediate Action | Short-Term Action | Escalation |
+|-------|-------------|-----------------|-------------------|------------|
+| **RED** — interval + PIT + independence | All layers fail (e.g. ENTSO-E load) | Suspend model use for risk quantification. Apply conformal expansion as interim coverage correction. | Re-estimate residual distribution with extended rolling window or regime-conditioned quantiles. Re-run full diagnostic battery. | Escalate to model risk committee. File REMIT Article 15 notification if model is used for wholesale market price formation. |
+| **RED** — PIT + independence only | Distributional failure, interval acceptable (e.g. PV solar) | Flag model outputs at quantile levels beyond evaluated interval (>90th / <10th percentile) as unreliable. Do not suspend interval-level outputs. | Investigate source of PIT non-uniformity: residual skewness, conditional heteroscedasticity, seasonal shape misspecification. | Document failure in model risk register. Schedule structured review within 60 days. |
+| **RED** — interval only (tail asymmetry) | One-sided breach excess (e.g. wind lower tail) | Apply directional conformal correction to affected tail only. Flag tail-specific risk measures (capacity shortfall probability, reserve sizing) as unreliable. | Investigate physical cause: bounded-below generation, power curve asymmetry, underestimated low-generation regimes. Recalibrate lower-tail quantile reconstruction. | Document asymmetric failure in model risk register with tail-specific breach statistics. |
+| **RED** — coverage (undercoverage) | Interval too narrow (e.g. misspecification scenarios) | Widen intervals by conformal expansion factor. Increase operational reserve sizing by coverage error magnitude. | Identify source: variance inflation, mean bias, or heavy-tail misspecification. Deploy targeted correction. | Quantify reserve undersizing in physical and financial terms. Report to risk committee. |
+| **YELLOW** | Marginal signal — sampling noise or borderline coverage | No suspension required. Increase monitoring frequency. | Re-evaluate at next scheduled review with updated data. Consider extending evaluation window if n < 500. | Log in model risk register. No external escalation required unless YELLOW persists across three consecutive review cycles. |
+| **GREEN** | All layers pass | Continue normal model use. | Schedule next review per standard governance calendar (quarterly recommended). | No escalation required. |
+| **GREEN (with conformal adjustment)** | Passes post-conformal, underlying PIT failures present | Continue use with conformal adjustment active. Do not remove adjustment without re-running full diagnostic battery. | Pursue structural model improvement to address underlying PIT failures. Set target date for re-evaluation without conformal layer. | Document adjustment in model risk register. Flag for independent validation review. |
+
+### 3.2 Minimum Evaluation Horizons
+
+The misspecification detection results (Section 5) establish that the
+framework's discriminative power is sample-size dependent. The following
+minimum evaluation horizons are recommended as procedural governance
+safeguards:
+
+| Model Class | Minimum n | Rationale |
+|-------------|-----------|-----------|
+| Short-term (ENTSO-E, hourly) | 5,000 | Stable PIT and Anfuso statistics; adequate rolling window count |
+| Long-term renewable (PV, wind) | 2,000 daytime obs | After nighttime exclusion and warmup; equivalent to ~1 year hourly daytime |
+| Simulation (Class 1) | 250 | Minimum for Anfuso binomial test to have power against 2× variance inflation |
+| Any model — heavy-tail check | 1,000 | Below this, t(df=3) misspecification is not detectable at conventional significance |
+
+Models evaluated below these thresholds should receive a mandatory YELLOW
+floor classification regardless of the statistical test outcomes, reflecting
+the governance principle that insufficient evidence is not the same as
+evidence of sufficiency.
+
+### 3.3 Review Cadence
+
+| Classification | Review frequency | Trigger for out-of-cycle review |
+|----------------|-----------------|--------------------------------|
+| RED | Immediate + monthly until GREEN | Any new data release covering the failure period |
+| YELLOW | Quarterly | Two consecutive YELLOW cycles without improvement |
+| GREEN | Semi-annual | Material change in underlying model, data source, or market regime |
+
+The transition probability analysis (run_007) confirms that all three
+real-data models show absorbing RED states (T_RR = 1.0 across hundreds
+of windows). This means the review cadence for these models is not a
+matter of waiting for conditions to improve — structural intervention is
+required before re-evaluation is meaningful. The governance record should
+document the specific intervention taken (re-estimation, conformal
+adjustment, data source change) before a re-evaluation result is
+considered valid.
+
+---
+
+## 4. The Misspecification Detection Boundary
 
 The controlled misspecification scenarios reveal where the framework's
 discriminative power ends. Variance inflation and mean bias are detected
@@ -116,9 +175,9 @@ governance policy as a procedural safeguard.
 
 ---
 
-## 4. Regulatory Mapping
+## 5. Regulatory Mapping
 
-### 4.1 Basel Traffic-Light Alignment
+### 5.1 Basel Traffic-Light Alignment
 
 The traffic-light architecture developed in this thesis is explicitly
 modelled on the Basel Committee's backtesting framework for Value-at-Risk
@@ -144,7 +203,7 @@ heterogeneous output formats and evaluation sample sizes requires the
 distribution reconstruction and sample-size-aware power calibration
 described in Chapter 2.
 
-### 4.2 REMIT Regulatory Context
+### 5.2 REMIT Regulatory Context
 
 The REMIT regulation (European Parliament, 2011) requires that energy
 market participants maintain reliable and auditable models for fundamental price formation and risk
@@ -177,7 +236,7 @@ rigorous and institutionally accessible.
 
 ---
 
-## 5. The Role of Conformal Augmentation in Governance
+## 6. The Role of Conformal Augmentation in Governance
 
 Conformal augmentation occupies a specific and bounded role in the
 governance architecture. It is not a substitute for model re-estimation
@@ -210,7 +269,7 @@ require periodic re-assessment.
 
 ---
 
-## 6. Limitations and Future Extensions
+## 7. Limitations and Future Extensions
 
 Several limitations of the current framework are relevant to governance
 practitioners.
@@ -258,9 +317,9 @@ sound model as over-conservative.
 
 ---
 
-## 7. Regime-Conditioned Governance
+## 8. Regime-Conditioned Governance
 
-### 7.1 Motivation
+### 8.1 Motivation
 
 The governance framework described in Sections 2–5 applies a single
 global policy threshold across all evaluation windows. This is appropriate
@@ -278,7 +337,7 @@ The `RegimeTagger` and `ThresholdCalibrator` components address this by
 enabling regime-conditioned governance — calibrating GREEN/YELLOW/RED
 thresholds separately for each identified market regime.
 
-### 7.2 Regime Tagging
+### 8.2 Regime Tagging
 
 `RegimeTagger` assigns a regime label to each rolling evaluation window
 using a composable rule system. Three built-in rules are available:
@@ -301,7 +360,7 @@ rules can be added as callables with signature `(t, y) → str | None`,
 making the tagger extensible to commodity-specific regime definitions
 without modifying core framework code.
 
-### 7.3 Threshold Calibration
+### 8.3 Threshold Calibration
 
 `ThresholdCalibrator` uses the empirical distribution of coverage values
 observed in calibration windows per regime to set regime-specific GREEN
@@ -318,7 +377,7 @@ over-relaxation on sparsely populated regimes. Regimes with fewer than
 policy, ensuring statistical discipline is maintained even when
 regime-specific calibration data is limited.
 
-### 7.4 Governance Implications
+### 8.4 Governance Implications
 
 Regime-conditioned governance has two practical implications. First, it
 reduces false RED classifications in inherently difficult regimes — winter
