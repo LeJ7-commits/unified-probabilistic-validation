@@ -450,7 +450,7 @@ def fig_rolling_coverage(coverage_series: list[float], window_labels: list,
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### UPV TERMINAL")
+    st.markdown("### TERMINAL")
     st.markdown(
         "<small style='color:#6B6B6B;font-family:DM Mono,monospace'>"
         "Unified Probabilistic Validation<br>"
