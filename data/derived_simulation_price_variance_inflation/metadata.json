@@ -1,0 +1,21 @@
+{
+  "series": "price",
+  "scenario": "variance_inflation",
+  "out_dir": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\derived_simulation_price_variance_inflation",
+  "n_days": 365,
+  "n_paths": 5000,
+  "n_horizons": 8760,
+  "eval_horizon_index": 0,
+  "alpha": 0.1,
+  "seed_realised": 43,
+  "seed_paths": 1043,
+  "empirical_coverage_90": 0.5534246575342465,
+  "model_class": "simulation",
+  "specification": "misspecified_variance_inflation",
+  "specification_note": "DGP uses 2x sigma (10.0). Model paths use true sigma. Intervals are too narrow by construction. Expected: bilateral over-breaching, RED classification.",
+  "dgp_parameters": {
+    "rho": 0.5,
+    "sigma_price": 5.0,
+    "sigma_temp": 3.0
+  }
+}

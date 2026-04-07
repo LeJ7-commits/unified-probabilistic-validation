@@ -1,0 +1,28 @@
+{
+  "source": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\entsoe_solar_de.csv",
+  "out_dir": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\derived_entsoe_solar",
+  "prefix": "entsoe_solar",
+  "n_raw": 52605,
+  "n_night_excluded": 0,
+  "n_clean": 52605,
+  "n_eval": 51933,
+  "na_before_drop": {
+    "Datetime": 0,
+    "y": 0,
+    "y_hat": 0
+  },
+  "alpha": 0.1,
+  "Wb": 40,
+  "Wg": 672,
+  "n_samples": 500,
+  "seed": 42,
+  "empirical_coverage_90": 0.8994,
+  "reconstruction_method": "4-bucket coarse time-of-day conditioning with global shrinkage and bias correction. Identical to build_entsoe_derived.py.",
+  "sample_method": "Non-parametric bootstrap: yhat + resample(residual_pool, M)",
+  "bucket_definitions": {
+    "0_night": "00:00-05:59",
+    "1_morning": "06:00-11:59",
+    "2_afternoon": "12:00-17:59",
+    "3_evening": "18:00-23:59"
+  }
+}

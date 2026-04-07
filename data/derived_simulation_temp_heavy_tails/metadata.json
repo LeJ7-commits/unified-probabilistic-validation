@@ -1,0 +1,21 @@
+{
+  "series": "temp",
+  "scenario": "heavy_tails",
+  "out_dir": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\derived_simulation_temp_heavy_tails",
+  "n_days": 365,
+  "n_paths": 5000,
+  "n_horizons": 8760,
+  "eval_horizon_index": 0,
+  "alpha": 0.1,
+  "seed_realised": 45,
+  "seed_paths": 1045,
+  "empirical_coverage_90": 0.9232876712328767,
+  "model_class": "simulation",
+  "specification": "misspecified_heavy_tails",
+  "specification_note": "DGP uses t(df=3) scaled to preserve variance. Model paths use Gaussian. Expected: excess tail breaching, PIT non-uniformity (U-shaped), RED.",
+  "dgp_parameters": {
+    "rho": 0.5,
+    "sigma_price": 5.0,
+    "sigma_temp": 3.0
+  }
+}

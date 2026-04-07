@@ -1,0 +1,14 @@
+{
+  "series": "carbon",
+  "n_days": 365,
+  "n_paths": 5000,
+  "n_horizons": 8760,
+  "alpha": 0.1,
+  "seed": 123,
+  "base": 65.0,
+  "sigma": 6.0,
+  "empirical_coverage_check": 0.9096,
+  "dgp": "joint_gaussian_5d_extended",
+  "eval_horizon": "h=1 (first step)",
+  "note": "Well-specified positive control. Realised values drawn from same DGP as simulation paths."
+}

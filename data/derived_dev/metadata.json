@@ -1,0 +1,26 @@
+{
+  "source": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\entsoe_sample_90days.csv",
+  "out_dir": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\derived_dev",
+  "n_raw": 8641,
+  "n_clean": 8641,
+  "n_eval": 7969,
+  "na_before_drop": {
+    "timestamp": 0,
+    "y": 0,
+    "y_hat": 0
+  },
+  "alpha": 0.1,
+  "Wb": 40,
+  "Wg": 672,
+  "n_samples": 500,
+  "seed": 42,
+  "empirical_coverage_90": 0.8529,
+  "reconstruction_method": "4-bucket coarse time-of-day conditioning (night/morning/afternoon/evening) with global shrinkage and bias correction. Selected based on feasibility analysis in notebooks/02_entsoe_feasibility.ipynb.",
+  "bucket_definitions": {
+    "0_night": "00:00-05:59",
+    "1_morning": "06:00-11:59",
+    "2_afternoon": "12:00-17:59",
+    "3_evening": "18:00-23:59"
+  },
+  "window_justification": "Wb=40 bucket-specific observations; Wg=672 global observations (7 days of quarter-hourly data). Chosen to balance local adaptivity with estimation stability."
+}

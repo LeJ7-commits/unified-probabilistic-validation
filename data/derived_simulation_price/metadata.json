@@ -1,0 +1,20 @@
+{
+  "series": "price",
+  "out_dir": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\derived_simulation_price",
+  "n_days": 365,
+  "n_paths": 5000,
+  "n_horizons": 8760,
+  "eval_horizon_index": 0,
+  "alpha": 0.1,
+  "seed": 42,
+  "empirical_coverage_90": 0.8849315068493151,
+  "model_class": "simulation",
+  "specification": "well_specified",
+  "specification_note": "Realised values are drawn from the same DGP as the simulation paths. PIT values should be approximately U(0,1) by construction. This serves as a controlled positive-control baseline: the diagnostic framework should return GREEN (or near-GREEN) for a correctly specified model.",
+  "dgp_parameters": {
+    "rho": 0.5,
+    "sigma_price": 5.0,
+    "sigma_temp": 3.0
+  },
+  "reconstruction_method": "Empirical alpha/2 and 1-alpha/2 quantiles of 5000 simulation paths at h=1 per as-of date. No rolling reconstruction needed \u2014 the distributional form is known exactly."
+}

@@ -1,0 +1,23 @@
+{
+  "source": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\wind_student.csv",
+  "out_dir": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\derived_wind",
+  "asset": "wind",
+  "n_raw": 26280,
+  "n_clean": 26280,
+  "n_nighttime_excluded": 0,
+  "n_after_nighttime": 26280,
+  "n_eval": 9000,
+  "na_before_drop": {
+    "Datetime": 0,
+    "Actuals": 0,
+    "Simulation": 0
+  },
+  "alpha": 0.1,
+  "W": 720,
+  "n_samples": 500,
+  "seed": 42,
+  "empirical_coverage_90": 0.8862,
+  "exclude_nighttime_zeros": false,
+  "nighttime_exclusion_note": "Not applied (wind dataset).",
+  "reconstruction_method": "24-bucket hour-of-day conditioning with trailing rolling window. W=720 trailing same-hour observations (~30 days). Justified by 3 years of hourly data (~1,095 observations per hour-bucket), ensuring stable quantile estimation."
+}

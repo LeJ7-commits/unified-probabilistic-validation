@@ -1,0 +1,23 @@
+{
+  "source": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\pv_student.csv",
+  "out_dir": "C:\\Users\\jiaya\\OneDrive\\Documents\\Lund_2025\\Thesis\\unified-probabilistic-validation\\data\\derived_pv",
+  "asset": "pv",
+  "n_raw": 26280,
+  "n_clean": 26280,
+  "n_nighttime_excluded": 10036,
+  "n_after_nighttime": 16244,
+  "n_eval": 4287,
+  "na_before_drop": {
+    "Datetime": 0,
+    "Actuals": 0,
+    "Simulation": 0
+  },
+  "alpha": 0.1,
+  "W": 720,
+  "n_samples": 500,
+  "seed": 42,
+  "empirical_coverage_90": 0.9137,
+  "exclude_nighttime_zeros": true,
+  "nighttime_exclusion_note": "Rows where both Simulation and Actuals are below 1e-9 are excluded from calibration evaluation. These are structural nighttime zeros for PV generation, not forecast errors. Including them would artificially inflate coverage metrics and distort PIT diagnostics. Applied to PV only; wind generates around the clock.",
+  "reconstruction_method": "24-bucket hour-of-day conditioning with trailing rolling window. W=720 trailing same-hour observations (~30 days). Justified by 3 years of hourly data (~1,095 observations per hour-bucket), ensuring stable quantile estimation."
+}
