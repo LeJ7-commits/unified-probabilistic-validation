@@ -26,3 +26,5 @@ venv/
 data/**/*.pkl
 .streamlit/secr
 data/derived_*/*.npy
+
+thesis_output/*.docx
