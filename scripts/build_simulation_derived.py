@@ -17,6 +17,8 @@ Design decisions:
     series — sufficient for full-sample and rolling diagnostics.
   - Artifacts written to data/derived_simulation/{price,temp}/ to mirror
     the structure of derived_pv/ and derived_wind/.
+  - Full sample array (n_days x n_paths) is now saved to enable PIT-based
+    diagnostics for the simulation model class.
 
 NOTE: The simulation DGP is jointly specified for price and temp with
 correlation rho=0.5. Each series is validated independently (univariate
@@ -99,6 +101,7 @@ def build_simulation_derived(
     """
     Generate simulation paths and realised values; compute empirical
     quantile intervals at horizon h=1 for each as-of date.
+    Also saves full sample arrays (n_days x n_paths) for PIT diagnostics.
 
     Returns metadata dict.
     """
@@ -107,15 +110,17 @@ def build_simulation_derived(
     asof_dates = pd.date_range("2020-01-01", periods=n_days, freq="D")
 
     # Containers — one scalar per as-of date (h=1 evaluation)
-    price_y    = np.empty(n_days)
-    price_yhat = np.empty(n_days)
-    price_lo   = np.empty(n_days)
-    price_hi   = np.empty(n_days)
+    price_y       = np.empty(n_days)
+    price_yhat    = np.empty(n_days)
+    price_lo      = np.empty(n_days)
+    price_hi      = np.empty(n_days)
+    price_samples = np.empty((n_days, n_paths))   # ← NEW
 
-    temp_y     = np.empty(n_days)
-    temp_yhat  = np.empty(n_days)
-    temp_lo    = np.empty(n_days)
-    temp_hi    = np.empty(n_days)
+    temp_y        = np.empty(n_days)
+    temp_yhat     = np.empty(n_days)
+    temp_lo       = np.empty(n_days)
+    temp_hi       = np.empty(n_days)
+    temp_samples  = np.empty((n_days, n_paths))   # ← NEW
 
     for i, asof in enumerate(asof_dates):
         mp, mt = hourly_means(asof, n_horizons)
@@ -135,20 +140,22 @@ def build_simulation_derived(
         # --- evaluate at h=1 only ---
         h = 0   # index 0 = first hour ahead
 
-        price_y[i]    = real_price[h]
-        price_yhat[i] = mp[h]
-        price_lo[i]   = float(np.quantile(sims_price[h, :], alpha / 2))
-        price_hi[i]   = float(np.quantile(sims_price[h, :], 1 - alpha / 2))
+        price_y[i]          = real_price[h]
+        price_yhat[i]       = mp[h]
+        price_lo[i]         = float(np.quantile(sims_price[h, :], alpha / 2))
+        price_hi[i]         = float(np.quantile(sims_price[h, :], 1 - alpha / 2))
+        price_samples[i]    = sims_price[h, :]           # ← NEW
 
-        temp_y[i]     = real_temp[h]
-        temp_yhat[i]  = mt[h]
-        temp_lo[i]    = float(np.quantile(sims_temp[h, :], alpha / 2))
-        temp_hi[i]    = float(np.quantile(sims_temp[h, :], 1 - alpha / 2))
+        temp_y[i]           = real_temp[h]
+        temp_yhat[i]        = mt[h]
+        temp_lo[i]          = float(np.quantile(sims_temp[h, :], alpha / 2))
+        temp_hi[i]          = float(np.quantile(sims_temp[h, :], 1 - alpha / 2))
+        temp_samples[i]     = sims_temp[h, :]            # ← NEW
 
     # ---- write artifacts ----
-    for series, (y, yhat, lo, hi) in {
-        "price": (price_y, price_yhat, price_lo, price_hi),
-        "temp":  (temp_y,  temp_yhat,  temp_lo,  temp_hi),
+    for series, (y, yhat, lo, hi, samples) in {
+        "price": (price_y, price_yhat, price_lo, price_hi, price_samples),
+        "temp":  (temp_y,  temp_yhat,  temp_lo,  temp_hi,  temp_samples),
     }.items():
         out_dir = out_root / f"derived_simulation_{series}"
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -157,6 +164,7 @@ def build_simulation_derived(
         np.save(out_dir / f"{series}_yhat.npy",        yhat)
         np.save(out_dir / f"{series}_lo_base_90.npy",  lo)
         np.save(out_dir / f"{series}_hi_base_90.npy",  hi)
+        np.save(out_dir / f"{series}_samples.npy",     samples)  # ← NEW
 
         emp_cov = float(np.mean((y >= lo) & (y <= hi)))
 
@@ -186,8 +194,8 @@ def build_simulation_derived(
             },
             "reconstruction_method": (
                 "Empirical alpha/2 and 1-alpha/2 quantiles of 5000 simulation "
-                "paths at h=1 per as-of date. No rolling reconstruction needed — "
-                "the distributional form is known exactly."
+                "paths at h=1 per as-of date. Full sample array (n_days x n_paths) "
+                "saved to enable PIT-based diagnostics."
             ),
         }
 
@@ -195,10 +203,9 @@ def build_simulation_derived(
             json.dump(meta, f, indent=2)
 
         print(
-            f"[{series}] n_days={n_days}, empirical_coverage_90="
-            f"{emp_cov:.4f}"
+            f"[{series}] n_days={n_days}, empirical_coverage_90={emp_cov:.4f}, "
+            f"samples_shape={samples.shape}"
         )
-        print(json.dumps(meta, indent=2))
 
     return meta
 
