@@ -12,7 +12,8 @@
   "empirical_coverage_90": 0.6246575342465753,
   "model_class": "simulation",
   "specification": "misspecified_variance_inflation",
-  "specification_note": "DGP uses 2x sigma (6.0). Model paths use true sigma. Intervals are too narrow by construction. Expected: bilateral over-breaching, RED classification.",
+  "specification_note": "DGP uses 2x sigma (6.0). Model paths use true sigma. Intervals are too narrow. Expected: bilateral over-breaching, RED. PIT should show U-shaped histogram (heavy tails relative to model).",
+  "samples_note": "Samples are model paths (well-specified Gaussian). PIT = P(model_sample <= misspecified_realisation) \u2014 non-uniform PIT reveals the misspecification.",
   "dgp_parameters": {
     "rho": 0.5,
     "sigma_price": 5.0,

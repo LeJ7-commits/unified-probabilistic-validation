@@ -16,5 +16,5 @@
     "sigma_price": 5.0,
     "sigma_temp": 3.0
   },
-  "reconstruction_method": "Empirical alpha/2 and 1-alpha/2 quantiles of 5000 simulation paths at h=1 per as-of date. No rolling reconstruction needed \u2014 the distributional form is known exactly."
+  "reconstruction_method": "Empirical alpha/2 and 1-alpha/2 quantiles of 5000 simulation paths at h=1 per as-of date. Full sample array (n_days x n_paths) saved to enable PIT-based diagnostics."
 }

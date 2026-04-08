@@ -12,7 +12,8 @@
   "empirical_coverage_90": 0.7041095890410959,
   "model_class": "simulation",
   "specification": "misspecified_mean_bias",
-  "specification_note": "DGP mean shifted by +1 sigma (+5.0). Model paths use true mean. Expected: lower tail over-breaches, upper tail under-breaches, RED.",
+  "specification_note": "DGP mean shifted by +1 sigma (+5.0). Model paths use true mean. Expected: lower tail over-breaches, upper tail under-breaches, RED. PIT should show right-skewed histogram.",
+  "samples_note": "Samples are model paths (well-specified Gaussian). PIT = P(model_sample <= misspecified_realisation) \u2014 non-uniform PIT reveals the misspecification.",
   "dgp_parameters": {
     "rho": 0.5,
     "sigma_price": 5.0,

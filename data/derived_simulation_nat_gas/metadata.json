@@ -10,5 +10,5 @@
   "empirical_coverage_check": 0.9151,
   "dgp": "joint_gaussian_5d_extended",
   "eval_horizon": "h=1 (first step)",
-  "note": "Well-specified positive control. Realised values drawn from same DGP as simulation paths."
+  "note": "Well-specified positive control. Realised values drawn from same DGP as simulation paths. Full sample array (n_days x n_paths) saved for PIT diagnostics."
 }

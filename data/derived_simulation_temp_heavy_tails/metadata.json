@@ -12,7 +12,8 @@
   "empirical_coverage_90": 0.9232876712328767,
   "model_class": "simulation",
   "specification": "misspecified_heavy_tails",
-  "specification_note": "DGP uses t(df=3) scaled to preserve variance. Model paths use Gaussian. Expected: excess tail breaching, PIT non-uniformity (U-shaped), RED.",
+  "specification_note": "DGP uses t(df=3) scaled to preserve variance. Model paths use Gaussian. Expected: excess tail breaching, PIT U-shaped. Note: limited power to detect at n=365.",
+  "samples_note": "Samples are model paths (well-specified Gaussian). PIT = P(model_sample <= misspecified_realisation) \u2014 non-uniform PIT reveals the misspecification.",
   "dgp_parameters": {
     "rho": 0.5,
     "sigma_price": 5.0,

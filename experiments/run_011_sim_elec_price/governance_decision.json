@@ -5,7 +5,7 @@
     "coverage_warn"
   ],
   "regime_tag": "regime_normal",
-  "decided_at": "2026-03-29T10:32:02.012586Z",
+  "decided_at": "2026-04-08T19:22:12.679633Z",
   "metric_snapshot": {
     "empirical_coverage": 0.920548,
     "mean_pinball": 1.169424,
