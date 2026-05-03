@@ -1,8 +1,8 @@
 {
-  "dataset_label": "Wind",
+  "dataset_label": "Wind (non-overlapping)",
   "alpha": 0.1,
   "window_size": 720,
-  "rolling_step": 168,
+  "rolling_step": 720,
   "coverage_target": 0.9,
   "pvalue_red": 0.01,
   "pvalue_yellow": 0.05,

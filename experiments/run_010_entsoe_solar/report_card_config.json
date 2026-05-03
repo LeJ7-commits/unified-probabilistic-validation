@@ -1,8 +1,8 @@
 {
-  "dataset_label": "ENTSO-E Solar (run_010)",
+  "dataset_label": "ENTSO-E Solar (non-overlapping)",
   "alpha": 0.1,
   "window_size": 250,
-  "rolling_step": 50,
+  "rolling_step": 250,
   "coverage_target": 0.9,
   "pvalue_red": 0.01,
   "pvalue_yellow": 0.05,

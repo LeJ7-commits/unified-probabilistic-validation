@@ -1,10 +1,10 @@
 {
   "transition": {
-    "n_windows": 50,
+    "n_windows": 12,
     "state_counts": {
       "GREEN": 0,
       "YELLOW": 0,
-      "RED": 50
+      "RED": 12
     },
     "state_freq_pct": {
       "GREEN": 0.0,

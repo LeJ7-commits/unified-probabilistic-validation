@@ -35,7 +35,9 @@ DATASETS = [
     ("ENTSO-E",    "run_001_entsoe",  250,  50,  "overlapping",     "short_term",  "ENTSO-E hourly electricity load forecast for Germany"),
     ("ENTSO-E (non-overlapping)", "run_001_entsoe", 250, 250, "non_overlapping", "short_term", "ENTSO-E hourly electricity load forecast for Germany"),
     ("PV Solar",   "run_002_pv",      720, 168,  "overlapping",     "long_term",   "PV solar hourly generation forecast"),
+    ("PV Solar (non-overlapping)",      "run_002_pv",        720, 720, "non_overlapping", "long_term",  "PV solar hourly generation forecast"),
     ("Wind",       "run_003_wind",    720, 168,  "overlapping",     "long_term",   "onshore wind hourly generation forecast"),
+    ("Wind (non-overlapping)",          "run_003_wind",      720, 720, "non_overlapping", "long_term",  "onshore wind hourly generation forecast"),
     ("Sim Price (well-spec)",     "run_004_simulation_price", 250, 250, "non_overlapping", "simulation", "Monte Carlo energy price simulation (well-specified positive control)"),
     ("Sim Temp (well-spec)",      "run_004_simulation_temp",  250, 250, "non_overlapping", "simulation", "Monte Carlo temperature simulation (well-specified positive control)"),
     ("Sim Price — Var Inflation", "run_004b_simulation_price_variance_inflation",  250, 250, "non_overlapping", "simulation", "Monte Carlo price simulation with variance inflation misspecification"),
@@ -48,7 +50,9 @@ DATASETS = [
     ("Sim Natural Gas (run_012)", "run_012_sim_nat_gas",    250, 50, "overlapping", "simulation", "Extended simulation positive control — natural gas (base=40 €/MWh, σ=8)"),
     ("Sim Carbon (run_013)",      "run_013_sim_carbon",     250, 50, "overlapping", "simulation", "Extended simulation positive control — carbon CO2 (base=65 €/tCO2, σ=6)"),
     ("ENTSO-E Wind (run_009)",        "run_009_entsoe_wind",             250,  50, "overlapping",     "short_term",  "ENTSO-E day-ahead onshore wind generation forecast for Germany 2020-2026"),
+    ("ENTSO-E Wind (non-overlapping)", "run_009_entsoe_wind",  250, 250, "non_overlapping", "short_term", "ENTSO-E day-ahead onshore wind generation forecast for Germany 2020-2026"),
     ("ENTSO-E Solar (run_010)",       "run_010_entsoe_solar",            250,  50, "overlapping",     "short_term",  "ENTSO-E day-ahead solar PV generation forecast for Germany 2020-2026"),
+    ("ENTSO-E Solar (non-overlapping)", "run_010_entsoe_solar", 250, 250, "non_overlapping", "short_term", "ENTSO-E day-ahead solar PV generation forecast for Germany 2020-2026"),
 ]
 
 
