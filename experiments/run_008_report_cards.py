@@ -33,6 +33,7 @@ EXP_DIR   = REPO_ROOT / "experiments"
 
 DATASETS = [
     ("ENTSO-E",    "run_001_entsoe",  250,  50,  "overlapping",     "short_term",  "ENTSO-E hourly electricity load forecast for Germany"),
+    ("ENTSO-E (non-overlapping)", "run_001_entsoe", 250, 250, "non_overlapping", "short_term", "ENTSO-E hourly electricity load forecast for Germany"),
     ("PV Solar",   "run_002_pv",      720, 168,  "overlapping",     "long_term",   "PV solar hourly generation forecast"),
     ("Wind",       "run_003_wind",    720, 168,  "overlapping",     "long_term",   "onshore wind hourly generation forecast"),
     ("Sim Price (well-spec)",     "run_004_simulation_price", 250, 250, "non_overlapping", "simulation", "Monte Carlo energy price simulation (well-specified positive control)"),
