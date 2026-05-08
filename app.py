@@ -282,6 +282,43 @@ footer { visibility: hidden; }
   color: var(--text-muted);
   letter-spacing: 0.05em;
 }
+/* Slider — defensive override in case Streamlit theme doesn't propagate */
+.stSlider [data-baseweb="slider"] > div > div > div {
+  background: var(--orange) !important;
+}
+.stSlider [role="slider"] {
+  background: var(--orange) !important;
+  border-color: var(--orange) !important;
+}
+
+/* File uploader — force light surface */
+[data-testid="stFileUploader"] section {
+  background: var(--surface) !important;
+  border: 1px dashed var(--border-2) !important;
+}
+[data-testid="stFileUploader"] section * {
+  color: var(--text) !important;
+}
+[data-testid="stFileUploaderDropzoneInstructions"] {
+  color: var(--text-muted) !important;
+}
+
+/* Inline markdown code chips (in the CSV format table) */
+.stMarkdown code, .streamlit-expanderContent code {
+  background: var(--surface-2) !important;
+  color: var(--navy) !important;
+  font-family: var(--mono) !important;
+  font-size: 0.85em !important;
+  padding: 0.1rem 0.4rem !important;
+  border-radius: 2px !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Toggle switch — orange when on */
+.stCheckbox [data-baseweb="checkbox"] [aria-checked="true"] > div:first-child,
+[data-testid="stToggle"] [aria-checked="true"] {
+  background-color: var(--orange) !important;
+}           
 </style>
 """, unsafe_allow_html=True)
 
