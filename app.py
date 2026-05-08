@@ -1,7 +1,7 @@
 """
 app.py — Unified Probabilistic Validation Framework
 =====================================================
-Quantitative terminal aesthetic. Amber-on-charcoal. DM Mono.
+Corporate light theme · Tiefenblau / Horizont Orange palette · Arial.
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ import streamlit as st
 from scipy.stats import norm, kstest, chi2, beta as beta_dist
 
 st.set_page_config(
-    page_title="UPV — Validation Terminal",
+    page_title="Unified Probabilistic Validation",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -31,31 +31,36 @@ st.set_page_config(
 # ── Design System ─────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap');
-
 :root {
-  --bg:        #0c0c0c;
-  --surface:   #131313;
-  --border:    #222222;
-  --border2:   #2e2e2e;
-  --amber:     #F59E0B;
-  --amber-dim: #92600A;
-  --green:     #22C55E;
-  --green-dim: #14532D;
-  --red:       #EF4444;
-  --red-dim:   #7F1D1D;
-  --yellow:    #EAB308;
-  --yellow-dim:#713F12;
-  --text:      #E5E5E5;
-  --text-muted:#6B6B6B;
-  --text-dim:  #4A4A4A;
-  --mono:      'DM Mono', monospace;
-  --sans:      'Syne', sans-serif;
+  --bg:           #FFFFFF;
+  --surface:      #F4F4F6;
+  --surface-2:    #EEEEF2;
+  --border:       #DDDDE3;
+  --border-2:     #C8C8D0;
+  --navy:         #000099;
+  --navy-deep:    #000066;
+  --orange:       #FD951F;
+  --orange-deep:  #C66800;
+  --green:        #1F9D55;
+  --green-tint:   #DBEFDF;
+  --green-text:   #0F6E3A;
+  --red:          #C92C2C;
+  --red-tint:     #F8DCDC;
+  --red-text:     #931E1E;
+  --yellow:       #F2A91E;
+  --yellow-tint:  #FBEBC6;
+  --yellow-text:  #8B5C0A;
+  --text:         #1A1A2E;
+  --text-muted:   #64647A;
+  --text-dim:     #9090A0;
+  --sans:         'Arial Black', Arial, sans-serif;
+  --body:         Arial, Helvetica, sans-serif;
+  --mono:         Consolas, 'Courier New', monospace;
 }
 
 html, body, [class*="css"], .stApp {
   background-color: var(--bg) !important;
-  font-family: var(--mono) !important;
+  font-family: var(--body) !important;
   color: var(--text) !important;
 }
 
@@ -64,45 +69,51 @@ html, body, [class*="css"], .stApp {
   background: var(--surface) !important;
   border-right: 1px solid var(--border) !important;
 }
-[data-testid="stSidebar"] * { font-family: var(--mono) !important; }
+[data-testid="stSidebar"] * { font-family: var(--body) !important; }
 
 /* Headings */
 h1 { font-family: var(--sans) !important; font-weight: 800 !important;
-     font-size: 1.6rem !important; letter-spacing: -0.02em !important;
-     color: var(--amber) !important; }
+     font-size: 1.6rem !important; letter-spacing: -0.01em !important;
+     color: var(--navy) !important; }
 h2 { font-family: var(--sans) !important; font-weight: 700 !important;
      font-size: 1.1rem !important; color: var(--text) !important; }
-h3 { font-family: var(--mono) !important; font-size: 0.78rem !important;
+h3 { font-family: var(--body) !important; font-size: 0.78rem !important;
      letter-spacing: 0.18em !important; text-transform: uppercase !important;
-     color: var(--text-muted) !important; font-weight: 400 !important; }
+     color: var(--text-muted) !important; font-weight: 700 !important; }
 
 /* Widgets */
 .stSelectbox > div > div,
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea {
-  background: var(--surface) !important;
-  border: 1px solid var(--border2) !important;
+  background: var(--bg) !important;
+  border: 1px solid var(--border-2) !important;
   color: var(--text) !important;
-  font-family: var(--mono) !important;
+  font-family: var(--body) !important;
   border-radius: 2px !important;
 }
 .stButton > button {
-  background: var(--amber) !important;
-  color: var(--bg) !important;
+  background: var(--orange) !important;
+  color: #FFFFFF !important;
   border: none !important;
-  font-family: var(--mono) !important;
-  font-weight: 500 !important;
+  font-family: var(--body) !important;
+  font-weight: 700 !important;
   letter-spacing: 0.05em !important;
   border-radius: 2px !important;
 }
+.stButton > button:hover { background: var(--orange-deep) !important; }
 .stDownloadButton > button {
   background: transparent !important;
-  border: 1px solid var(--amber) !important;
-  color: var(--amber) !important;
-  font-family: var(--mono) !important;
+  border: 1px solid var(--navy) !important;
+  color: var(--navy) !important;
+  font-family: var(--body) !important;
+  font-weight: 700 !important;
   border-radius: 2px !important;
 }
-.stProgress > div > div { background: var(--amber) !important; }
+.stDownloadButton > button:hover {
+  background: var(--navy) !important;
+  color: #FFFFFF !important;
+}
+.stProgress > div > div { background: var(--orange) !important; }
 
 /* Tabs */
 .stTabs [data-baseweb="tab-list"] {
@@ -110,7 +121,7 @@ h3 { font-family: var(--mono) !important; font-size: 0.78rem !important;
   gap: 0 !important;
 }
 .stTabs [data-baseweb="tab"] {
-  font-family: var(--mono) !important;
+  font-family: var(--body) !important;
   font-size: 0.75rem !important;
   letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
@@ -118,21 +129,23 @@ h3 { font-family: var(--mono) !important; font-size: 0.78rem !important;
   background: transparent !important;
   border: none !important;
   padding: 0.5rem 1.2rem !important;
+  font-weight: 700 !important;
 }
 .stTabs [aria-selected="true"] {
-  color: var(--amber) !important;
-  border-bottom: 2px solid var(--amber) !important;
+  color: var(--navy) !important;
+  border-bottom: 2px solid var(--navy) !important;
 }
 
 /* Expander */
 .streamlit-expanderHeader {
-  font-family: var(--mono) !important;
+  font-family: var(--body) !important;
   font-size: 0.78rem !important;
   letter-spacing: 0.1em !important;
   text-transform: uppercase !important;
   color: var(--text-muted) !important;
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
+  font-weight: 700 !important;
 }
 .streamlit-expanderContent {
   background: var(--surface) !important;
@@ -160,78 +173,85 @@ footer { visibility: hidden; }
   padding: 1.2rem 1.8rem;
   display: inline-block;
   margin-bottom: 1rem;
+  border-radius: 2px;
 }
-.verdict-green  { border-color: var(--green);  background: #0a1f0f; }
-.verdict-yellow { border-color: var(--yellow); background: #1a1500; }
-.verdict-red    { border-color: var(--red);    background: #1a0505; }
+.verdict-green  { border-color: var(--green);  background: var(--green-tint); }
+.verdict-yellow { border-color: var(--yellow); background: var(--yellow-tint); }
+.verdict-red    { border-color: var(--red);    background: var(--red-tint); }
 
 .verdict-label {
   font-family: var(--sans);
   font-weight: 800;
   font-size: 2.4rem;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   display: block;
 }
-.verdict-green  .verdict-label  { color: var(--green); }
-.verdict-yellow .verdict-label  { color: var(--yellow); }
-.verdict-red    .verdict-label  { color: var(--red); }
+.verdict-green  .verdict-label  { color: var(--green-text); }
+.verdict-yellow .verdict-label  { color: var(--yellow-text); }
+.verdict-red    .verdict-label  { color: var(--red-text); }
 
 .code-chip {
   display: inline-block;
   font-family: var(--mono);
   font-size: 0.72rem;
   padding: 0.15rem 0.6rem;
-  border: 1px solid var(--border2);
+  border: 1px solid var(--border-2);
+  background: var(--bg);
   color: var(--text-muted);
   margin: 0.15rem 0.1rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
+  border-radius: 2px;
 }
 
 .kpi-block {
   border: 1px solid var(--border);
   padding: 1rem 1.2rem;
   background: var(--surface);
+  border-radius: 2px;
 }
 .kpi-value {
   font-family: var(--mono);
   font-size: 1.5rem;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
 }
 .kpi-label {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--text-muted);
   margin-top: 0.2rem;
+  font-weight: 700;
 }
 .kpi-sub {
-  font-family: var(--mono);
+  font-family: var(--body);
   font-size: 0.68rem;
   color: var(--text-dim);
   margin-top: 0.15rem;
 }
 
 .section-rule {
-  font-family: var(--mono);
-  font-size: 0.68rem;
+  font-family: var(--body);
+  font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-muted);
   border-top: 1px solid var(--border);
   padding-top: 0.6rem;
   margin: 1.5rem 0 1rem 0;
+  font-weight: 700;
 }
 
 .narrative-block {
-  border-left: 2px solid var(--amber);
+  border-left: 3px solid var(--navy);
   padding: 1rem 1.4rem;
   background: var(--surface);
   font-size: 0.9rem;
-  line-height: 1.8;
+  line-height: 1.75;
   color: var(--text);
+  border-radius: 0 2px 2px 0;
 }
 .narrative-plain { border-left-color: var(--green); }
 
@@ -245,40 +265,60 @@ footer { visibility: hidden; }
   padding: 0.45rem 0.7rem;
   border-bottom: 1px solid var(--border);
 }
-.anf-table td:first-child { color: var(--text-muted); }
+.anf-table td:first-child { color: var(--text-muted); letter-spacing: 0.05em; }
+
+/* Empty state */
+.empty-state {
+  border: 1px dashed var(--border-2);
+  padding: 3.5rem;
+  text-align: center;
+  background: var(--surface);
+  margin-top: 1rem;
+  border-radius: 2px;
+}
+.empty-state-text {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # ── Matplotlib style ───────────────────────────────────────────────────────────
 plt.rcParams.update({
-    "figure.facecolor":  "#0c0c0c",
-    "axes.facecolor":    "#131313",
-    "axes.edgecolor":    "#222222",
-    "axes.labelcolor":   "#9A9A9A",
-    "axes.titlecolor":   "#E5E5E5",
+    "figure.facecolor":  "#FFFFFF",
+    "axes.facecolor":    "#FFFFFF",
+    "axes.edgecolor":    "#DDDDE3",
+    "axes.labelcolor":   "#64647A",
+    "axes.titlecolor":   "#1A1A2E",
     "axes.titlesize":    9,
+    "axes.titleweight":  "bold",
     "axes.labelsize":    8,
     "axes.spines.top":   False,
     "axes.spines.right": False,
-    "xtick.color":       "#6B6B6B",
-    "ytick.color":       "#6B6B6B",
+    "xtick.color":       "#64647A",
+    "ytick.color":       "#64647A",
     "xtick.labelsize":   7,
     "ytick.labelsize":   7,
-    "grid.color":        "#1e1e1e",
+    "grid.color":        "#EEEEF2",
     "grid.linestyle":    "--",
-    "text.color":        "#9A9A9A",
-    "font.family":       "monospace",
+    "text.color":        "#1A1A2E",
+    "font.family":       "sans-serif",
+    "font.sans-serif":   ["Arial", "Helvetica", "DejaVu Sans"],
     "font.size":         8,
     "lines.linewidth":   1.4,
     "figure.dpi":        120,
+    "legend.frameon":    False,
 })
 
-AMBER  = "#F59E0B"
-GREEN  = "#22C55E"
-RED    = "#EF4444"
-YELLOW = "#EAB308"
-GREY   = "#6B6B6B"
-BLUE   = "#3B82F6"
+NAVY    = "#000099"
+ORANGE  = "#FD951F"
+GREEN   = "#1F9D55"
+RED     = "#C92C2C"
+YELLOW  = "#F2A91E"
+GREY    = "#64647A"
+GREY_LT = "#9090A0"
 
 
 # ── Helper: format values ─────────────────────────────────────────────────────
@@ -307,26 +347,26 @@ def fig_pit_diagnostics(u: np.ndarray, title: str, n_lags: int = 40) -> plt.Figu
     n = len(u)
 
     fig, axes = plt.subplots(1, 4, figsize=(14, 3.2))
-    fig.suptitle(title, fontsize=9, fontweight="bold", color="#E5E5E5", y=1.02)
+    fig.suptitle(title, fontsize=9, fontweight="bold", color="#1A1A2E", y=1.02)
 
     # Panel 1 — Histogram
     ax = axes[0]
-    ax.hist(u, bins=20, density=True, color=BLUE, alpha=0.8,
-            edgecolor="#0c0c0c", linewidth=0.3)
-    ax.axhline(1.0, color=AMBER, linestyle="--", linewidth=1.1, label="Uniform")
+    ax.hist(u, bins=20, density=True, color=NAVY, alpha=0.75,
+            edgecolor="#FFFFFF", linewidth=0.4)
+    ax.axhline(1.0, color=ORANGE, linestyle="--", linewidth=1.3, label="Uniform")
     ax.set_xlabel("PIT  u_t");  ax.set_ylabel("Density")
     ax.set_title("PIT Histogram");  ax.set_xlim(0, 1)
     ks_stat, ks_p = kstest(u, "uniform")
     col = RED if ks_stat > 0.05 else GREEN
     ax.text(0.97, 0.97, f"KS={ks_stat:.4f}\np={ks_p:.2e}",
             transform=ax.transAxes, ha="right", va="top",
-            fontsize=7, color=col)
+            fontsize=7, color=col, fontweight="bold")
 
     # Panel 2 — ACF
     ax = axes[1]
     try:
         plot_acf(z, lags=min(n_lags, n // 5), ax=ax,
-                 color=BLUE, vlines_kwargs={"colors": BLUE},
+                 color=NAVY, vlines_kwargs={"colors": NAVY},
                  alpha=0.05, zero=False)
     except Exception:
         ax.text(0.5, 0.5, "ACF unavailable", transform=ax.transAxes,
@@ -337,15 +377,15 @@ def fig_pit_diagnostics(u: np.ndarray, title: str, n_lags: int = 40) -> plt.Figu
     col  = RED if abs(acf1) > 0.05 else GREEN
     ax.text(0.97, 0.97, f"ACF(1)={acf1:.3f}",
             transform=ax.transAxes, ha="right", va="top",
-            fontsize=7, color=col)
+            fontsize=7, color=col, fontweight="bold")
 
     # Panel 3 — Time series
     ax = axes[2]
     step = max(1, n // 2000)
     idx  = np.arange(0, n, step)
-    ax.plot(idx, u[idx], color=BLUE, alpha=0.5, linewidth=0.5)
-    ax.axhline(0.5, color=AMBER, linestyle="--", linewidth=0.9)
-    ax.fill_between([0, len(idx)], 0.05, 0.95, color=GREEN, alpha=0.05)
+    ax.plot(idx, u[idx], color=NAVY, alpha=0.55, linewidth=0.5)
+    ax.axhline(0.5, color=ORANGE, linestyle="--", linewidth=1.0)
+    ax.fill_between([0, len(idx)], 0.05, 0.95, color=GREEN, alpha=0.06)
     ax.set_xlabel("Obs. index");  ax.set_ylabel("u_t")
     ax.set_title("PIT Time Series");  ax.set_ylim(-0.02, 1.02)
 
@@ -353,8 +393,8 @@ def fig_pit_diagnostics(u: np.ndarray, title: str, n_lags: int = 40) -> plt.Figu
     ax = axes[3]
     u_s = np.sort(u)
     pp  = plotting_positions(u_s, alpha=0.5, beta=0.5)
-    ax.scatter(pp, u_s, s=1.5, color=BLUE, alpha=0.4, linewidths=0)
-    ax.plot([0, 1], [0, 1], color=AMBER, linestyle="--", linewidth=1.1)
+    ax.scatter(pp, u_s, s=2.0, color=NAVY, alpha=0.45, linewidths=0)
+    ax.plot([0, 1], [0, 1], color=ORANGE, linestyle="--", linewidth=1.3)
     ax.set_xlabel("Theoretical");  ax.set_ylabel("Empirical")
     ax.set_title("Q-Q vs Uniform");  ax.set_xlim(0, 1);  ax.set_ylim(0, 1)
 
@@ -397,7 +437,7 @@ def fig_power_vs_n(n_uploaded: int | None = None) -> plt.Figure:
     n_arr = np.array(n_vals)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 3.8))
     fig.suptitle("Rejection Rate vs Sample Size  ·  Theoretical Power Analysis",
-                 fontsize=9, fontweight="bold", color="#E5E5E5")
+                 fontsize=9, fontweight="bold", color="#1A1A2E")
 
     for ax, h0, alt, title, alt_lbl in [
         (ax1, ks_h0, ks_alt, "Kolmogorov–Smirnov",
@@ -412,7 +452,7 @@ def fig_power_vs_n(n_uploaded: int | None = None) -> plt.Figure:
         ax.axhline(alpha, color=GREY, linestyle=":", linewidth=0.9,
                    label=f"α={alpha}")
         if n_uploaded:
-            ax.axvline(n_uploaded, color=AMBER, linestyle=":", linewidth=1.0,
+            ax.axvline(n_uploaded, color=ORANGE, linestyle=":", linewidth=1.2,
                        label=f"this dataset (n={n_uploaded:,})")
         ax.set_xscale("log")
         ax.set_xlabel("n (log scale)");  ax.set_ylabel("Rejection rate")
@@ -429,18 +469,18 @@ def fig_rolling_coverage(coverage_series: list[float], window_labels: list,
     """Rolling coverage time series."""
     fig, ax = plt.subplots(figsize=(10, 2.8))
     x = np.arange(len(coverage_series))
-    ax.plot(x, coverage_series, color=AMBER, linewidth=1.2, marker="o",
-            markersize=3)
-    ax.axhline(target, color=GREEN, linestyle="--", linewidth=0.9,
+    ax.plot(x, coverage_series, color=ORANGE, linewidth=1.4, marker="o",
+            markersize=3.5, markeredgecolor="#FFFFFF", markeredgewidth=0.4)
+    ax.axhline(target, color=GREEN, linestyle="--", linewidth=1.0,
                label=f"Target {target:.0%}")
-    ax.axhline(target - 0.05, color=RED, linestyle=":", linewidth=0.8,
+    ax.axhline(target - 0.05, color=RED, linestyle=":", linewidth=0.9,
                label="RED threshold (−5 pp)")
     ax.set_ylim(max(0, min(coverage_series) - 0.05),
                 min(1, max(coverage_series) + 0.05))
     ax.fill_between(x, target - 0.02, target + 0.02,
                     color=GREEN, alpha=0.07, label="±2 pp band")
     ax.set_ylabel("Empirical Coverage")
-    ax.set_title("Rolling Window Coverage", color="#E5E5E5")
+    ax.set_title("Rolling Window Coverage", color="#1A1A2E")
     ax.yaxis.set_major_formatter(mticker.PercentFormatter(1.0))
     ax.legend(fontsize=7)
     ax.set_xticks(x[::max(1, len(x)//8)])
@@ -450,35 +490,46 @@ def fig_rolling_coverage(coverage_series: list[float], window_labels: list,
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### TERMINAL")
     st.markdown(
-        "<small style='color:#6B6B6B;font-family:DM Mono,monospace'>"
+        "<div style='font-family:Arial,sans-serif;font-size:0.78rem;"
+        "color:#64647A;letter-spacing:0.18em;text-transform:uppercase;"
+        "font-weight:700;margin-bottom:0.6rem'>"
+        "Validation Suite"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<div style='color:#64647A;font-family:Arial,sans-serif;"
+        "font-size:0.82rem;line-height:1.6'>"
         "Unified Probabilistic Validation<br>"
         "for Energy Market Models<br><br>"
-        "Lund University · Jay & Kamila<br>"
-        "Energy Quant Solutions Sweden</small>",
+        "<span style='color:#9090A0'>Lund University · Le &amp; Askarova<br>"
+        "Energy Quant Solutions Sweden</span>"
+        "</div>",
         unsafe_allow_html=True,
     )
     st.divider()
 
-    st.markdown("### DATASET")
+    st.markdown("### Dataset")
     model_class = st.selectbox("Model class",
         ["short_term", "long_term", "simulation"], label_visibility="collapsed")
     commodity = st.text_input("Commodity / context",
         value="electricity load forecast", label_visibility="collapsed")
 
     st.divider()
-    st.markdown("### COVERAGE")
+    st.markdown("### Coverage")
     alpha = st.select_slider("Miscoverage α",
         options=[0.05, 0.10, 0.20], value=0.10)
     coverage_target = 1 - alpha
     st.markdown(
-        f"<small style='color:#6B6B6B'>Nominal interval: "
-        f"<span style='color:{AMBER}'>{coverage_target:.0%}</span></small>",
+        f"<small style='color:#64647A;font-family:Arial,sans-serif'>"
+        f"Nominal interval: "
+        f"<span style='color:{NAVY};font-weight:700'>"
+        f"{coverage_target:.0%}</span></small>",
         unsafe_allow_html=True)
 
     st.divider()
-    st.markdown("### ROLLING WINDOWS")
+    st.markdown("### Rolling Windows")
     enable_rolling = st.toggle("Enable rolling diagnostics", value=True)
     if enable_rolling:
         rolling_window = st.select_slider(
@@ -492,28 +543,29 @@ with st.sidebar:
             value=50,
             help="Step between consecutive windows")
         st.markdown(
-            f"<small style='color:#6B6B6B'>Overlap: "
+            f"<small style='color:#64647A;font-family:Arial,sans-serif'>"
+            f"Overlap: "
             f"{100*(1 - rolling_step/rolling_window):.0f}%</small>",
             unsafe_allow_html=True)
     else:
         rolling_window = 250; rolling_step = 250
 
     st.divider()
-    st.markdown("### DISTRIBUTION")
+    st.markdown("### Distribution")
     dist_mode = st.selectbox("Reconstruction method",
         ["non_parametric", "parametric"], label_visibility="collapsed")
     n_samples = st.select_slider("Sample paths M",
         options=[100, 200, 500], value=200)
 
     st.divider()
-    st.markdown("### VISUALIZATIONS")
+    st.markdown("### Visualizations")
     show_pit_plots   = st.toggle("PIT diagnostic plots", value=True)
     show_rolling_cov = st.toggle("Rolling coverage chart", value=True)
     show_power_plot  = st.toggle("Power analysis", value=False,
                                   help="Shows theoretical power curves (~30s to compute)")
 
     st.divider()
-    st.markdown("### AI NARRATIVES")
+    st.markdown("### AI Narratives")
     def _get_key():
         try:    return st.secrets.get("ANTHROPIC_API_KEY", "")
         except: return os.environ.get("ANTHROPIC_API_KEY", "")
@@ -527,17 +579,17 @@ c1, c2 = st.columns([3, 1])
 with c1:
     st.markdown(
         "<h1>UNIFIED PROBABILISTIC VALIDATION</h1>"
-        "<p style='color:#6B6B6B;font-family:DM Mono,monospace;font-size:0.82rem;"
-        "letter-spacing:0.05em;margin-top:-0.5rem'>"
+        "<p style='color:#64647A;font-family:Arial,sans-serif;font-size:0.85rem;"
+        "letter-spacing:0.02em;margin-top:-0.5rem'>"
         "Basel framework governance classification · PIT diagnostics · Conformal augmentation"
         "</p>",
         unsafe_allow_html=True)
 with c2:
     st.markdown(
         "<div style='text-align:right;padding-top:0.5rem'>"
-        "<span style='color:#F59E0B;font-family:DM Mono,monospace;font-size:0.7rem;"
-        "letter-spacing:0.15em'>PRODUCTION FRAMEWORK</span><br>"
-        "<span style='color:#4A4A4A;font-family:DM Mono,monospace;font-size:0.65rem'>"
+        "<span style='color:#FD951F;font-family:Arial,sans-serif;font-size:0.7rem;"
+        "letter-spacing:0.15em;font-weight:700'>PRODUCTION FRAMEWORK</span><br>"
+        "<span style='color:#9090A0;font-family:Consolas,monospace;font-size:0.65rem'>"
         "v2.0 · LeJ7-commits/unified-probabilistic-validation</span></div>",
         unsafe_allow_html=True)
 
@@ -561,11 +613,9 @@ uploaded = st.file_uploader("Upload forecast CSV", type=["csv"],
 
 if uploaded is None:
     st.markdown("""
-<div style='border:1px dashed #222;padding:3.5rem;text-align:center;
-     background:#131313;margin-top:1rem'>
-  <div style='font-family:DM Mono,monospace;font-size:0.9rem;
-       color:#4A4A4A;letter-spacing:0.1em'>
-    // DROP FORECAST CSV TO BEGIN VALIDATION
+<div class="empty-state">
+  <div class="empty-state-text">
+    Drop a forecast CSV to begin validation
   </div>
 </div>""", unsafe_allow_html=True)
     st.stop()
@@ -600,12 +650,12 @@ if len(df_raw) > MAX_ROWS:
 with st.expander("▸ DETECTED COLUMN MAPPING"):
     for role, col in col_map.items():
         s = "✓" if col else "✗"
-        c = AMBER if col else RED
+        c = NAVY if col else RED
         st.markdown(
-            f"<span style='color:{c};font-family:DM Mono,monospace;"
-            f"font-size:0.8rem'>{s} {role:8s}</span>"
-            f"<span style='color:#6B6B6B;font-family:DM Mono,monospace;"
-            f"font-size:0.8rem'> → {col or 'NOT FOUND'}</span>",
+            f"<span style='color:{c};font-family:Consolas,monospace;"
+            f"font-size:0.82rem;font-weight:700'>{s} {role:8s}</span>"
+            f"<span style='color:#64647A;font-family:Consolas,monospace;"
+            f"font-size:0.82rem'> → {col or 'NOT FOUND'}</span>",
             unsafe_allow_html=True)
 
 missing = [r for r in ["y", "y_hat"] if col_map.get(r) is None]
@@ -712,7 +762,7 @@ with st.spinner(""):
 snap  = decision.metric_snapshot
 label = decision.final_label
 
-st.markdown('<div class="section-rule">▸ GOVERNANCE DECISION</div>',
+st.markdown('<div class="section-rule">▸ Governance Decision</div>',
             unsafe_allow_html=True)
 
 col_v, col_k = st.columns([1, 3])
@@ -732,7 +782,7 @@ with col_v:
 with col_k:
     k1, k2, k3, k4 = st.columns(4)
     def kpi(col, val, label, sub="", color=None):
-        c = color or "#E5E5E5"
+        c = color or "#1A1A2E"
         col.markdown(
             f'<div class="kpi-block">'
             f'<div class="kpi-value" style="color:{c}">{val}</div>'
@@ -763,7 +813,7 @@ with col_k:
         snap.get("sharpness_label", "—"))
 
 # ── Anfuso + snapshot ─────────────────────────────────────────────────────────
-st.markdown('<div class="section-rule">▸ INTERVAL BACKTESTING</div>',
+st.markdown('<div class="section-rule">▸ Interval Backtesting</div>',
             unsafe_allow_html=True)
 ca, cb = st.columns([1, 1])
 with ca:
@@ -776,9 +826,9 @@ with ca:
          snap.get("upper_breach_rate")),
     ]
     tbl = "".join(
-        f"<tr><td style='color:#6B6B6B'>{r}</td>"
-        f"<td style='color:{tl_color(tl)};font-weight:500'>{tl or '—'}</td>"
-        f"<td style='color:#E5E5E5'>{_fmt(br, pct=True)}</td></tr>"
+        f"<tr><td>{r}</td>"
+        f"<td style='color:{tl_color(tl)};font-weight:700'>{tl or '—'}</td>"
+        f"<td style='color:#1A1A2E'>{_fmt(br, pct=True)}</td></tr>"
         for r, tl, br in rows
     )
     st.markdown(
@@ -793,7 +843,7 @@ with cb:
 
 # ── Visualizations ────────────────────────────────────────────────────────────
 if show_pit_plots:
-    st.markdown('<div class="section-rule">▸ PIT DIAGNOSTIC PLOTS</div>',
+    st.markdown('<div class="section-rule">▸ PIT Diagnostic Plots</div>',
                 unsafe_allow_html=True)
     u = np.mean(sample_matrix.samples <= pool.y_eval[:, None], axis=1)
     u = np.clip(u, 1e-12, 1 - 1e-12)
@@ -804,7 +854,7 @@ if show_pit_plots:
     plt.close(fig)
 
 if show_rolling_cov and enable_rolling:
-    st.markdown('<div class="section-rule">▸ ROLLING COVERAGE</div>',
+    st.markdown('<div class="section-rule">▸ Rolling Coverage</div>',
                 unsafe_allow_html=True)
     y_e  = pool.y_eval
     lo_e = pool.pool_lo[:pool.n_obs]
@@ -827,7 +877,7 @@ if show_rolling_cov and enable_rolling:
                 f"step={rolling_step})")
 
 if show_power_plot:
-    st.markdown('<div class="section-rule">▸ POWER ANALYSIS</div>',
+    st.markdown('<div class="section-rule">▸ Power Analysis</div>',
                 unsafe_allow_html=True)
     with st.spinner("Computing power curves (~20s)…"):
         fig = fig_power_vs_n(n_uploaded=pool.n_obs)
@@ -835,7 +885,7 @@ if show_power_plot:
     plt.close(fig)
 
 # ── Narratives ────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-rule">▸ GOVERNANCE NARRATIVES</div>',
+st.markdown('<div class="section-rule">▸ Governance Narratives</div>',
             unsafe_allow_html=True)
 if not narrative.api_used:
     st.warning("Add Anthropic API key in sidebar for AI-generated narratives.")
@@ -864,7 +914,7 @@ with st.expander("▸ DECISION PROVENANCE"):
     st.markdown(f"**Timestamp:** `{decision.decided_at}`")
 
 # ── Download ─────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-rule">▸ ARTIFACTS</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-rule">▸ Artifacts</div>', unsafe_allow_html=True)
 
 def build_zip():
     buf = io.BytesIO()
@@ -884,21 +934,15 @@ def build_zip():
                                       "PIT Diagnostics")
             img = io.BytesIO()
             fig.savefig(img, format="png", dpi=150, bbox_inches="tight",
-                        facecolor="#0c0c0c")
+                        facecolor="#FFFFFF")
             zf.writestr("pit_diagnostics.png", img.getvalue())
             plt.close(fig)
     buf.seek(0)
     return buf.read()
 
 st.download_button(
-    label="⬇ DOWNLOAD ALL ARTIFACTS  (.zip)",
+    label="⬇  DOWNLOAD ALL ARTIFACTS  (.zip)",
     data=build_zip(),
     file_name=f"upv_{label.lower()}_{decision.model_id}.zip",
     mime="application/zip",
 )
-
-
-
-
-
-
