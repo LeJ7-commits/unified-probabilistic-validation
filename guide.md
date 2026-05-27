@@ -81,13 +81,9 @@ Without this, stub narratives are written automatically and the pipeline still r
 
 ## PART 1 — SIMULATION MODEL CLASS
 
-### What this model class is
-
-A Monte Carlo simulation engine that produces thousands of possible future price paths. The model generates a distribution of outcomes rather than a single forecast. Examples: commodity price simulation, temperature scenario generation, energy generation scenario engines.
-
 ### What your CSV needs to look like
 
-For simulation models the framework needs the raw simulation paths — not just a summary statistic. The build script generates these from the DGP parameters directly. If you are bringing an external simulation engine, you need to export its paths in the following format:
+For simulation models the framework needs the raw simulation paths. The build script generates these from the DGP parameters directly. If you are bringing an external simulation engine, you need to export its paths in the following format:
 
 ```
 as_of_date, path_1, path_2, ..., path_5000, realised_value
@@ -128,7 +124,7 @@ N_PATHS     = 5000                  # number of simulation paths
 ALPHA       = 0.10                  # 0.10 = 90% interval target
 ```
 
-If you are using the built-in Gaussian DGP (recommended for demonstration), update the parameters to match your commodity:
+If you are using the built-in Gaussian DGP, update the parameters to match your commodity:
 
 ```python
 BASE_VALUE  = 40.0    # typical price level
@@ -207,10 +203,6 @@ type experiments\run_020_sim_gas_price\governance_decision.json
 
 ## PART 2 — SHORT-TERM FORECAST MODEL CLASS
 
-### What this model class is
-
-An operational forecasting model that produces a single point forecast for each time step — typically hourly or quarter-hourly. Examples: day-ahead electricity load forecast, day-ahead price forecast, intraday balancing forecast. The model does not produce a distribution — only a predicted value. The framework reconstructs the predictive distribution from historical forecast errors.
-
 ### What your CSV needs to look like
 
 ```
@@ -287,7 +279,7 @@ Building derived artifacts for my_load_forecast...
 Done.
 ```
 
-The empirical coverage will likely not be exactly 90% — this is a finding, not an error. It tells you how well the model's intervals were calibrated before any diagnostic adjustment.
+The empirical coverage tells you how well the model's intervals were calibrated before any diagnostic adjustment.
 
 ---
 
@@ -361,10 +353,6 @@ type experiments\run_021_my_forecast\narrative_plain.md
 ---
 
 ## PART 3 — LONG-TERM RENEWABLE FORECAST MODEL CLASS
-
-### What this model class is
-
-A simulation-based model that produces expected generation output for PV solar or wind over a long horizon — typically hourly over multiple years. Unlike short-term forecasts, these models account for seasonal patterns, weather variability, and the physical power curve. Examples: wind speed forecast + power curve = expected wind generation; irradiance model + PV efficiency = expected solar output.
 
 ### Special consideration: nighttime exclusion
 
