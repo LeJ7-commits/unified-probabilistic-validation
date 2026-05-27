@@ -1,6 +1,5 @@
 # Unified Probabilistic Validation Framework
 ## End-to-End Dataset Onboarding Guide
-### For Energy Quant Solutions / EnBW Demonstration
 
 ---
 
